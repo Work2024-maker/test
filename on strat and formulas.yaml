@@ -1,0 +1,176 @@
+Concurrent(
+Set(AzureData, 'PowerAppV2->Compose'.Run());
+//
+// Core Navigation Collection
+//
+ClearCollect(
+    colNavigation,
+    [
+        {
+            id: "nav_home",
+            title: "Home",
+            label: "Home",
+            icon: "Home",     // Using exact Home icon
+            screen: "scrHome",
+            order: 1
+        },
+        {
+            id: "nav_resources",
+            title: "Resources",
+            label: "Resources", 
+            icon: "Box",      // Using Box icon for resources
+            screen: "scrResources",
+            order: 2
+        },
+        {
+            id: "nav_history",
+            title: "History",
+            label: "History",
+            icon: "History",  // Using History icon
+            screen: "scrHistory",
+            order: 3
+        },
+        {
+            id: "nav_settings",
+            title: "Settings",
+            label: "Settings",
+            icon: "Settings", // Using Settings icon
+            screen: "scrSettings",
+            order: 4
+        }
+    ]
+))
+
+
+formulas:
+
+
+
+dataResources =ForAll(
+    Table(ParseJSON(AzureData.resources)) As Resource,
+
+        {
+            id:Substitute( JSON(Resource.Value.id),"""",""),
+            name:Substitute(Resource.Value.name,"""",""),
+            location: Substitute( JSON(Resource.Value.location),"""",""),
+            tags: JSON(Resource.Value.tags),
+            properties:Substitute(JSON(Resource.Value.properties),"""","")
+
+        }
+    
+);
+
+dataSubscriptions = ForAll(
+   Table(ParseJSON(AzureData.subscriptions)) As Subscriptions,
+       {
+            id: Substitute(Text(JSON(Subscriptions.Value.id)),"""",""),
+            authorizationSource:Substitute(Text(JSON(Subscriptions.Value.authorizationSource)),"""",""),
+            subscriptionId: Substitute(Text(JSON(Subscriptions.Value.subscriptionId)),"""",""),
+            displayName: Substitute(Text(JSON(Subscriptions.Value.displayName)),"""",""),
+            state: Substitute(Text(JSON(Subscriptions.Value.state)),"""",""),
+            subscriptionPolicies: Text(JSON(Subscriptions.Value.subscriptionPolicies))
+        }
+);
+
+tags = ForAll(
+    Table(ParseJSON(AzureData.tags)) As Tags,
+        {
+            // Extracting other properties from the JSON
+            id: Substitute(Text(JSON(Tags.Value.Id)), """", ""),
+            tagName: Substitute(Text(JSON(Tags.Value.tagName)), """", ""),
+            tagValues: Substitute(Text(JSON(Tags.Value.tagValues)), """", "")
+        }
+    
+);
+
+Theme = {
+        // Colors
+        PrimaryColor:"#2563eb",
+        SecondaryColor:"#2B88D8",
+        TertiaryColor:"#A4D3FF",
+        
+        TextPrimaryColor:"#333333",
+        TextSecondaryColor:"#666666",
+        TextLightColor:"#FFFFFF",
+        
+        BackgroundPrimaryColor:"#FFFFFF",
+        BackgroundSecondaryColor:"#F3F3F3",
+        BackgroundTertiaryColor:"#E1E1E1",
+        
+        BorderPrimaryColor:"#CCCCCC",
+        BorderSecondaryColor:"#E1E1E1",
+        
+        SuccessColor:"#107C10",
+        WarningColor:"#FFC300",
+        ErrorColor:"#E81123",
+        
+        // Typography
+        Font: Font.Arial,
+        FontSizeSmall: 12,
+        FontSizeMedium: 14,
+        FontSizeLarge: 18,
+        FontSizeXLarge: 24,
+        
+        // Spacing
+        SpacingSmall: 4,
+        SpacingMedium: 8,
+        SpacingLarge: 16,
+        SpacingXLarge: 24,
+        
+        // Border Radius
+        BorderRadiusSmall: 2,
+        BorderRadiusMedium: 4,
+        BorderRadiusLarge: 8
+};
+
+
+/////////////////////////
+// Theme Settings
+/////////////////////////
+
+// Base colors used throughout the app
+nf_Colors = {
+    Primary: ColorValue("#0078d4"),
+    PrimaryLight: ColorValue("#2b88d8"),
+    PrimaryDark: ColorValue("#005a9e"),
+    Secondary: ColorValue("#2b579a"),
+    SecondaryLight: ColorValue("#4a72af"),
+    SecondaryDark: ColorValue("#1d3d6f"),
+    Success: ColorValue("#107c10"),
+    Error: ColorValue("#a4262c"),
+    Warning: ColorValue("#ca5010"),
+    // Grays
+    Gray50: ColorValue("#fafafa"),
+    Gray100: ColorValue("#f5f5f5"),
+    Gray200: ColorValue("#e5e5e5"),
+    Gray300: ColorValue("#d4d4d4"),
+    Gray400: ColorValue("#a3a3a3"),
+    Gray500: ColorValue("#737373")
+};
+
+// Font settings
+nf_Fonts = {
+    Body: {
+        Family: Font.'Segoe UI',
+        Size: 13,
+        LineHeight: 1.5
+    },
+    Heading: {
+        Family: Font.'Segoe UI',
+        Size: 18,
+        LineHeight: 1.2
+    },
+    Code: {
+        Family: Font.'Segoe UI',
+        Size: 12,
+        LineHeight: 1.4
+    }
+};
+
+
+/////////////////////////
+// User Context
+/////////////////////////
+
+// Get current user details with Office365 connector
+nf_CurrentUser = Office365Users.MyProfile();
