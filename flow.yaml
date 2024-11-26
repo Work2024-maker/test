@@ -1,0 +1,388 @@
+{
+  "$schema": "https://power-automate-tools.local/flow-editor.json#",
+  "connectionReferences": {
+    "shared_arm-1": {
+      "connectionName": "shared-arm-fd32afcf-b61b-489d-b5d3-a298e06951d1",
+      "connectionReferenceLogicalName": "new_sharedarm_ebacb",
+      "source": "Invoker",
+      "id": "/providers/Microsoft.PowerApps/apis/shared_arm",
+      "displayName": "Azure Resource Manager",
+      "iconUri": "https://connectoricons-prod.azureedge.net/releases/v1.0.1685/1.0.1685.3700/arm/icon.png",
+      "brandColor": "#003056",
+      "tier": "Premium"
+    }
+  },
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "$authentication": {
+        "defaultValue": {},
+        "type": "SecureObject"
+      },
+      "$connections": {
+        "defaultValue": {},
+        "type": "Object"
+      }
+    },
+    "triggers": {
+      "manual": {
+        "metadata": {
+          "operationMetadataId": "2ab2911a-20a6-478d-8a24-9ab4e5abddc0"
+        },
+        "type": "Request",
+        "kind": "PowerAppV2",
+        "inputs": {
+          "schema": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        }
+      }
+    },
+    "actions": {
+      "List_subscriptions": {
+        "runAfter": {
+          "Initialize_tags_variable": [
+            "Succeeded"
+          ],
+          "Initialize_tagValues_variable": [
+            "Succeeded"
+          ]
+        },
+        "metadata": {
+          "operationMetadataId": "ff69b3bc-4003-46f6-9b36-2cde313eb621"
+        },
+        "type": "OpenApiConnection",
+        "inputs": {
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_arm",
+            "connectionName": "shared_arm-1",
+            "operationId": "Subscriptions_List"
+          },
+          "authentication": {
+            "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']",
+            "type": "Raw"
+          }
+        }
+      },
+      "Respond_to_a_Power_App_or_flow": {
+        "runAfter": {
+          "List_resource_groups": [
+            "Succeeded"
+          ]
+        },
+        "metadata": {
+          "operationMetadataId": "ab090766-4420-4a56-b48e-06cae5449197"
+        },
+        "type": "Response",
+        "kind": "PowerApp",
+        "inputs": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "subscriptions": {
+                "title": "subscriptions",
+                "x-ms-dynamically-added": true,
+                "type": "string"
+              },
+              "resources": {
+                "title": "resources",
+                "x-ms-dynamically-added": true,
+                "type": "string"
+              },
+              "tags": {
+                "title": "tags",
+                "x-ms-dynamically-added": true,
+                "type": "string"
+              }
+            },
+            "additionalProperties": {}
+          },
+          "statusCode": 200,
+          "body": {
+            "subscriptions": "@{outputs('List_subscriptions')?['body/value']}",
+            "resources": "@{outputs('List_resource_groups')?['body/value']}",
+            "tags": "@{outputs('tags')}"
+          }
+        }
+      },
+      "Lists_the_subscription_locations": {
+        "runAfter": {
+          "List_resources_by_subscription": [
+            "Succeeded"
+          ]
+        },
+        "metadata": {
+          "operationMetadataId": "4ae1a6bc-5176-4798-9125-0ba449105ce5"
+        },
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "subscriptionId": "4c60d4f9-4088-4443-8d09-5ca50233c273"
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_arm",
+            "connectionName": "shared_arm-1",
+            "operationId": "Subscriptions_ListLocations"
+          },
+          "authentication": {
+            "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']",
+            "type": "Raw"
+          }
+        }
+      },
+      "List_resource_groups": {
+        "runAfter": {
+          "Lists_the_subscription_locations": [
+            "Succeeded"
+          ]
+        },
+        "metadata": {
+          "operationMetadataId": "5add73c8-7fe4-4f4a-b80c-1246ec3f9fcf"
+        },
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "subscriptionId": "4c60d4f9-4088-4443-8d09-5ca50233c273"
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_arm",
+            "connectionName": "shared_arm-1",
+            "operationId": "ResourceGroups_List"
+          },
+          "authentication": {
+            "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']",
+            "type": "Raw"
+          }
+        }
+      },
+      "List_resources_by_subscription": {
+        "runAfter": {
+          "Subscriptions_Tags_Scope": [
+            "Succeeded"
+          ]
+        },
+        "metadata": {
+          "operationMetadataId": "d7f2a220-d929-4eb8-a853-a143645f6673"
+        },
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "subscriptionId": "4c60d4f9-4088-4443-8d09-5ca50233c273"
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_arm",
+            "connectionName": "shared_arm-1",
+            "operationId": "Resources_List"
+          },
+          "authentication": {
+            "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']",
+            "type": "Raw"
+          }
+        }
+      },
+      "Initialize_tags_variable": {
+        "runAfter": {},
+        "metadata": {
+          "operationMetadataId": "6dae1885-5ee3-486b-b8ff-12a0bc839b8f"
+        },
+        "type": "InitializeVariable",
+        "inputs": {
+          "variables": [
+            {
+              "name": "tags",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "Subscriptions_Tags_Scope": {
+        "actions": {
+          "Select_SubscriptionID": {
+            "metadata": {
+              "operationMetadataId": "6ebcce2a-861c-4616-83a9-1f6ac76c2d44"
+            },
+            "type": "Select",
+            "inputs": {
+              "from": "@outputs('List_subscriptions')?['body/value']",
+              "select": {
+                "SubscriptionID": "@item()?['subscriptionId']"
+              }
+            }
+          },
+          "For_each_Subscription_ID": {
+            "foreach": "@outputs('List_subscriptions')?['body/value']",
+            "actions": {
+              "List_subscription_resource_tags": {
+                "metadata": {
+                  "operationMetadataId": "02002752-03f2-4e1d-9dea-8f31178570b0"
+                },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "parameters": {
+                    "subscriptionId": "@item()?['subscriptionId']"
+                  },
+                  "host": {
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_arm",
+                    "connectionName": "shared_arm-1",
+                    "operationId": "Tags_List"
+                  },
+                  "authentication": {
+                    "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']",
+                    "type": "Raw"
+                  }
+                }
+              },
+              "For_each_TagValues": {
+                "foreach": "@outputs('List_subscription_resource_tags')?['body/value']",
+                "actions": {
+                  "Select_TagValues": {
+                    "metadata": {
+                      "operationMetadataId": "afd6d275-a939-4bc7-8a52-c634d3d5fd7a"
+                    },
+                    "type": "Select",
+                    "inputs": {
+                      "from": "@items('For_each_TagValues')?['values']",
+                      "select": {
+                        "TagValue": "@item()?['tagValue']"
+                      }
+                    }
+                  },
+                  "Append_to_string_tagValues": {
+                    "runAfter": {
+                      "Compose": [
+                        "Succeeded"
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "e4344fa8-5f7c-4ef0-b29b-3dda70a37a53"
+                    },
+                    "type": "AppendToStringVariable",
+                    "inputs": {
+                      "name": "tagValues",
+                      "value": "@{outputs('Compose')},"
+                    }
+                  },
+                  "array_into_string": {
+                    "runAfter": {
+                      "Select_TagValues": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Compose",
+                    "inputs": "@replace(\r\n    replace(\r\n      string(body('Select_TagValues')), \r\n        '{\"TagValue\":\"', ''\r\n      ),\r\n    '\"}', ''\r\n  )\r\n"
+                  },
+                  "Compose": {
+                    "runAfter": {
+                      "array_into_string": [
+                        "Succeeded"
+                      ]
+                    },
+                    "type": "Compose",
+                    "inputs": "@replace(replace(outputs('array_into_string'),'[',''),']','')"
+                  }
+                },
+                "runAfter": {
+                  "List_subscription_resource_tags": [
+                    "Succeeded"
+                  ]
+                },
+                "metadata": {
+                  "operationMetadataId": "8fdd4c3b-dca8-4d8a-bb0a-42d9676f62e3"
+                },
+                "type": "Foreach"
+              },
+              "Resource_Tag_Wrapper": {
+                "runAfter": {
+                  "For_each_TagValues": [
+                    "Succeeded"
+                  ]
+                },
+                "metadata": {
+                  "operationMetadataId": "c045251e-abbc-4953-b054-7da82d6fd852"
+                },
+                "type": "Select",
+                "inputs": {
+                  "from": "@outputs('List_subscription_resource_tags')?['body/value']",
+                  "select": {
+                    "Id": "@item()?['id']",
+                    "tagName": "@item()['tagName']",
+                    "tagValues": "@variables('tagValues')"
+                  }
+                }
+              },
+              "Append_to_tags": {
+                "runAfter": {
+                  "Resource_Tag_Wrapper": [
+                    "Succeeded"
+                  ]
+                },
+                "metadata": {
+                  "operationMetadataId": "10f21251-d08f-4d5a-a7f2-806a0ccb9fe9"
+                },
+                "type": "AppendToStringVariable",
+                "inputs": {
+                  "name": "tags",
+                  "value": "@{substring(string(body('Resource_Tag_Wrapper')), 1, sub(length(string(body('Resource_Tag_Wrapper'))), 2))},"
+                }
+              },
+              "Empty_tagValues": {
+                "runAfter": {
+                  "Append_to_tags": [
+                    "Succeeded"
+                  ]
+                },
+                "type": "SetVariable",
+                "inputs": {
+                  "name": "tagValues",
+                  "value": "@null"
+                }
+              }
+            },
+            "runAfter": {
+              "Select_SubscriptionID": [
+                "Succeeded"
+              ]
+            },
+            "metadata": {
+              "operationMetadataId": "ef1048db-ba3f-4352-a08c-155be8181a73"
+            },
+            "type": "Foreach"
+          },
+          "tags": {
+            "runAfter": {
+              "For_each_Subscription_ID": [
+                "Succeeded"
+              ]
+            },
+            "metadata": {
+              "operationMetadataId": "36616415-2fb1-472f-b3ed-19bb69a59938"
+            },
+            "type": "Compose",
+            "inputs": "@concat('[',take(variables('tags'),sub(length(variables('tags')),1)),']')"
+          }
+        },
+        "runAfter": {
+          "List_subscriptions": [
+            "Succeeded"
+          ]
+        },
+        "type": "Scope"
+      },
+      "Initialize_tagValues_variable": {
+        "runAfter": {},
+        "type": "InitializeVariable",
+        "inputs": {
+          "variables": [
+            {
+              "name": "tagValues",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
