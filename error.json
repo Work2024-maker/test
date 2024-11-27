@@ -1,0 +1,2 @@
+Action 'HTTP-copy' failed: The client '3d34e094-f411-46c5-a5de-16dbe1c3169d' with object id '3d34e094-f411-46c5-a5de-16dbe1c3169d' does not have authorization to perform action 'Microsoft.Authorization/roleAssignments/read' over scope '/subscriptions/e15f0fd8-1482-45a3-bff5-12aec4867a14/resourceGroups/rg-il-sw-data-infra/providers/Microsoft.Authorization' or the scope is invalid. If access was recently granted, please refresh your credentials.
+
