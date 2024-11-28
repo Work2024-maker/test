@@ -1,0 +1,3654 @@
+- srcNewResource:
+    Control: Screen
+    Children:
+    - ButtonCanvas9:
+        Control: Button
+        Properties:
+          OnSelect: =NewForm(Form5)
+          X: =853
+    - TextCanvas8:
+        Control: Text
+        Properties:
+          Text: |-
+            =//ValidateName( DataCardValue17.Value, "ResourceGroup")
+            //If(!IsMatch(DataCardValue17.Value, "^[a-zA-Z0-9\-\_]{3,90}$"),"Invalid Resource Group Name. Ensure it is alphanumeric, no spaces, and less than 90 characters.")
+          Width: =741
+          Y: =736
+    - TextCanvas7:
+        Control: Text
+        Properties:
+          Height: =0
+          X: =40
+          Y: =72
+    - ScreenContainer1_1:
+        Control: GroupContainer
+        Variant: verticalAutoLayoutContainer
+        Properties:
+          Fill: =RGBA(249, 249, 249, 0.62)
+          Height: =Parent.Height
+          LayoutAlignItems: =LayoutAlignItems.Stretch
+          LayoutDirection: =LayoutDirection.Vertical
+          LayoutGap: =16
+          LayoutMode: =LayoutMode.Auto
+          Width: =Parent.Width
+        Children:
+        - HeaderContainer1_2:
+            Control: GroupContainer
+            Variant: horizontalAutoLayoutContainer
+            Properties:
+              DropShadow: =DropShadow.None
+              Fill: =RGBA(255, 255, 255, 1)
+              FillPortions: =0
+              Height: =75
+              LayoutAlignItems: =LayoutAlignItems.Center
+              LayoutGap: =15
+              LayoutMode: =LayoutMode.Auto
+              PaddingLeft: =20
+              PaddingRight: =20
+              RadiusBottomLeft: =0
+              RadiusBottomRight: =0
+              RadiusTopLeft: =0
+              RadiusTopRight: =0
+            Children:
+            - Image2_1:
+                Control: Image
+                Properties:
+                  OnSelect: =Back()
+                  Image: |
+                    =//
+                    // Icon Color Processing Function
+                    //
+                    With(
+                        {
+                            iconName: "ArrowLeft",
+                            //bgColor: "rgba(34, 197, 94, 0.1)" ,//witch( ThisItem.bgColor, "blue", "rgba(59, 130, 246, 0.1)", "purple", "rgba(147, 51, 234, 0.1)", "green", "rgba(34, 197, 94, 0.1)" ),
+                            iconColor:  "RGBA(107, 114, 128,1)" //Switch( ThisItem.actionColor, "blue", "rgb(59, 130, 246)", "purple", "rgb(147, 51, 234)", "green", "rgb(34, 197, 94)" )
+                        },
+                            "data:image/svg+xml;utf8," & EncodeUrl(
+                                Substitute(
+                                    LookUp(
+                                        fn_Icons,
+                                        name = iconName
+                                    ).value,
+                                    "currentColor",// Original color placeholder
+                                   /* If(
+                                        isSelected,
+                                        "rgb(59, 130, 246)",// Selected - Blue rgb(59, 130, 246)
+                                        "rgb(107, 114, 128)"// Not Selected - Gray rgb(107, 114, 128)
+                                    )*/
+                                  iconColor
+                                )
+                            )
+                        )
+                  LayoutMinHeight: =10
+                  PaddingBottom: =15
+                  PaddingLeft: =15
+                  PaddingRight: =15
+                  PaddingTop: =15
+                  Width: =60
+            - Container6_1:
+                Control: GroupContainer
+                Variant: verticalAutoLayoutContainer
+                Properties:
+                  AlignInContainer: =AlignInContainer.SetByContainer
+                  DropShadow: =DropShadow.None
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutJustifyContent: =LayoutJustifyContent.Center
+                  LayoutMinHeight: =10
+                  LayoutMode: =LayoutMode.Auto
+                  PaddingLeft: =10
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =200
+                Children:
+                - Label2_4:
+                    Control: Label
+                    Properties:
+                      Text: =galFormSteps.Selected.label
+                      AlignInContainer: =AlignInContainer.Stretch
+                      Font: =Font.Lato
+                      FontWeight: =FontWeight.Bold
+                      Height: =26
+                      LayoutMinWidth: =15
+                      Size: =20
+                      Width: =3
+            - galFormSteps:
+                Control: Gallery
+                Variant: BrowseLayout_Horizontal_TwoTextOneImageVariant_ver5.0
+                Properties:
+                  Default: =locStep
+                  Items: =colProgressSteps
+                  AlignInContainer: =AlignInContainer.SetByContainer
+                  DelayItemLoading: =true
+                  FillPortions: =0
+                  LayoutMinHeight: =10
+                  TemplatePadding: =0
+                  TemplateSize: =Self.Width/3
+                  Visible: =false
+                  Width: =900
+                Children:
+                - Container10:
+                    Control: GroupContainer
+                    Variant: horizontalAutoLayoutContainer
+                    Properties:
+                      DropShadow: =DropShadow.None
+                      Height: =75
+                      LayoutAlignItems: =LayoutAlignItems.Center
+                      LayoutGap: =15
+                      LayoutMode: =LayoutMode.Auto
+                      PaddingLeft: =10
+                      Width: =Parent.TemplateWidth
+                    Children:
+                    - TextCanvas1:
+                        Control: Text
+                        Properties:
+                          Align: ='TextCanvas.Align'.Center
+                          BorderRadius: =100
+                          Fill: |-
+                            =If(
+                                ThisItem.IsSelected,
+                                RGBA(59, 130, 246,.1),// Selected - Blue rgb(59, 130, 246)
+                                RGBA(107, 114, 128,.1)// Not Selected - Gray rgb(107, 114, 128)
+                            )
+                          FontColor: |-
+                            =If(
+                                ThisItem.IsSelected,
+                                RGBA(59, 130, 246,1),// Selected - Blue rgb(59, 130, 246)
+                                RGBA(107, 114, 128,1)// Not Selected - Gray rgb(107, 114, 128)
+                            )
+                          PaddingBottom: =2.5
+                          PaddingLeft: =0
+                          PaddingRight: =0
+                          PaddingTop: =0
+                          Size: =20
+                          Text: =ThisItem.order
+                          Weight: ='TextCanvas.Weight'.Regular
+                          Height: =35
+                          Width: =35
+                          Y: =16
+                    - Title2_1:
+                        Control: Label
+                        Properties:
+                          OnSelect: =
+                          Text: =ThisItem.label
+                          Color: |-
+                            =If(
+                                ThisItem.IsSelected,
+                                RGBA(59, 130, 246,1),// Selected - Blue rgb(59, 130, 246)
+                                RGBA(107, 114, 128,1)// Not Selected - Gray rgb(107, 114, 128)
+                            )
+                          FillPortions: =1
+                          FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+                          Height: =Self.Size * 1.8
+                          PaddingBottom: =0
+                          PaddingLeft: =0
+                          PaddingRight: =0
+                          PaddingTop: =0
+                          VerticalAlign: =VerticalAlign.Top
+                          Width: =
+                          X: =48
+                          Y: =7
+                    - Image8_1:
+                        Control: Image
+                        Properties:
+                          OnSelect: =
+                          Image: |
+                            =//
+                            // Icon Color Processing Function
+                            //
+                            With(
+                                {
+                                    iconName: "ChevronRight",
+                                    //bgColor: "rgba(34, 197, 94, 0.1)" ,//witch( ThisItem.bgColor, "blue", "rgba(59, 130, 246, 0.1)", "purple", "rgba(147, 51, 234, 0.1)", "green", "rgba(34, 197, 94, 0.1)" ),
+                                    iconColor:  "RGBA(107, 114, 128,.5)" //Switch( ThisItem.actionColor, "blue", "rgb(59, 130, 246)", "purple", "rgb(147, 51, 234)", "green", "rgb(34, 197, 94)" )
+                                },
+                                    "data:image/svg+xml;utf8," & EncodeUrl(
+                                        Substitute(
+                                            LookUp(
+                                                fn_Icons,
+                                                name = iconName
+                                            ).value,
+                                            "currentColor",// Original color placeholder
+                                           /* If(
+                                                isSelected,
+                                                "rgb(59, 130, 246)",// Selected - Blue rgb(59, 130, 246)
+                                                "rgb(107, 114, 128)"// Not Selected - Gray rgb(107, 114, 128)
+                                            )*/
+                                          iconColor
+                                        )
+                                    )
+                                )
+                          Height: =30
+                          ImagePosition: =ImagePosition.Fill
+                          RadiusBottomLeft: =8
+                          RadiusBottomRight: =8
+                          RadiusTopLeft: =8
+                          RadiusTopRight: =8
+                          Visible: =ThisItem.order<>3
+                          Width: =30
+                          X: =222
+                          Y: =4
+                - Subtitle3_1:
+                    Control: Label
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      Text: =ThisItem.id
+                      FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+                      Height: =Self.Size * 1.8
+                      PaddingBottom: =0
+                      PaddingLeft: =0
+                      PaddingRight: =0
+                      PaddingTop: =0
+                      VerticalAlign: =VerticalAlign.Top
+                      Visible: =false
+                      Width: =Title2_1.Width
+                      X: =Title2_1.X
+                      Y: =Title2_1.Y + Title2_1.Height + 8
+            - ButtonCanvas10:
+                Control: Button
+                Properties:
+                  Text: ="Step "& galFormSteps.Selected.order &" of " & galFormSteps.AllItemsCount
+        - conSubscriptuion:
+            Control: GroupContainer
+            Variant: verticalAutoLayoutContainer
+            Properties:
+              BorderStyle: =BorderStyle.None
+              DropShadow: =DropShadow.None
+              FillPortions: =3
+              LayoutDirection: =LayoutDirection.Vertical
+              LayoutGap: =10
+              LayoutMode: =LayoutMode.Auto
+              PaddingBottom: =10
+              PaddingTop: =10
+              RadiusBottomLeft: =8
+              RadiusBottomRight: =8
+              RadiusTopLeft: =8
+              RadiusTopRight: =8
+              Visible: =galFormSteps.Selected.order =1
+            Children:
+            - Container6_2:
+                Control: GroupContainer
+                Variant: verticalAutoLayoutContainer
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutJustifyContent: =LayoutJustifyContent.Center
+                  LayoutMinHeight: =10
+                  LayoutMode: =LayoutMode.Auto
+                  PaddingLeft: =10
+                Children:
+                - Label3_5:
+                    Control: Label
+                    Properties:
+                      Text: |-
+                        ="Select Subscription
+                        "
+                      AlignInContainer: =AlignInContainer.Stretch
+                      Font: =Font.Arial
+                      PaddingLeft: =20
+                      Size: =15
+                      Visible: =false
+                - Container16_6:
+                    Control: GroupContainer
+                    Variant: verticalAutoLayoutContainer
+                    Properties:
+                      LayoutAlignItems: =LayoutAlignItems.Center
+                      LayoutDirection: =LayoutDirection.Vertical
+                      LayoutGap: =15
+                      LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                      LayoutMode: =LayoutMode.Auto
+                      PaddingBottom: =25
+                      PaddingLeft: =30
+                      PaddingRight: =30
+                      PaddingTop: =25
+                    Children:
+                    - Label3_14:
+                        Control: Label
+                        Properties:
+                          Text: ="Subscription"
+                          AlignInContainer: =AlignInContainer.Stretch
+                          Font: =Font.Lato
+                          FontWeight: =FontWeight.Semibold
+                          Size: =15
+                    - ComboboxCanvas2_2:
+                        Control: ComboBox
+                        Variant: pcfdataset
+                        Properties:
+                          BorderColor: =RGBA(106, 122, 127, 1)
+                          BorderRadius: =7
+                          Fill: =RGBA(255, 255, 255, 1)
+                          InputTextPlaceholder: ="Select Subscripion"
+                          Items: =Sort( Distinct( dataSubscriptions,displayName),Value,SortOrder.Ascending)
+                          AlignInContainer: =AlignInContainer.Stretch
+                          Height: =45
+                    - Label3_11:
+                        Control: Label
+                        Properties:
+                          Text: ="only subscriptions with Self-Service enabled are available for deployment"
+                          AlignInContainer: =AlignInContainer.Stretch
+                          Font: =Font.Arial
+                          PaddingLeft: =20
+                          Size: =12
+            - Container9_1:
+                Control: GroupContainer
+                Variant: manualLayoutContainer
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =60
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  Visible: =false
+                Children:
+                - TextInputCanvas1:
+                    Control: TextInput
+                    Properties:
+                      Appearance: ='TextInputCanvas.Appearance'.FilledLighter
+                      BorderColor: =RGBA(214, 221, 224, 1)
+                      BorderRadius: =10
+                      BorderStyle: =BorderStyle.Solid
+                      Fill: =RGBA(255, 255, 255, 1)
+                      FontSize: =18
+                      PaddingLeft: =50
+                      Placeholder: ="Search subscriptions..."
+                      Type: ='TextInputCanvas.Type'.Search
+                      Height: =Parent.Height-10
+                      Width: =Parent.Width-40
+                      X: =20
+                      Y: =5
+            - galSubscriptions:
+                Control: Gallery
+                Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+                Properties:
+                  OnSelect: =UpdateContext({locVarCurrentNav:ThisItem})
+                  Items: =Search(dataSubscriptions,TextInputCanvas1.Value,authorizationSource,displayName,id,state,subscriptionId,subscriptionPolicies)
+                  WrapCount: =2
+                  DelayItemLoading: =true
+                  Layout: =Layout.Vertical
+                  ShowScrollbar: =false
+                  TemplateSize: =140
+                  Visible: =false
+                Children:
+                - Container3_3:
+                    Control: GroupContainer
+                    Variant: horizontalAutoLayoutContainer
+                    Properties:
+                      BorderColor: |-
+                        =// Selected - Blue rgb(59, 130, 246) - // Not Selected - transparent
+                        If(ThisItem.IsSelected,RGBA(59,130,246,1),RGBA(228,228,231,1))
+                      BorderThickness: =1
+                      Fill: |-
+                        =// Selected - Blue rgb(59, 130, 246) - // Not Selected - transparent
+                        //If(ThisItem.IsSelected,RGBA(59,130,246,.15),RGBA(107,114,128,0))
+                        Color.White
+                      Height: =Parent.TemplateHeight-15
+                      LayoutAlignItems: =LayoutAlignItems.Center
+                      LayoutGap: =15
+                      LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                      LayoutMode: =LayoutMode.Auto
+                      PaddingBottom: =10
+                      PaddingLeft: =10
+                      PaddingRight: =10
+                      PaddingTop: =10
+                      RadiusBottomLeft: =10
+                      RadiusBottomRight: =10
+                      RadiusTopLeft: =10
+                      RadiusTopRight: =10
+                      Width: =Parent.TemplateWidth-24
+                      X: =12
+                      Y: =10
+                    Children:
+                    - Image7_3:
+                        Control: Image
+                        Properties:
+                          OnSelect: =
+                          Image: |
+                            =//
+                            // Icon Color Processing Function
+                            //
+                            With(
+                                {
+                                    iconName:"Globe",
+                                    isSelected: ThisItem.IsSelected,
+                                    iconColor: "rgb(59, 130, 246)"//Switch( ThisItem.color,"blue", "rgb(59, 130, 246)", "orange", "rgb(249, 115, 22)", "purple", "rgb(147, 51, 234)", "green", "rgb(34, 197, 94)", "red", "rgb(239, 68, 68)", "yellow", "rgb(234, 179, 8)", "indigo", "rgb(99, 102, 241)", "pink", "rgb(236, 72, 153)", "teal", "rgb(20, 184, 166)", "cyan", "rgb(6, 182, 212)")
+                                },
+                                    "data:image/svg+xml;utf8," & EncodeUrl(
+                                        Substitute(
+                                            LookUp(
+                                                fn_Icons,
+                                                name = iconName
+                                            ).value,
+                                            "currentColor",// Original color placeholder
+                                          "rgb(59, 130, 246)"
+                                        )
+                                    )
+                                )
+                          Fill: =//Switch(ThisItem.color,"blue",RGBA(59,130,246,.15),"orange",RGBA(249,115,22,.15),"purple",RGBA(147,51,234,.15),"green",RGBA(34,197,94,.15),"red",RGBA(239,68,68,.15),"yellow",RGBA(234,179,8,.15),"indigo",RGBA(99,102,241,.15),"pink",RGBA(236,72,153,.15),"teal",RGBA(20,184,166,.15),"cyan",RGBA(6,182,212,.15))
+                          Height: =60
+                          ImagePosition: =ImagePosition.Fill
+                          LayoutMinHeight: =10
+                          LayoutMinWidth: =50
+                          PaddingBottom: =15
+                          PaddingLeft: =15
+                          PaddingRight: =15
+                          PaddingTop: =15
+                          RadiusBottomLeft: =10
+                          RadiusBottomRight: =10
+                          RadiusTopLeft: =10
+                          RadiusTopRight: =10
+                          Width: =60
+                          X: =//(Parent.TemplateWidth / 2) - (Self.Width / 2)
+                          Y: =16
+                    - Container4_3:
+                        Control: GroupContainer
+                        Variant: verticalAutoLayoutContainer
+                        Properties:
+                          AlignInContainer: =AlignInContainer.SetByContainer
+                          DropShadow: =DropShadow.None
+                          Height: =70
+                          LayoutDirection: =LayoutDirection.Vertical
+                          LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                          LayoutMinHeight: =10
+                          LayoutMinWidth: =10
+                          LayoutMode: =LayoutMode.Auto
+                        Children:
+                        - Container3_7:
+                            Control: GroupContainer
+                            Variant: horizontalAutoLayoutContainer
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =40
+                              LayoutAlignItems: =LayoutAlignItems.Stretch
+                              LayoutGap: =10
+                              LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                              LayoutMinHeight: =10
+                              LayoutMode: =LayoutMode.Auto
+                            Children:
+                            - Label2_5:
+                                Control: Label
+                                Properties:
+                                  Text: =ThisItem.displayName
+                                  AlignInContainer: =AlignInContainer.Stretch
+                                  AutoHeight: =true
+                                  FillPortions: =1
+                                  Font: =Font.Lato
+                                  FontWeight: =FontWeight.Semibold
+                                  Height: =26
+                                  LayoutMinWidth: =15
+                                  Width: =3
+                            - Container3_8:
+                                Control: GroupContainer
+                                Variant: horizontalAutoLayoutContainer
+                                Properties:
+                                  AlignInContainer: =AlignInContainer.Center
+                                  DropShadow: =DropShadow.None
+                                  Fill: =RGBA(34, 197, 94, 0.1)
+                                  FillPortions: =0
+                                  Height: =27
+                                  LayoutAlignItems: =LayoutAlignItems.Stretch
+                                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                                  LayoutMinHeight: =10
+                                  LayoutMode: =LayoutMode.Auto
+                                  PaddingLeft: =5
+                                  PaddingRight: =5
+                                  RadiusBottomLeft: =100
+                                  RadiusBottomRight: =100
+                                  RadiusTopLeft: =100
+                                  RadiusTopRight: =100
+                                  Width: =190
+                                Children:
+                                - Image7_5:
+                                    Control: Image
+                                    Properties:
+                                      OnSelect: =
+                                      Image: |
+                                        =//
+                                        // Icon Color Processing Function
+                                        //
+                                        With(
+                                            {
+                                                iconName: "CircleCkeck",
+                                                //bgColor: "rgba(34, 197, 94, 0.1)" ,//witch( ThisItem.bgColor, "blue", "rgba(59, 130, 246, 0.1)", "purple", "rgba(147, 51, 234, 0.1)", "green", "rgba(34, 197, 94, 0.1)" ),
+                                                iconColor: "rgb(34, 197, 94)" //Switch( ThisItem.actionColor, "blue", "rgb(59, 130, 246)", "purple", "rgb(147, 51, 234)", "green", "rgb(34, 197, 94)" )
+                                            },
+                                                "data:image/svg+xml;utf8," & EncodeUrl(
+                                                    Substitute(
+                                                        LookUp(
+                                                            fn_Icons,
+                                                            name = "CircleCheck"
+                                                        ).value,
+                                                        "currentColor",// Original color placeholder
+                                                       /* If(
+                                                            isSelected,
+                                                            "rgb(59, 130, 246)",// Selected - Blue rgb(59, 130, 246)
+                                                            "rgb(107, 114, 128)"// Not Selected - Gray rgb(107, 114, 128)
+                                                        )*/
+                                                      iconColor
+                                                    )
+                                                )
+                                            )
+                                      AlignInContainer: =AlignInContainer.Stretch
+                                      Fill: =//Switch( ThisItem.bgColor, "blue", RGBA(59, 130, 246, 0.1), "purple", RGBA(147, 51, 234, 0.1), "green", RGBA(34, 197, 94, 0.1) )
+                                      Height: =50
+                                      ImagePosition: =ImagePosition.Fill
+                                      LayoutMinHeight: =10
+                                      LayoutMinWidth: =50
+                                      PaddingBottom: =7
+                                      PaddingLeft: =7
+                                      PaddingRight: =7
+                                      PaddingTop: =7
+                                      RadiusBottomLeft: =10
+                                      RadiusBottomRight: =10
+                                      RadiusTopLeft: =10
+                                      RadiusTopRight: =10
+                                      Width: =Self.Height
+                                      X: =//(Parent.TemplateWidth / 2) - (Self.Width / 2)
+                                      Y: =16
+                                - Container4_5:
+                                    Control: GroupContainer
+                                    Variant: verticalAutoLayoutContainer
+                                    Properties:
+                                      AlignInContainer: =AlignInContainer.SetByContainer
+                                      DropShadow: =DropShadow.None
+                                      LayoutDirection: =LayoutDirection.Vertical
+                                      LayoutJustifyContent: =LayoutJustifyContent.Center
+                                      LayoutMinHeight: =10
+                                      LayoutMinWidth: =10
+                                      LayoutMode: =LayoutMode.Auto
+                                    Children:
+                                    - Label4_11:
+                                        Control: Label
+                                        Properties:
+                                          Text: =ThisItem.state
+                                          AlignInContainer: =AlignInContainer.Stretch
+                                          AutoHeight: =true
+                                          Color: =ColorFade( RGBA(34, 197, 94, 1),-40%)
+                                          LayoutMinWidth: =15
+                                          Size: =11
+                                          Width: =3
+                        - Container3_6:
+                            Control: GroupContainer
+                            Variant: horizontalAutoLayoutContainer
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =25
+                              LayoutAlignItems: =LayoutAlignItems.Stretch
+                              LayoutGap: =10
+                              LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                              LayoutMinHeight: =10
+                              LayoutMode: =LayoutMode.Auto
+                            Children:
+                            - Label2_7:
+                                Control: Label
+                                Properties:
+                                  Text: |-
+                                    ="ID: " & ThisItem.id
+                                  AlignInContainer: =AlignInContainer.Center
+                                  AutoHeight: =true
+                                  Color: =RGBA(79, 90, 94, 1)
+                                  FillPortions: =1
+                                  Font: =Font.Arial
+                                  Height: =26
+                                  LayoutMinHeight: =30
+                                  LayoutMinWidth: =15
+                                  Size: =12
+                                  Width: =3
+                            - Label2_8:
+                                Control: Label
+                                Properties:
+                                  Text: |-
+                                    =//"RGs: " & ThisItem.resourceGroups
+                                  AlignInContainer: =AlignInContainer.Center
+                                  AutoHeight: =true
+                                  Color: =RGBA(79, 90, 94, 1)
+                                  FillPortions: =1
+                                  Font: =Font.Arial
+                                  Height: =26
+                                  LayoutMinHeight: =30
+                                  LayoutMinWidth: =15
+                                  Size: =12
+                                  Visible: =false
+                                  Width: =3
+                            - Label4_9:
+                                Control: Label
+                                Properties:
+                                  Text: |-
+                                    =//"Quota: "& ThisItem.quota.used &"/" & ThisItem.quota.total
+                                  Align: =Align.Right
+                                  AlignInContainer: =AlignInContainer.Center
+                                  AutoHeight: =true
+                                  Color: =RGBA(79, 90, 94, 1)
+                                  FillPortions: =1
+                                  Font: =Font.Arial
+                                  LayoutMinHeight: =30
+                                  LayoutMinWidth: =15
+                                  Size: =11
+                                  Visible: =false
+                                  Width: =3
+                        - TextCanvas5:
+                            Control: Text
+                            Properties:
+                              Text: =Text(ThisItem.authorizationSource)
+                              AlignInContainer: =AlignInContainer.Stretch
+                              FillPortions: =1
+                              Visible: =false
+                - Rectangle3_2:
+                    Control: Rectangle
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      Height: =Parent.TemplateHeight - Separator3_2.Height
+                      Visible: =false
+                      Width: =4
+                - Separator3_2:
+                    Control: Rectangle
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      Fill: =RGBA(255, 255, 255, 1)
+                      Height: =8
+                      Visible: =false
+                      Width: =Parent.TemplateWidth
+                      Y: =Parent.TemplateHeight - Self.Height
+                - NextArrow3_2:
+                    Control: Classic/Icon
+                    Variant: ChevronRight
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      AccessibleLabel: =Self.Tooltip
+                      Tooltip: ="View item details"
+                      BorderColor: =RGBA(0, 0, 0, 1)
+                      Color: =RGBA(166, 166, 166, 1)
+                      DisabledBorderColor: =RGBA(56, 56, 56, 1)
+                      DisabledColor: =RGBA(119, 119, 119, 1)
+                      Height: =50
+                      Icon: =Icon.ChevronRight
+                      PaddingBottom: =16
+                      PaddingLeft: =16
+                      PaddingRight: =16
+                      PaddingTop: =16
+                      Visible: =false
+                      Width: =50
+                      X: =Parent.TemplateWidth - Self.Width - 12
+                      Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+                - Subtitle2_2:
+                    Control: Label
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      Text: =ThisItem.id
+                      FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+                      Height: =Self.Size * 1.8
+                      PaddingBottom: =0
+                      PaddingLeft: =0
+                      PaddingRight: =0
+                      PaddingTop: =0
+                      VerticalAlign: =VerticalAlign.Top
+                      Visible: =false
+                      Width: =Title3_2.Width
+                      X: =Title3_2.X
+                      Y: =Title3_2.Y + Title3_2.Height
+                - Title3_2:
+                    Control: Label
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      Text: =ThisItem.authorizationSource
+                      FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+                      Height: =Self.Size * 1.8
+                      PaddingBottom: =0
+                      PaddingLeft: =0
+                      PaddingRight: =0
+                      PaddingTop: =0
+                      VerticalAlign: =VerticalAlign.Top
+                      Visible: =false
+                      Width: =Parent.TemplateWidth - 173
+                      X: =103
+                      Y: =(Parent.TemplateHeight - (Self.Size * 1.8 + Subtitle2_2.Size * 1.8)) / 2
+                - Image3_5:
+                    Control: Image
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      Image: |-
+                        =// // Icon Color Processing Function // With( { iconName: ThisItem.icon, isSelected: ThisItem.id = locVarCurrentNav.id, iconColor: Switch( ThisItem.color,"blue", "rgb(59, 130, 246)", "orange", "rgb(249, 115, 22)", "purple", "rgb(147, 51, 234)", "green", "rgb(34, 197, 94)", "red", "rgb(239, 68, 68)", "yellow", "rgb(234, 179, 8)", "indigo", "rgb(99, 102, 241)", "pink", "rgb(236, 72, 153)", "teal", "rgb(20, 184, 166)", "cyan", "rgb(6, 182, 212)") }, "data:image/svg+xml;utf8," & EncodeUrl( Substitute( LookUp( fn_Icons, name = iconName ).value, "currentColor",// Original color placeholder /* If( isSelected, "rgb(59, 130, 246)",// Selected - Blue rgb(59, 130, 246) "rgb(107, 114, 128)"// Not Selected - Gray rgb(107, 114, 128) )*/ iconColor ) ) )
+                      Height: =72
+                      RadiusBottomLeft: =8
+                      RadiusBottomRight: =8
+                      RadiusTopLeft: =8
+                      RadiusTopRight: =8
+                      Visible: =false
+                      Width: =72
+                      X: =16
+                      Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+            - Container16_7:
+                Control: GroupContainer
+                Variant: verticalAutoLayoutContainer
+                Properties:
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =15
+                  LayoutMode: =LayoutMode.Auto
+                  PaddingBottom: =25
+                  PaddingLeft: =30
+                  PaddingRight: =30
+                  PaddingTop: =25
+                Children:
+                - Label3_15:
+                    Control: Label
+                    Properties:
+                      Text: ="Resource Group"
+                      AlignInContainer: =AlignInContainer.Stretch
+                      Font: =Font.Lato
+                      FontWeight: =FontWeight.Semibold
+                      Size: =15
+                - TabList1:
+                    Control: TabList
+                    Variant: pcfdataset
+                    Properties:
+                      Items: =["Use Existing", "Create New"]
+                      AlignInContainer: =AlignInContainer.Stretch
+                - Label2_36:
+                    Control: Label
+                    Properties:
+                      Text: ="Resource Group Name"
+                      AlignInContainer: =AlignInContainer.Stretch
+                      Font: =Font.Lato
+                      FontWeight: =FontWeight.Semibold
+                      Height: =26
+                      LayoutMinWidth: =15
+                      Size: =12
+                      Visible: =TabList1.Selected.Value<> "Use Existing"
+                - TextInputCanvas4:
+                    Control: TextInput
+                    Properties:
+                      Placeholder: ="Enter new resource group nam"
+                      AlignInContainer: =AlignInContainer.Stretch
+                      Visible: =TabList1.Selected.Value<> "Use Existing"
+                - Label2_37:
+                    Control: Label
+                    Properties:
+                      Text: ="Region"
+                      AlignInContainer: =AlignInContainer.Stretch
+                      Font: =Font.Lato
+                      FontWeight: =FontWeight.Semibold
+                      Height: =26
+                      LayoutMinWidth: =15
+                      Size: =12
+                      Visible: =TabList1.Selected.Value<> "Use Existing"
+                - ComboboxCanvas2_3:
+                    Control: ComboBox
+                    Variant: pcfdataset
+                    Properties:
+                      BorderColor: =RGBA(106, 122, 127, 1)
+                      BorderRadius: =7
+                      Fill: =RGBA(255, 255, 255, 1)
+                      InputTextPlaceholder: ="Select Resource Group"
+                      Items: =Sort( Distinct( dataResourceGroups,name),Value,SortOrder.Ascending)
+                      AlignInContainer: =AlignInContainer.Stretch
+                      Height: =45
+                - DropdownCanvas1_8:
+                    Control: DropDown
+                    Variant: pcfdataset
+                    Properties:
+                      BorderColor: =RGBA(106, 122, 127, 1)
+                      BorderStyle: =BorderStyle.Solid
+                      DefaultSelectedItems: =["String"]
+                      Fill: =RGBA(255, 255, 255, 1)
+                      Items: =Sort( Distinct( dataLocations,displayName),Value,SortOrder.Ascending)
+                      AlignInContainer: =AlignInContainer.Stretch
+                      Height: =40
+                      LayoutMinWidth: =10
+                      Visible: =TabList1.Selected.Value<> "Use Existing"
+                    Children:
+                    - Value1_3:
+                        Control: PowerApps_CoreControls_DropdownCanvasTemplate_dataField
+                        Variant: textualColumn
+                        Properties:
+                          FieldDisplayName: ="Value"
+                          FieldName: ="Value"
+                          FieldType: ="s"
+                          Order: =3
+                - Label3_12:
+                    Control: Label
+                    Properties:
+                      Text: ="You can only cretae one rsoce per deployment"
+                      AlignInContainer: =AlignInContainer.Stretch
+                      Font: =Font.Arial
+                      PaddingLeft: =20
+                      Size: =12
+                      Visible: =TabList1.Selected.Value<> "Use Existing"
+        - conResourceGroup:
+            Control: GroupContainer
+            Variant: verticalAutoLayoutContainer
+            Properties:
+              BorderStyle: =BorderStyle.None
+              DropShadow: =DropShadow.None
+              LayoutDirection: =LayoutDirection.Vertical
+              LayoutGap: =10
+              LayoutMinHeight: =10
+              LayoutMode: =LayoutMode.Auto
+              RadiusBottomLeft: =8
+              RadiusBottomRight: =8
+              RadiusTopLeft: =8
+              RadiusTopRight: =8
+              Visible: =galFormSteps.Selected.order =2
+            Children:
+            - Container6_3:
+                Control: GroupContainer
+                Variant: verticalAutoLayoutContainer
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =50
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutJustifyContent: =LayoutJustifyContent.Center
+                  LayoutMinHeight: =10
+                  LayoutMode: =LayoutMode.Auto
+                  PaddingLeft: =10
+                  Visible: =false
+                Children:
+                - Label3_6:
+                    Control: Label
+                    Properties:
+                      Text: |-
+                        ="Select Subscription
+                        "
+                      AlignInContainer: =AlignInContainer.Stretch
+                      Font: =Font.Arial
+                      FontWeight: =FontWeight.Semibold
+                      PaddingLeft: =20
+                      Size: =15
+                      Visible: =false
+                - Label4_10:
+                    Control: Label
+                    Properties:
+                      Text: |-
+                        ="Resource Group: ____ (available)"
+                      AlignInContainer: =AlignInContainer.Stretch
+                      AutoHeight: =true
+                      Color: =RGBA(53, 61, 63, 1)
+                      Font: =Font.Lato
+                      LayoutMinWidth: =15
+                      PaddingLeft: =20
+                      Size: =11.5
+                      Width: =3
+            - Container20:
+                Control: GroupContainer
+                Variant: horizontalAutoLayoutContainer
+                Properties:
+                  FillPortions: =0
+                  Height: =100
+                  LayoutGap: =30
+                  LayoutMode: =LayoutMode.Auto
+                  PaddingLeft: =30
+                  PaddingRight: =30
+                  Visible: =false
+                Children:
+                - Container16_5:
+                    Control: GroupContainer
+                    Variant: verticalAutoLayoutContainer
+                    Properties:
+                      LayoutAlignItems: =LayoutAlignItems.Center
+                      LayoutDirection: =LayoutDirection.Vertical
+                      LayoutGap: =10
+                      LayoutJustifyContent: =LayoutJustifyContent.Center
+                      LayoutMode: =LayoutMode.Auto
+                      PaddingBottom: =10
+                      PaddingLeft: =10
+                      PaddingRight: =10
+                      PaddingTop: =10
+                    Children:
+                    - Label2_31:
+                        Control: Label
+                        Properties:
+                          Text: |-
+                            ="Resources
+                            "
+                          AlignInContainer: =AlignInContainer.Stretch
+                          Font: =Font.Lato
+                          FontWeight: =FontWeight.Semibold
+                          Height: =26
+                          LayoutMinWidth: =15
+                          Size: =15
+                    - DropdownCanvas1_5:
+                        Control: DropDown
+                        Variant: pcfdataset
+                        Properties:
+                          BorderColor: =RGBA(106, 122, 127, 1)
+                          BorderStyle: =BorderStyle.Solid
+                          DefaultSelectedItems: =["String"]
+                          Fill: =RGBA(255, 255, 255, 1)
+                          Items: =dataSubscriptions
+                          AlignInContainer: =AlignInContainer.Stretch
+                          Height: =40
+                          LayoutMinWidth: =10
+                        Children:
+                        - id4:
+                            Control: PowerApps_CoreControls_DropdownCanvasTemplate_dataField
+                            Variant: textualColumn
+                            Properties:
+                              FieldDisplayName: ="id"
+                              FieldName: ="id"
+                              FieldType: ="s"
+                              Order: =5
+                        - displayName3:
+                            Control: PowerApps_CoreControls_DropdownCanvasTemplate_dataField
+                            Variant: textualColumn
+                            Properties:
+                              FieldDisplayName: ="displayName"
+                              FieldName: ="displayName"
+                              FieldType: ="s"
+                              Order: =4
+                - Container16_2:
+                    Control: GroupContainer
+                    Variant: verticalAutoLayoutContainer
+                    Properties:
+                      LayoutAlignItems: =LayoutAlignItems.Center
+                      LayoutDirection: =LayoutDirection.Vertical
+                      LayoutGap: =10
+                      LayoutJustifyContent: =LayoutJustifyContent.Center
+                      LayoutMode: =LayoutMode.Auto
+                      PaddingBottom: =10
+                      PaddingLeft: =10
+                      PaddingRight: =10
+                      PaddingTop: =10
+                    Children:
+                    - Container21:
+                        Control: GroupContainer
+                        Variant: horizontalAutoLayoutContainer
+                        Properties:
+                          Height: =26
+                          LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                          LayoutMinHeight: =10
+                          LayoutMode: =LayoutMode.Auto
+                        Children:
+                        - Label2_29:
+                            Control: Label
+                            Properties:
+                              Text: ="Resource Group"
+                              AlignInContainer: =AlignInContainer.Center
+                              FillPortions: =1
+                              Font: =Font.Lato
+                              FontWeight: =FontWeight.Semibold
+                              Height: =26
+                              LayoutMinWidth: =15
+                              Size: =15
+                        - Toggle1:
+                            Control: Toggle
+                            Properties:
+                              Label: ="New RG"
+                              Width: =130
+                    - DropdownCanvas1_3:
+                        Control: DropDown
+                        Variant: pcfdataset
+                        Properties:
+                          BorderColor: =RGBA(106, 122, 127, 1)
+                          BorderStyle: =BorderStyle.Solid
+                          DefaultSelectedItems: =["String"]
+                          Fill: =RGBA(255, 255, 255, 1)
+                          Items: =Filter(dataResourceGroups,DropdownCanvas1_5.Selected.id in ThisRecord.id)
+                          AlignInContainer: =AlignInContainer.Stretch
+                          Height: =40
+                          LayoutMinWidth: =10
+                          Visible: =!Toggle1.Checked
+                        Children:
+                        - properties2:
+                            Control: PowerApps_CoreControls_DropdownCanvasTemplate_dataField
+                            Variant: textualColumn
+                            Properties:
+                              FieldDisplayName: ="properties"
+                              FieldName: ="properties"
+                              FieldType: ="s"
+                              Order: =4
+                        - tags3:
+                            Control: PowerApps_CoreControls_DropdownCanvasTemplate_dataField
+                            Variant: textualColumn
+                            Properties:
+                              FieldDisplayName: ="tags"
+                              FieldName: ="tags"
+                              FieldType: ="s"
+                              Order: =3
+                        - name3:
+                            Control: PowerApps_CoreControls_DropdownCanvasTemplate_dataField
+                            Variant: textualColumn
+                            Properties:
+                              FieldDisplayName: ="name"
+                              FieldName: ="name"
+                              FieldType: ="s"
+                              Order: =2
+                    - TextInputCanvas3:
+                        Control: TextInput
+                        Properties:
+                          BorderColor: =RGBA(106, 122, 127, 1)
+                          Fill: =RGBA(255, 255, 255, 1)
+                          AlignInContainer: =AlignInContainer.Stretch
+                          Height: =40
+                          Visible: =Toggle1.Checked
+                - Container16_4:
+                    Control: GroupContainer
+                    Variant: verticalAutoLayoutContainer
+                    Properties:
+                      LayoutAlignItems: =LayoutAlignItems.Center
+                      LayoutDirection: =LayoutDirection.Vertical
+                      LayoutGap: =10
+                      LayoutJustifyContent: =LayoutJustifyContent.Center
+                      LayoutMode: =LayoutMode.Auto
+                      PaddingBottom: =10
+                      PaddingLeft: =10
+                      PaddingRight: =10
+                      PaddingTop: =10
+                    Children:
+                    - Label2_30:
+                        Control: Label
+                        Properties:
+                          Text: ="Location"
+                          AlignInContainer: =AlignInContainer.Stretch
+                          Font: =Font.Lato
+                          FontWeight: =FontWeight.Semibold
+                          Height: =26
+                          LayoutMinWidth: =15
+                          Size: =15
+                    - DropdownCanvas1_4:
+                        Control: DropDown
+                        Variant: pcfdataset
+                        Properties:
+                          BorderColor: =RGBA(106, 122, 127, 1)
+                          BorderStyle: =BorderStyle.Solid
+                          DefaultSelectedItems: =["String"]
+                          Fill: =RGBA(255, 255, 255, 1)
+                          Items: =Sort( Distinct( dataLocations,displayName),Value,SortOrder.Ascending)
+                          AlignInContainer: =AlignInContainer.Stretch
+                          Height: =40
+                          LayoutMinWidth: =10
+                        Children:
+                        - Value1:
+                            Control: PowerApps_CoreControls_DropdownCanvasTemplate_dataField
+                            Variant: textualColumn
+                            Properties:
+                              FieldDisplayName: ="Value"
+                              FieldName: ="Value"
+                              FieldType: ="s"
+                              Order: =3
+            - Label3_7:
+                Control: Label
+                Properties:
+                  Text: |-
+                    ="Existing Resource Groups
+                    "
+                  AlignInContainer: =AlignInContainer.Stretch
+                  Font: =Font.Lato
+                  FontWeight: =FontWeight.Semibold
+                  PaddingLeft: =20
+                  Size: =15
+                  Visible: =false
+            - Gallery3_3:
+                Control: Gallery
+                Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+                Properties:
+                  OnSelect: =UpdateContext({locVarCurrentNav:ThisItem})
+                  Items: =dataResources
+                  DelayItemLoading: =true
+                  Layout: =Layout.Vertical
+                  ShowScrollbar: =false
+                  TemplateSize: =100
+                  Visible: =false
+                Children:
+                - Container3_4:
+                    Control: GroupContainer
+                    Variant: horizontalAutoLayoutContainer
+                    Properties:
+                      BorderColor: |-
+                        =// Selected - Blue rgb(59, 130, 246) - // Not Selected - transparent
+                        If(ThisItem.IsSelected,RGBA(59,130,246,1),RGBA(228,228,231,1))
+                      BorderThickness: =1
+                      Fill: |-
+                        =// Selected - Blue rgb(59, 130, 246) - // Not Selected - transparent
+                        //If(ThisItem.IsSelected,RGBA(59,130,246,.15),RGBA(107,114,128,0))
+                        Color.White
+                      Height: =Parent.TemplateHeight-15
+                      LayoutAlignItems: =LayoutAlignItems.Center
+                      LayoutGap: =15
+                      LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                      LayoutMode: =LayoutMode.Auto
+                      PaddingBottom: =20
+                      PaddingLeft: =20
+                      PaddingRight: =20
+                      PaddingTop: =20
+                      RadiusBottomLeft: =10
+                      RadiusBottomRight: =10
+                      RadiusTopLeft: =10
+                      RadiusTopRight: =10
+                      Width: =Parent.TemplateWidth-24
+                      X: =12
+                      Y: =10
+                    Children:
+                    - Image7_4:
+                        Control: Image
+                        Properties:
+                          OnSelect: =
+                          Image: =
+                          Fill: =//Switch(ThisItem.color,"blue",RGBA(59,130,246,.15),"orange",RGBA(249,115,22,.15),"purple",RGBA(147,51,234,.15),"green",RGBA(34,197,94,.15),"red",RGBA(239,68,68,.15),"yellow",RGBA(234,179,8,.15),"indigo",RGBA(99,102,241,.15),"pink",RGBA(236,72,153,.15),"teal",RGBA(20,184,166,.15),"cyan",RGBA(6,182,212,.15))
+                          Height: =60
+                          ImagePosition: =ImagePosition.Fill
+                          LayoutMinHeight: =10
+                          LayoutMinWidth: =50
+                          PaddingBottom: =15
+                          PaddingLeft: =15
+                          PaddingRight: =15
+                          PaddingTop: =15
+                          RadiusBottomLeft: =10
+                          RadiusBottomRight: =10
+                          RadiusTopLeft: =10
+                          RadiusTopRight: =10
+                          Visible: =false
+                          Width: =60
+                          X: =//(Parent.TemplateWidth / 2) - (Self.Width / 2)
+                          Y: =16
+                    - Container4_4:
+                        Control: GroupContainer
+                        Variant: verticalAutoLayoutContainer
+                        Properties:
+                          AlignInContainer: =AlignInContainer.SetByContainer
+                          DropShadow: =DropShadow.None
+                          Height: =70
+                          LayoutDirection: =LayoutDirection.Vertical
+                          LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                          LayoutMinHeight: =10
+                          LayoutMinWidth: =10
+                          LayoutMode: =LayoutMode.Auto
+                        Children:
+                        - Container3_9:
+                            Control: GroupContainer
+                            Variant: horizontalAutoLayoutContainer
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =40
+                              LayoutAlignItems: =LayoutAlignItems.Stretch
+                              LayoutGap: =10
+                              LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                              LayoutMinHeight: =10
+                              LayoutMode: =LayoutMode.Auto
+                            Children:
+                            - Label2_9:
+                                Control: Label
+                                Properties:
+                                  Text: =ThisItem.name
+                                  AlignInContainer: =AlignInContainer.Stretch
+                                  AutoHeight: =true
+                                  FillPortions: =1
+                                  Font: =Font.Lato
+                                  FontWeight: =FontWeight.Semibold
+                                  Height: =26
+                                  LayoutMinWidth: =15
+                                  Width: =3
+                            - Container3_10:
+                                Control: GroupContainer
+                                Variant: horizontalAutoLayoutContainer
+                                Properties:
+                                  AlignInContainer: =AlignInContainer.Center
+                                  DropShadow: =DropShadow.None
+                                  Fill: =RGBA(34, 197, 94, 0.1)
+                                  FillPortions: =0
+                                  Height: =27
+                                  LayoutAlignItems: =LayoutAlignItems.Stretch
+                                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                                  LayoutMinHeight: =10
+                                  LayoutMode: =LayoutMode.Auto
+                                  PaddingLeft: =5
+                                  PaddingRight: =5
+                                  RadiusBottomLeft: =100
+                                  RadiusBottomRight: =100
+                                  RadiusTopLeft: =100
+                                  RadiusTopRight: =100
+                                  Width: =190
+                                Children:
+                                - Image7_6:
+                                    Control: Image
+                                    Properties:
+                                      OnSelect: =
+                                      Image: |
+                                        =//
+                                        // Icon Color Processing Function
+                                        //
+                                        With(
+                                            {
+                                                iconName: "CircleCkeck",
+                                                //bgColor: "rgba(34, 197, 94, 0.1)" ,//witch( ThisItem.bgColor, "blue", "rgba(59, 130, 246, 0.1)", "purple", "rgba(147, 51, 234, 0.1)", "green", "rgba(34, 197, 94, 0.1)" ),
+                                                iconColor: "rgb(34, 197, 94)" //Switch( ThisItem.actionColor, "blue", "rgb(59, 130, 246)", "purple", "rgb(147, 51, 234)", "green", "rgb(34, 197, 94)" )
+                                            },
+                                                "data:image/svg+xml;utf8," & EncodeUrl(
+                                                    Substitute(
+                                                        LookUp(
+                                                            fn_Icons,
+                                                            name = "CircleCheck"
+                                                        ).value,
+                                                        "currentColor",// Original color placeholder
+                                                       /* If(
+                                                            isSelected,
+                                                            "rgb(59, 130, 246)",// Selected - Blue rgb(59, 130, 246)
+                                                            "rgb(107, 114, 128)"// Not Selected - Gray rgb(107, 114, 128)
+                                                        )*/
+                                                      iconColor
+                                                    )
+                                                )
+                                            )
+                                      AlignInContainer: =AlignInContainer.Stretch
+                                      Fill: =//Switch( ThisItem.bgColor, "blue", RGBA(59, 130, 246, 0.1), "purple", RGBA(147, 51, 234, 0.1), "green", RGBA(34, 197, 94, 0.1) )
+                                      Height: =50
+                                      ImagePosition: =ImagePosition.Fill
+                                      LayoutMinHeight: =10
+                                      LayoutMinWidth: =50
+                                      PaddingBottom: =7
+                                      PaddingLeft: =7
+                                      PaddingRight: =7
+                                      PaddingTop: =7
+                                      RadiusBottomLeft: =10
+                                      RadiusBottomRight: =10
+                                      RadiusTopLeft: =10
+                                      RadiusTopRight: =10
+                                      Width: =Self.Height
+                                      X: =//(Parent.TemplateWidth / 2) - (Self.Width / 2)
+                                      Y: =16
+                                - Container4_6:
+                                    Control: GroupContainer
+                                    Variant: verticalAutoLayoutContainer
+                                    Properties:
+                                      AlignInContainer: =AlignInContainer.SetByContainer
+                                      DropShadow: =DropShadow.None
+                                      LayoutDirection: =LayoutDirection.Vertical
+                                      LayoutJustifyContent: =LayoutJustifyContent.Center
+                                      LayoutMinHeight: =10
+                                      LayoutMinWidth: =10
+                                      LayoutMode: =LayoutMode.Auto
+                                    Children:
+                                    - Label4_12:
+                                        Control: Label
+                                        Properties:
+                                          Text: =//ThisItem
+                                          AlignInContainer: =AlignInContainer.Stretch
+                                          AutoHeight: =true
+                                          Color: =ColorFade( RGBA(34, 197, 94, 1),-40%)
+                                          LayoutMinWidth: =15
+                                          Size: =11
+                                          Width: =3
+                        - Container3_11:
+                            Control: GroupContainer
+                            Variant: horizontalAutoLayoutContainer
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =25
+                              LayoutAlignItems: =LayoutAlignItems.Stretch
+                              LayoutGap: =10
+                              LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                              LayoutMinHeight: =10
+                              LayoutMode: =LayoutMode.Auto
+                            Children:
+                            - Label2_10:
+                                Control: Label
+                                Properties:
+                                  Text: |-
+                                    ="Location: " & ThisItem.location
+                                  AlignInContainer: =AlignInContainer.Center
+                                  AutoHeight: =true
+                                  Color: =RGBA(79, 90, 94, 1)
+                                  FillPortions: =1
+                                  Font: =Font.Arial
+                                  Height: =26
+                                  LayoutMinHeight: =30
+                                  LayoutMinWidth: =15
+                                  Size: =12
+                                  Width: =3
+                            - Label2_11:
+                                Control: Label
+                                Properties:
+                                  Text: |-
+                                    =//"Resources: " & CountRows(ThisItem.resources)
+                                  AlignInContainer: =AlignInContainer.Center
+                                  AutoHeight: =true
+                                  Color: =RGBA(79, 90, 94, 1)
+                                  FillPortions: =1
+                                  Font: =Font.Arial
+                                  Height: =26
+                                  LayoutMinHeight: =30
+                                  LayoutMinWidth: =15
+                                  Size: =12
+                                  Width: =3
+                            - Label4_13:
+                                Control: Label
+                                Properties:
+                                  Text: |-
+                                    =//"Quota: "& ThisItem.quota.used &"/" & ThisItem.quota.total
+                                  Align: =Align.Right
+                                  AlignInContainer: =AlignInContainer.Center
+                                  AutoHeight: =true
+                                  Color: =RGBA(79, 90, 94, 1)
+                                  FillPortions: =1
+                                  Font: =Font.Arial
+                                  LayoutMinHeight: =30
+                                  LayoutMinWidth: =15
+                                  Size: =11
+                                  Width: =3
+                - Rectangle3_3:
+                    Control: Rectangle
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      Height: =Parent.TemplateHeight - Separator3_3.Height
+                      Visible: =false
+                      Width: =4
+                - Separator3_3:
+                    Control: Rectangle
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      Fill: =RGBA(255, 255, 255, 1)
+                      Height: =8
+                      Visible: =false
+                      Width: =Parent.TemplateWidth
+                      Y: =Parent.TemplateHeight - Self.Height
+                - NextArrow3_3:
+                    Control: Classic/Icon
+                    Variant: ChevronRight
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      AccessibleLabel: =Self.Tooltip
+                      Tooltip: ="View item details"
+                      BorderColor: =RGBA(0, 0, 0, 1)
+                      Color: =RGBA(166, 166, 166, 1)
+                      DisabledBorderColor: =RGBA(56, 56, 56, 1)
+                      DisabledColor: =RGBA(119, 119, 119, 1)
+                      Height: =50
+                      Icon: =Icon.ChevronRight
+                      PaddingBottom: =16
+                      PaddingLeft: =16
+                      PaddingRight: =16
+                      PaddingTop: =16
+                      Visible: =false
+                      Width: =50
+                      X: =Parent.TemplateWidth - Self.Width - 12
+                      Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+                - Subtitle2_3:
+                    Control: Label
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      Text: =ThisItem.location
+                      FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+                      Height: =Self.Size * 1.8
+                      PaddingBottom: =0
+                      PaddingLeft: =0
+                      PaddingRight: =0
+                      PaddingTop: =0
+                      VerticalAlign: =VerticalAlign.Top
+                      Visible: =false
+                      Width: =Title3_3.Width
+                      X: =Title3_3.X
+                      Y: =Title3_3.Y + Title3_3.Height
+                - Title3_3:
+                    Control: Label
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      Text: =ThisItem.id
+                      FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+                      Height: =Self.Size * 1.8
+                      PaddingBottom: =0
+                      PaddingLeft: =0
+                      PaddingRight: =0
+                      PaddingTop: =0
+                      VerticalAlign: =VerticalAlign.Top
+                      Visible: =false
+                      Width: =Parent.TemplateWidth - 173
+                      X: =103
+                      Y: =(Parent.TemplateHeight - (Self.Size * 1.8 + Subtitle2_3.Size * 1.8)) / 2
+                - Image3_9:
+                    Control: Image
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      Image: =
+                      Height: =72
+                      RadiusBottomLeft: =8
+                      RadiusBottomRight: =8
+                      RadiusTopLeft: =8
+                      RadiusTopRight: =8
+                      Visible: =false
+                      Width: =72
+                      X: =16
+                      Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+            - Label3_8:
+                Control: Label
+                Properties:
+                  Text: |-
+                    ="Create New Resource Group
+                    "
+                  AlignInContainer: =AlignInContainer.Stretch
+                  Font: =Font.Lato
+                  FontWeight: =FontWeight.Semibold
+                  PaddingLeft: =20
+                  Size: =15
+                  Visible: =false
+            - Container16_8:
+                Control: GroupContainer
+                Variant: verticalAutoLayoutContainer
+                Properties:
+                  FillPortions: =0
+                  Height: =100
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =10
+                  LayoutMode: =LayoutMode.Auto
+                  PaddingBottom: =10
+                  PaddingLeft: =30
+                  PaddingRight: =30
+                  PaddingTop: =10
+                Children:
+                - Label2_38:
+                    Control: Label
+                    Properties:
+                      Text: ="Resource Type"
+                      AlignInContainer: =AlignInContainer.Stretch
+                      Font: =Font.Lato
+                      FontWeight: =FontWeight.Semibold
+                      Height: =26
+                      LayoutMinWidth: =15
+                      Size: =15
+                - ComboboxCanvas2:
+                    Control: ComboBox
+                    Variant: pcfdataset
+                    Properties:
+                      BorderColor: =RGBA(106, 122, 127, 1)
+                      BorderRadius: =7
+                      BorderStyle: =BorderStyle.Solid
+                      BorderThickness: =1
+                      Fill: =RGBA(255, 255, 255, 1)
+                      InputTextPlaceholder: ="Select Resource Type"
+                      Items: =Choices('Resource Type (Resources_1)')
+                      AlignInContainer: =AlignInContainer.Stretch
+                      Height: =40
+            - Container16_9:
+                Control: GroupContainer
+                Variant: verticalAutoLayoutContainer
+                Properties:
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =7
+                  LayoutMode: =LayoutMode.Auto
+                  PaddingBottom: =10
+                  PaddingLeft: =30
+                  PaddingRight: =30
+                  PaddingTop: =10
+                Children:
+                - Label2_39:
+                    Control: Label
+                    Properties:
+                      Text: =ComboboxCanvas2.Selected.Value
+                      AlignInContainer: =AlignInContainer.Stretch
+                      AutoHeight: =true
+                      Font: =Font.Lato
+                      FontWeight: =FontWeight.Semibold
+                      Height: =26
+                      LayoutMinWidth: =15
+                      Size: =15
+                - Label3_16:
+                    Control: Label
+                    Properties:
+                      Text: ="VM Size"
+                      AlignInContainer: =AlignInContainer.Stretch
+                      AutoHeight: =true
+                      Font: =Font.Lato
+                      FontWeight: =FontWeight.Semibold
+                      Size: =12
+                - ComboboxCanvas2_1:
+                    Control: ComboBox
+                    Variant: pcfdataset
+                    Properties:
+                      BorderColor: =RGBA(106, 122, 127, 1)
+                      BorderRadius: =7
+                      BorderThickness: =1
+                      Fill: =RGBA(255, 255, 255, 1)
+                      Items: =Choices('Resource Type (Resources_1)')
+                      AlignInContainer: =AlignInContainer.Stretch
+                      Height: =40
+                - Container22:
+                    Control: GroupContainer
+                    Variant: horizontalAutoLayoutContainer
+                    Properties:
+                      DropShadow: =DropShadow.None
+                      FillPortions: =0
+                      Height: =100
+                      LayoutGap: =15
+                      LayoutMinWidth: =1
+                      LayoutMode: =LayoutMode.Auto
+                      PaddingBottom: =5
+                      PaddingLeft: =2.5
+                      PaddingRight: =2.5
+                      PaddingTop: =5
+                    Children:
+                    - Container3_34:
+                        Control: GroupContainer
+                        Variant: horizontalAutoLayoutContainer
+                        Properties:
+                          BorderColor: =RGBA(228,228,231,1)
+                          BorderThickness: =1
+                          Fill: |-
+                            =// Selected - Blue rgb(59, 130, 246) - // Not Selected - transparent
+                            //If(ThisItem.IsSelected,RGBA(59,130,246,.15),RGBA(107,114,128,0))
+                            Color.White
+                          Height: =100
+                          LayoutAlignItems: =LayoutAlignItems.Center
+                          LayoutGap: =15
+                          LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                          LayoutMinHeight: =10
+                          LayoutMode: =LayoutMode.Auto
+                          PaddingBottom: =10
+                          PaddingLeft: =10
+                          PaddingRight: =10
+                          PaddingTop: =10
+                          RadiusBottomLeft: =10
+                          RadiusBottomRight: =10
+                          RadiusTopLeft: =10
+                          RadiusTopRight: =10
+                          Width: =Parent.Width
+                          X: =12
+                          Y: =10
+                        Children:
+                        - Container4_26:
+                            Control: GroupContainer
+                            Variant: verticalAutoLayoutContainer
+                            Properties:
+                              AlignInContainer: =AlignInContainer.SetByContainer
+                              DropShadow: =DropShadow.None
+                              Height: =70
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                              LayoutMinHeight: =10
+                              LayoutMinWidth: =10
+                              LayoutMode: =LayoutMode.Auto
+                            Children:
+                            - Container3_35:
+                                Control: GroupContainer
+                                Variant: horizontalAutoLayoutContainer
+                                Properties:
+                                  DropShadow: =DropShadow.None
+                                  FillPortions: =0
+                                  Height: =40
+                                  LayoutAlignItems: =LayoutAlignItems.Stretch
+                                  LayoutGap: =10
+                                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                                  LayoutMinHeight: =10
+                                  LayoutMode: =LayoutMode.Auto
+                                Children:
+                                - Label2_32:
+                                    Control: Label
+                                    Properties:
+                                      Text: ="Join Domain"
+                                      AlignInContainer: =AlignInContainer.Center
+                                      AutoHeight: =true
+                                      FillPortions: =1
+                                      Font: =Font.Lato
+                                      FontWeight: =FontWeight.Semibold
+                                      Height: =26
+                                      LayoutMinWidth: =15
+                                      Width: =3
+                                - Container3_36:
+                                    Control: GroupContainer
+                                    Variant: horizontalAutoLayoutContainer
+                                    Properties:
+                                      AlignInContainer: =AlignInContainer.Center
+                                      DropShadow: =DropShadow.None
+                                      Fill: =RGBA(34, 197, 94, 0.1)
+                                      FillPortions: =0
+                                      Height: =27
+                                      LayoutAlignItems: =LayoutAlignItems.Stretch
+                                      LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                                      LayoutMinHeight: =10
+                                      LayoutMode: =LayoutMode.Auto
+                                      PaddingLeft: =5
+                                      PaddingRight: =5
+                                      RadiusBottomLeft: =100
+                                      RadiusBottomRight: =100
+                                      RadiusTopLeft: =100
+                                      RadiusTopRight: =100
+                                      Visible: =false
+                                      Width: =190
+                                    Children:
+                                    - Image7_29:
+                                        Control: Image
+                                        Properties:
+                                          OnSelect: =
+                                          Image: |
+                                            =//
+                                            // Icon Color Processing Function
+                                            //
+                                            With(
+                                                {
+                                                    iconName: "CircleCkeck",
+                                                    //bgColor: "rgba(34, 197, 94, 0.1)" ,//witch( ThisItem.bgColor, "blue", "rgba(59, 130, 246, 0.1)", "purple", "rgba(147, 51, 234, 0.1)", "green", "rgba(34, 197, 94, 0.1)" ),
+                                                    iconColor: "rgb(34, 197, 94)" //Switch( ThisItem.actionColor, "blue", "rgb(59, 130, 246)", "purple", "rgb(147, 51, 234)", "green", "rgb(34, 197, 94)" )
+                                                },
+                                                    "data:image/svg+xml;utf8," & EncodeUrl(
+                                                        Substitute(
+                                                            LookUp(
+                                                                fn_Icons,
+                                                                name = "CircleCheck"
+                                                            ).value,
+                                                            "currentColor",// Original color placeholder
+                                                           /* If(
+                                                                isSelected,
+                                                                "rgb(59, 130, 246)",// Selected - Blue rgb(59, 130, 246)
+                                                                "rgb(107, 114, 128)"// Not Selected - Gray rgb(107, 114, 128)
+                                                            )*/
+                                                          iconColor
+                                                        )
+                                                    )
+                                                )
+                                          AlignInContainer: =AlignInContainer.Stretch
+                                          Fill: =//Switch( ThisItem.bgColor, "blue", RGBA(59, 130, 246, 0.1), "purple", RGBA(147, 51, 234, 0.1), "green", RGBA(34, 197, 94, 0.1) )
+                                          Height: =50
+                                          ImagePosition: =ImagePosition.Fill
+                                          LayoutMinHeight: =10
+                                          LayoutMinWidth: =50
+                                          PaddingBottom: =7
+                                          PaddingLeft: =7
+                                          PaddingRight: =7
+                                          PaddingTop: =7
+                                          RadiusBottomLeft: =10
+                                          RadiusBottomRight: =10
+                                          RadiusTopLeft: =10
+                                          RadiusTopRight: =10
+                                          Width: =Self.Height
+                                          X: =//(Parent.TemplateWidth / 2) - (Self.Width / 2)
+                                          Y: =16
+                                    - Container4_27:
+                                        Control: GroupContainer
+                                        Variant: verticalAutoLayoutContainer
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.SetByContainer
+                                          DropShadow: =DropShadow.None
+                                          LayoutDirection: =LayoutDirection.Vertical
+                                          LayoutJustifyContent: =LayoutJustifyContent.Center
+                                          LayoutMinHeight: =10
+                                          LayoutMinWidth: =10
+                                          LayoutMode: =LayoutMode.Auto
+                                        Children:
+                                        - Label4_32:
+                                            Control: Label
+                                            Properties:
+                                              Text: ="Self-Service Enabled"
+                                              AlignInContainer: =AlignInContainer.Stretch
+                                              AutoHeight: =true
+                                              Color: =ColorFade( RGBA(34, 197, 94, 1),-40%)
+                                              LayoutMinWidth: =15
+                                              Size: =11
+                                              Width: =3
+                            - Container3_37:
+                                Control: GroupContainer
+                                Variant: horizontalAutoLayoutContainer
+                                Properties:
+                                  DropShadow: =DropShadow.None
+                                  FillPortions: =0
+                                  Height: =25
+                                  LayoutAlignItems: =LayoutAlignItems.Stretch
+                                  LayoutGap: =10
+                                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                                  LayoutMinHeight: =10
+                                  LayoutMode: =LayoutMode.Auto
+                                Children:
+                                - Label2_33:
+                                    Control: Label
+                                    Properties:
+                                      Text: ="Add this VM t othe corporate domain"
+                                      AlignInContainer: =AlignInContainer.Center
+                                      AutoHeight: =true
+                                      Color: =RGBA(79, 90, 94, 1)
+                                      FillPortions: =1
+                                      Font: =Font.Arial
+                                      Height: =26
+                                      LayoutMinHeight: =30
+                                      LayoutMinWidth: =15
+                                      Size: =12
+                                      Width: =3
+                                - Label2_34:
+                                    Control: Label
+                                    Properties:
+                                      Text: |-
+                                        =//"RGs: " & ThisItem.resourceGroups
+                                      AlignInContainer: =AlignInContainer.Center
+                                      AutoHeight: =true
+                                      Color: =RGBA(79, 90, 94, 1)
+                                      FillPortions: =1
+                                      Font: =Font.Arial
+                                      Height: =26
+                                      LayoutMinHeight: =30
+                                      LayoutMinWidth: =15
+                                      Size: =12
+                                      Visible: =false
+                                      Width: =3
+                                - Label4_33:
+                                    Control: Label
+                                    Properties:
+                                      Text: |-
+                                        =//"Quota: "& ThisItem.quota.used &"/" & ThisItem.quota.total
+                                      Align: =Align.Right
+                                      AlignInContainer: =AlignInContainer.Center
+                                      AutoHeight: =true
+                                      Color: =RGBA(79, 90, 94, 1)
+                                      FillPortions: =1
+                                      Font: =Font.Arial
+                                      LayoutMinHeight: =30
+                                      LayoutMinWidth: =15
+                                      Size: =11
+                                      Visible: =false
+                                      Width: =3
+                        - Toggle2:
+                            Control: Toggle
+                            Properties:
+                              Label: =""
+                              ToggleSize: |+
+                                =60
+
+                              Width: =80
+                    - Container3_38:
+                        Control: GroupContainer
+                        Variant: horizontalAutoLayoutContainer
+                        Properties:
+                          BorderColor: =RGBA(228,228,231,1)
+                          BorderThickness: =1
+                          Fill: |-
+                            =// Selected - Blue rgb(59, 130, 246) - // Not Selected - transparent
+                            //If(ThisItem.IsSelected,RGBA(59,130,246,.15),RGBA(107,114,128,0))
+                            Color.White
+                          Height: =100
+                          LayoutAlignItems: =LayoutAlignItems.Center
+                          LayoutGap: =15
+                          LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                          LayoutMinHeight: =10
+                          LayoutMode: =LayoutMode.Auto
+                          PaddingBottom: =10
+                          PaddingLeft: =10
+                          PaddingRight: =10
+                          PaddingTop: =10
+                          RadiusBottomLeft: =10
+                          RadiusBottomRight: =10
+                          RadiusTopLeft: =10
+                          RadiusTopRight: =10
+                          Width: =Parent.Width
+                          X: =12
+                          Y: =10
+                        Children:
+                        - Container4_28:
+                            Control: GroupContainer
+                            Variant: verticalAutoLayoutContainer
+                            Properties:
+                              AlignInContainer: =AlignInContainer.SetByContainer
+                              DropShadow: =DropShadow.None
+                              Height: =70
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                              LayoutMinHeight: =10
+                              LayoutMinWidth: =10
+                              LayoutMode: =LayoutMode.Auto
+                            Children:
+                            - Container3_39:
+                                Control: GroupContainer
+                                Variant: horizontalAutoLayoutContainer
+                                Properties:
+                                  DropShadow: =DropShadow.None
+                                  FillPortions: =0
+                                  Height: =40
+                                  LayoutAlignItems: =LayoutAlignItems.Stretch
+                                  LayoutGap: =10
+                                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                                  LayoutMinHeight: =10
+                                  LayoutMode: =LayoutMode.Auto
+                                Children:
+                                - Label2_35:
+                                    Control: Label
+                                    Properties:
+                                      Text: ="Trusted Launch"
+                                      AlignInContainer: =AlignInContainer.Center
+                                      AutoHeight: =true
+                                      FillPortions: =1
+                                      Font: =Font.Lato
+                                      FontWeight: =FontWeight.Semibold
+                                      Height: =26
+                                      LayoutMinWidth: =15
+                                      Width: =3
+                                - Container3_40:
+                                    Control: GroupContainer
+                                    Variant: horizontalAutoLayoutContainer
+                                    Properties:
+                                      AlignInContainer: =AlignInContainer.Center
+                                      DropShadow: =DropShadow.None
+                                      Fill: =RGBA(34, 197, 94, 0.1)
+                                      FillPortions: =0
+                                      Height: =27
+                                      LayoutAlignItems: =LayoutAlignItems.Stretch
+                                      LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                                      LayoutMinHeight: =10
+                                      LayoutMode: =LayoutMode.Auto
+                                      PaddingLeft: =5
+                                      PaddingRight: =5
+                                      RadiusBottomLeft: =100
+                                      RadiusBottomRight: =100
+                                      RadiusTopLeft: =100
+                                      RadiusTopRight: =100
+                                      Visible: =false
+                                      Width: =190
+                                    Children:
+                                    - Image7_30:
+                                        Control: Image
+                                        Properties:
+                                          OnSelect: =
+                                          Image: |
+                                            =//
+                                            // Icon Color Processing Function
+                                            //
+                                            With(
+                                                {
+                                                    iconName: "CircleCkeck",
+                                                    //bgColor: "rgba(34, 197, 94, 0.1)" ,//witch( ThisItem.bgColor, "blue", "rgba(59, 130, 246, 0.1)", "purple", "rgba(147, 51, 234, 0.1)", "green", "rgba(34, 197, 94, 0.1)" ),
+                                                    iconColor: "rgb(34, 197, 94)" //Switch( ThisItem.actionColor, "blue", "rgb(59, 130, 246)", "purple", "rgb(147, 51, 234)", "green", "rgb(34, 197, 94)" )
+                                                },
+                                                    "data:image/svg+xml;utf8," & EncodeUrl(
+                                                        Substitute(
+                                                            LookUp(
+                                                                fn_Icons,
+                                                                name = "CircleCheck"
+                                                            ).value,
+                                                            "currentColor",// Original color placeholder
+                                                           /* If(
+                                                                isSelected,
+                                                                "rgb(59, 130, 246)",// Selected - Blue rgb(59, 130, 246)
+                                                                "rgb(107, 114, 128)"// Not Selected - Gray rgb(107, 114, 128)
+                                                            )*/
+                                                          iconColor
+                                                        )
+                                                    )
+                                                )
+                                          AlignInContainer: =AlignInContainer.Stretch
+                                          Fill: =//Switch( ThisItem.bgColor, "blue", RGBA(59, 130, 246, 0.1), "purple", RGBA(147, 51, 234, 0.1), "green", RGBA(34, 197, 94, 0.1) )
+                                          Height: =50
+                                          ImagePosition: =ImagePosition.Fill
+                                          LayoutMinHeight: =10
+                                          LayoutMinWidth: =50
+                                          PaddingBottom: =7
+                                          PaddingLeft: =7
+                                          PaddingRight: =7
+                                          PaddingTop: =7
+                                          RadiusBottomLeft: =10
+                                          RadiusBottomRight: =10
+                                          RadiusTopLeft: =10
+                                          RadiusTopRight: =10
+                                          Width: =Self.Height
+                                          X: =//(Parent.TemplateWidth / 2) - (Self.Width / 2)
+                                          Y: =16
+                                    - Container4_29:
+                                        Control: GroupContainer
+                                        Variant: verticalAutoLayoutContainer
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.SetByContainer
+                                          DropShadow: =DropShadow.None
+                                          LayoutDirection: =LayoutDirection.Vertical
+                                          LayoutJustifyContent: =LayoutJustifyContent.Center
+                                          LayoutMinHeight: =10
+                                          LayoutMinWidth: =10
+                                          LayoutMode: =LayoutMode.Auto
+                                        Children:
+                                        - Label4_34:
+                                            Control: Label
+                                            Properties:
+                                              Text: ="Self-Service Enabled"
+                                              AlignInContainer: =AlignInContainer.Stretch
+                                              AutoHeight: =true
+                                              Color: =ColorFade( RGBA(34, 197, 94, 1),-40%)
+                                              LayoutMinWidth: =15
+                                              Size: =11
+                                              Width: =3
+                            - Container3_41:
+                                Control: GroupContainer
+                                Variant: horizontalAutoLayoutContainer
+                                Properties:
+                                  DropShadow: =DropShadow.None
+                                  FillPortions: =0
+                                  Height: =25
+                                  LayoutAlignItems: =LayoutAlignItems.Stretch
+                                  LayoutGap: =10
+                                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                                  LayoutMinHeight: =10
+                                  LayoutMode: =LayoutMode.Auto
+                                Children:
+                                - Label2_41:
+                                    Control: Label
+                                    Properties:
+                                      Text: ="Enable trusted launch security options"
+                                      AlignInContainer: =AlignInContainer.Center
+                                      AutoHeight: =true
+                                      Color: =RGBA(79, 90, 94, 1)
+                                      FillPortions: =1
+                                      Font: =Font.Arial
+                                      Height: =26
+                                      LayoutMinHeight: =30
+                                      LayoutMinWidth: =15
+                                      Size: =12
+                                      Width: =3
+                                - Label4_35:
+                                    Control: Label
+                                    Properties:
+                                      Text: |-
+                                        =//"Quota: "& ThisItem.quota.used &"/" & ThisItem.quota.total
+                                      Align: =Align.Right
+                                      AlignInContainer: =AlignInContainer.Center
+                                      AutoHeight: =true
+                                      Color: =RGBA(79, 90, 94, 1)
+                                      FillPortions: =1
+                                      Font: =Font.Arial
+                                      LayoutMinHeight: =30
+                                      LayoutMinWidth: =15
+                                      Size: =11
+                                      Visible: =false
+                                      Width: =3
+                        - Toggle2_1:
+                            Control: Toggle
+                            Properties:
+                              Label: =""
+                              ToggleSize: |+
+                                =60
+
+                              Width: =80
+                - Label2_40:
+                    Control: Label
+                    Properties:
+                      Text: =ComboboxCanvas2.Selected.Value
+                      AlignInContainer: =AlignInContainer.Stretch
+                      AutoHeight: =true
+                      Font: =Font.Lato
+                      FontWeight: =FontWeight.Semibold
+                      Height: =26
+                      LayoutMinWidth: =15
+                      Size: =15
+                - Container24:
+                    Control: GroupContainer
+                    Variant: horizontalAutoLayoutContainer
+                    Properties:
+                      DropShadow: =DropShadow.None
+                      FillPortions: =0
+                      Height: =90
+                      LayoutAlignItems: =LayoutAlignItems.Stretch
+                      LayoutGap: =15
+                      LayoutMode: =LayoutMode.Auto
+                    Children:
+                    - Container23:
+                        Control: GroupContainer
+                        Variant: verticalAutoLayoutContainer
+                        Properties:
+                          AlignInContainer: =AlignInContainer.SetByContainer
+                          DropShadow: =DropShadow.None
+                          LayoutAlignItems: =LayoutAlignItems.Stretch
+                          LayoutDirection: =LayoutDirection.Vertical
+                          LayoutMinHeight: =10
+                          LayoutMinWidth: =90
+                          LayoutMode: =LayoutMode.Auto
+                        Children:
+                        - Label2_42:
+                            Control: Label
+                            Properties:
+                              Text: ="Start Time"
+                              AutoHeight: =true
+                              Font: =Font.Lato
+                              FontWeight: =FontWeight.Semibold
+                              Height: =26
+                              LayoutMinWidth: =15
+                              Size: =12
+                        - TextInputCanvas4_1:
+                            Control: TextInput
+                            Properties:
+                              BorderColor: =RGBA(106, 122, 127, 1)
+                              Fill: =RGBA(255, 255, 255, 1)
+                              Placeholder: ="Enter new resource group nam"
+                              Height: =45
+                    - Container23_1:
+                        Control: GroupContainer
+                        Variant: verticalAutoLayoutContainer
+                        Properties:
+                          AlignInContainer: =AlignInContainer.SetByContainer
+                          DropShadow: =DropShadow.None
+                          LayoutDirection: =LayoutDirection.Vertical
+                          LayoutMinHeight: =10
+                          LayoutMinWidth: =90
+                          LayoutMode: =LayoutMode.Auto
+                        Children:
+                        - Label2_43:
+                            Control: Label
+                            Properties:
+                              Text: ="Shut Down Time"
+                              AlignInContainer: =AlignInContainer.Stretch
+                              AutoHeight: =true
+                              Font: =Font.Lato
+                              FontWeight: =FontWeight.Semibold
+                              Height: =26
+                              LayoutMinWidth: =15
+                              Size: =12
+                        - TextInputCanvas4_2:
+                            Control: TextInput
+                            Properties:
+                              BorderColor: =RGBA(106, 122, 127, 1)
+                              Fill: =RGBA(255, 255, 255, 1)
+                              Placeholder: ="Enter new resource group nam"
+                              AlignInContainer: =AlignInContainer.Stretch
+                              Height: =45
+                - Container23_2:
+                    Control: GroupContainer
+                    Variant: verticalAutoLayoutContainer
+                    Properties:
+                      DropShadow: =DropShadow.None
+                      FillPortions: =0
+                      Height: =90
+                      LayoutAlignItems: =LayoutAlignItems.Stretch
+                      LayoutDirection: =LayoutDirection.Vertical
+                      LayoutMinHeight: =10
+                      LayoutMinWidth: =90
+                      LayoutMode: =LayoutMode.Auto
+                    Children:
+                    - Label2_44:
+                        Control: Label
+                        Properties:
+                          Text: ="Description"
+                          AutoHeight: =true
+                          Font: =Font.Lato
+                          FontWeight: =FontWeight.Semibold
+                          Height: =26
+                          LayoutMinWidth: =15
+                          Size: =12
+                    - TextInputCanvas4_3:
+                        Control: TextInput
+                        Properties:
+                          BorderColor: =RGBA(106, 122, 127, 1)
+                          Fill: =RGBA(255, 255, 255, 1)
+                          Placeholder: ="Enter a description for this VM"
+                          Height: =45
+            - Canvas1_1:
+                Control: FluidGrid
+                Variant: fluidGridWithBlankCard
+                Properties:
+                  BorderThickness: =0
+                  Height: =Parent.Height - Self.Y
+                  Visible: =false
+                  Width: =Parent.Width
+                  Y: =RectQuickActionBar2.Y + RectQuickActionBar2.Height
+                Children:
+                - DataCard1_1:
+                    Control: DataCard
+                    Properties:
+                      Height: =Parent.Height - 100
+                      Width: =Parent.Width
+        - conSubscriptuion_1:
+            Control: GroupContainer
+            Variant: verticalAutoLayoutContainer
+            Properties:
+              BorderStyle: =BorderStyle.None
+              DropShadow: =DropShadow.None
+              FillPortions: =3
+              LayoutAlignItems: =LayoutAlignItems.Stretch
+              LayoutDirection: =LayoutDirection.Vertical
+              LayoutGap: =10
+              LayoutMode: =LayoutMode.Auto
+              PaddingBottom: =10
+              PaddingLeft: =20
+              PaddingRight: =20
+              PaddingTop: =10
+              RadiusBottomLeft: =8
+              RadiusBottomRight: =8
+              RadiusTopLeft: =8
+              RadiusTopRight: =8
+              Visible: =galFormSteps.Selected.order =3
+            Children:
+            - TextCanvas3_1:
+                Control: Text
+                Properties:
+                  Text: ="VM Size"
+                  Weight: ='TextCanvas.Weight'.Semibold
+            - DropdownCanvas1_1:
+                Control: DropDown
+                Variant: pcfdataset
+                Properties:
+                  Fill: =RGBA(255, 255, 255, 1)
+                  Items: =["Standard_D2s_v3", "Standard_D4s_v3", "Standard_D8s_v3"]
+                  Height: =40
+            - Container6_4:
+                Control: GroupContainer
+                Variant: verticalAutoLayoutContainer
+                Properties:
+                  AlignInContainer: =AlignInContainer.SetByContainer
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =80
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutJustifyContent: =LayoutJustifyContent.Center
+                  LayoutMinHeight: =10
+                  LayoutMode: =LayoutMode.Auto
+                  PaddingLeft: =10
+                Children:
+                - Label3_9:
+                    Control: Label
+                    Properties:
+                      Text: |-
+                        ="Select Subscription
+                        "
+                      AlignInContainer: =AlignInContainer.Stretch
+                      Font: =Font.Arial
+                      Size: =15
+                - Label4_14:
+                    Control: Label
+                    Properties:
+                      Text: ="Choose a subscription to deploy your new resource."
+                      AlignInContainer: =AlignInContainer.Stretch
+                      AutoHeight: =true
+                      Color: =RGBA(53, 61, 63, 1)
+                      Font: =Font.Lato
+                      LayoutMinWidth: =15
+                      Size: =11.5
+                      Width: =3
+            - Container9_2:
+                Control: GroupContainer
+                Variant: manualLayoutContainer
+                Properties:
+                  AlignInContainer: =AlignInContainer.SetByContainer
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =60
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  Visible: =false
+                Children:
+                - TextInputCanvas1_1:
+                    Control: TextInput
+                    Properties:
+                      Appearance: ='TextInputCanvas.Appearance'.FilledLighter
+                      BorderColor: =RGBA(214, 221, 224, 1)
+                      BorderRadius: =10
+                      BorderStyle: =BorderStyle.Solid
+                      Fill: =RGBA(255, 255, 255, 1)
+                      FontSize: =18
+                      PaddingLeft: =50
+                      Placeholder: ="Search subscriptions..."
+                      Type: ='TextInputCanvas.Type'.Search
+                      Height: =Parent.Height-10
+                      Width: =Parent.Width-40
+                      X: =20
+                      Y: =5
+            - Gallery3_4:
+                Control: Gallery
+                Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+                Properties:
+                  OnSelect: =UpdateContext({locVarCurrentNav:ThisItem})
+                  Items: =colSubscriptions
+                  AlignInContainer: =AlignInContainer.SetByContainer
+                  DelayItemLoading: =true
+                  Layout: =Layout.Vertical
+                  ShowScrollbar: =false
+                  TemplateSize: =140
+                  Visible: =false
+                Children:
+                - Container3_5:
+                    Control: GroupContainer
+                    Variant: horizontalAutoLayoutContainer
+                    Properties:
+                      BorderColor: |-
+                        =// Selected - Blue rgb(59, 130, 246) - // Not Selected - transparent
+                        If(ThisItem.IsSelected,RGBA(59,130,246,1),RGBA(228,228,231,1))
+                      BorderThickness: =1
+                      Fill: |-
+                        =// Selected - Blue rgb(59, 130, 246) - // Not Selected - transparent
+                        //If(ThisItem.IsSelected,RGBA(59,130,246,.15),RGBA(107,114,128,0))
+                        Color.White
+                      Height: =Parent.TemplateHeight-15
+                      LayoutAlignItems: =LayoutAlignItems.Center
+                      LayoutGap: =15
+                      LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                      LayoutMode: =LayoutMode.Auto
+                      PaddingBottom: =20
+                      PaddingLeft: =20
+                      PaddingRight: =20
+                      PaddingTop: =20
+                      RadiusBottomLeft: =10
+                      RadiusBottomRight: =10
+                      RadiusTopLeft: =10
+                      RadiusTopRight: =10
+                      Width: =Parent.TemplateWidth-24
+                      X: =12
+                      Y: =10
+                    Children:
+                    - Image7_8:
+                        Control: Image
+                        Properties:
+                          OnSelect: =
+                          Image: |
+                            =//
+                            // Icon Color Processing Function
+                            //
+                            With(
+                                {
+                                    iconName: ThisItem.icon,
+                                    isSelected: ThisItem.IsSelected,
+                                    iconColor: Switch( ThisItem.color,"blue", "rgb(59, 130, 246)", "orange", "rgb(249, 115, 22)", "purple", "rgb(147, 51, 234)", "green", "rgb(34, 197, 94)", "red", "rgb(239, 68, 68)", "yellow", "rgb(234, 179, 8)", "indigo", "rgb(99, 102, 241)", "pink", "rgb(236, 72, 153)", "teal", "rgb(20, 184, 166)", "cyan", "rgb(6, 182, 212)")
+                                },
+                                    "data:image/svg+xml;utf8," & EncodeUrl(
+                                        Substitute(
+                                            LookUp(
+                                                fn_Icons,
+                                                name = iconName
+                                            ).value,
+                                            "currentColor",// Original color placeholder
+                                          "rgb(59, 130, 246)"
+                                        )
+                                    )
+                                )
+                          Fill: =Switch(ThisItem.color,"blue",RGBA(59,130,246,.15),"orange",RGBA(249,115,22,.15),"purple",RGBA(147,51,234,.15),"green",RGBA(34,197,94,.15),"red",RGBA(239,68,68,.15),"yellow",RGBA(234,179,8,.15),"indigo",RGBA(99,102,241,.15),"pink",RGBA(236,72,153,.15),"teal",RGBA(20,184,166,.15),"cyan",RGBA(6,182,212,.15))
+                          Height: =60
+                          ImagePosition: =ImagePosition.Fill
+                          LayoutMinHeight: =10
+                          LayoutMinWidth: =50
+                          PaddingBottom: =15
+                          PaddingLeft: =15
+                          PaddingRight: =15
+                          PaddingTop: =15
+                          RadiusBottomLeft: =10
+                          RadiusBottomRight: =10
+                          RadiusTopLeft: =10
+                          RadiusTopRight: =10
+                          Width: =60
+                          X: =//(Parent.TemplateWidth / 2) - (Self.Width / 2)
+                          Y: =16
+                    - Container4_7:
+                        Control: GroupContainer
+                        Variant: verticalAutoLayoutContainer
+                        Properties:
+                          AlignInContainer: =AlignInContainer.SetByContainer
+                          DropShadow: =DropShadow.None
+                          Height: =70
+                          LayoutDirection: =LayoutDirection.Vertical
+                          LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                          LayoutMinHeight: =10
+                          LayoutMinWidth: =10
+                          LayoutMode: =LayoutMode.Auto
+                        Children:
+                        - Container3_12:
+                            Control: GroupContainer
+                            Variant: horizontalAutoLayoutContainer
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =40
+                              LayoutAlignItems: =LayoutAlignItems.Stretch
+                              LayoutGap: =10
+                              LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                              LayoutMinHeight: =10
+                              LayoutMode: =LayoutMode.Auto
+                            Children:
+                            - Label2_12:
+                                Control: Label
+                                Properties:
+                                  Text: =ThisItem.name
+                                  AlignInContainer: =AlignInContainer.Stretch
+                                  AutoHeight: =true
+                                  FillPortions: =1
+                                  Font: =Font.Lato
+                                  FontWeight: =FontWeight.Semibold
+                                  Height: =26
+                                  LayoutMinWidth: =15
+                                  Width: =3
+                            - Container3_13:
+                                Control: GroupContainer
+                                Variant: horizontalAutoLayoutContainer
+                                Properties:
+                                  AlignInContainer: =AlignInContainer.Center
+                                  DropShadow: =DropShadow.None
+                                  Fill: =RGBA(34, 197, 94, 0.1)
+                                  FillPortions: =0
+                                  Height: =27
+                                  LayoutAlignItems: =LayoutAlignItems.Stretch
+                                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                                  LayoutMinHeight: =10
+                                  LayoutMode: =LayoutMode.Auto
+                                  PaddingLeft: =5
+                                  PaddingRight: =5
+                                  RadiusBottomLeft: =100
+                                  RadiusBottomRight: =100
+                                  RadiusTopLeft: =100
+                                  RadiusTopRight: =100
+                                  Width: =190
+                                Children:
+                                - Image7_7:
+                                    Control: Image
+                                    Properties:
+                                      OnSelect: =
+                                      Image: |
+                                        =//
+                                        // Icon Color Processing Function
+                                        //
+                                        With(
+                                            {
+                                                iconName: "CircleCkeck",
+                                                //bgColor: "rgba(34, 197, 94, 0.1)" ,//witch( ThisItem.bgColor, "blue", "rgba(59, 130, 246, 0.1)", "purple", "rgba(147, 51, 234, 0.1)", "green", "rgba(34, 197, 94, 0.1)" ),
+                                                iconColor: "rgb(34, 197, 94)" //Switch( ThisItem.actionColor, "blue", "rgb(59, 130, 246)", "purple", "rgb(147, 51, 234)", "green", "rgb(34, 197, 94)" )
+                                            },
+                                                "data:image/svg+xml;utf8," & EncodeUrl(
+                                                    Substitute(
+                                                        LookUp(
+                                                            fn_Icons,
+                                                            name = "CircleCheck"
+                                                        ).value,
+                                                        "currentColor",// Original color placeholder
+                                                       /* If(
+                                                            isSelected,
+                                                            "rgb(59, 130, 246)",// Selected - Blue rgb(59, 130, 246)
+                                                            "rgb(107, 114, 128)"// Not Selected - Gray rgb(107, 114, 128)
+                                                        )*/
+                                                      iconColor
+                                                    )
+                                                )
+                                            )
+                                      AlignInContainer: =AlignInContainer.Stretch
+                                      Fill: =//Switch( ThisItem.bgColor, "blue", RGBA(59, 130, 246, 0.1), "purple", RGBA(147, 51, 234, 0.1), "green", RGBA(34, 197, 94, 0.1) )
+                                      Height: =50
+                                      ImagePosition: =ImagePosition.Fill
+                                      LayoutMinHeight: =10
+                                      LayoutMinWidth: =50
+                                      PaddingBottom: =7
+                                      PaddingLeft: =7
+                                      PaddingRight: =7
+                                      PaddingTop: =7
+                                      RadiusBottomLeft: =10
+                                      RadiusBottomRight: =10
+                                      RadiusTopLeft: =10
+                                      RadiusTopRight: =10
+                                      Width: =Self.Height
+                                      X: =//(Parent.TemplateWidth / 2) - (Self.Width / 2)
+                                      Y: =16
+                                - Container4_8:
+                                    Control: GroupContainer
+                                    Variant: verticalAutoLayoutContainer
+                                    Properties:
+                                      AlignInContainer: =AlignInContainer.SetByContainer
+                                      DropShadow: =DropShadow.None
+                                      LayoutDirection: =LayoutDirection.Vertical
+                                      LayoutJustifyContent: =LayoutJustifyContent.Center
+                                      LayoutMinHeight: =10
+                                      LayoutMinWidth: =10
+                                      LayoutMode: =LayoutMode.Auto
+                                    Children:
+                                    - Label4_15:
+                                        Control: Label
+                                        Properties:
+                                          Text: ="Self-Service Enabled"
+                                          AlignInContainer: =AlignInContainer.Stretch
+                                          AutoHeight: =true
+                                          Color: =ColorFade( RGBA(34, 197, 94, 1),-40%)
+                                          LayoutMinWidth: =15
+                                          Size: =11
+                                          Width: =3
+                        - Container3_14:
+                            Control: GroupContainer
+                            Variant: horizontalAutoLayoutContainer
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =25
+                              LayoutAlignItems: =LayoutAlignItems.Stretch
+                              LayoutGap: =10
+                              LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                              LayoutMinHeight: =10
+                              LayoutMode: =LayoutMode.Auto
+                            Children:
+                            - Label2_13:
+                                Control: Label
+                                Properties:
+                                  Text: |-
+                                    ="ID: " & ThisItem.id
+                                  AlignInContainer: =AlignInContainer.Center
+                                  AutoHeight: =true
+                                  Color: =RGBA(79, 90, 94, 1)
+                                  FillPortions: =1
+                                  Font: =Font.Arial
+                                  Height: =26
+                                  LayoutMinHeight: =30
+                                  LayoutMinWidth: =15
+                                  Size: =12
+                                  Width: =3
+                            - Label2_14:
+                                Control: Label
+                                Properties:
+                                  Text: |-
+                                    ="RGs: " & ThisItem.resourceGroups
+                                  AlignInContainer: =AlignInContainer.Center
+                                  AutoHeight: =true
+                                  Color: =RGBA(79, 90, 94, 1)
+                                  FillPortions: =1
+                                  Font: =Font.Arial
+                                  Height: =26
+                                  LayoutMinHeight: =30
+                                  LayoutMinWidth: =15
+                                  Size: =12
+                                  Width: =3
+                            - Label4_16:
+                                Control: Label
+                                Properties:
+                                  Text: |-
+                                    ="Quota: "& ThisItem.quota.used &"/" & ThisItem.quota.total
+                                  Align: =Align.Right
+                                  AlignInContainer: =AlignInContainer.Center
+                                  AutoHeight: =true
+                                  Color: =RGBA(79, 90, 94, 1)
+                                  FillPortions: =1
+                                  Font: =Font.Arial
+                                  LayoutMinHeight: =30
+                                  LayoutMinWidth: =15
+                                  Size: =11
+                                  Width: =3
+                - Rectangle3_4:
+                    Control: Rectangle
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      Height: =Parent.TemplateHeight - Separator3_4.Height
+                      Visible: =false
+                      Width: =4
+                - Separator3_4:
+                    Control: Rectangle
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      Fill: =RGBA(255, 255, 255, 1)
+                      Height: =8
+                      Visible: =false
+                      Width: =Parent.TemplateWidth
+                      Y: =Parent.TemplateHeight - Self.Height
+                - NextArrow3_4:
+                    Control: Classic/Icon
+                    Variant: ChevronRight
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      AccessibleLabel: =Self.Tooltip
+                      Tooltip: ="View item details"
+                      BorderColor: =RGBA(0, 0, 0, 1)
+                      Color: =RGBA(166, 166, 166, 1)
+                      DisabledBorderColor: =RGBA(56, 56, 56, 1)
+                      DisabledColor: =RGBA(119, 119, 119, 1)
+                      Height: =50
+                      Icon: =Icon.ChevronRight
+                      PaddingBottom: =16
+                      PaddingLeft: =16
+                      PaddingRight: =16
+                      PaddingTop: =16
+                      Visible: =false
+                      Width: =50
+                      X: =Parent.TemplateWidth - Self.Width - 12
+                      Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+                - Subtitle2_4:
+                    Control: Label
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      Text: =ThisItem.id
+                      FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+                      Height: =Self.Size * 1.8
+                      PaddingBottom: =0
+                      PaddingLeft: =0
+                      PaddingRight: =0
+                      PaddingTop: =0
+                      VerticalAlign: =VerticalAlign.Top
+                      Visible: =false
+                      Width: =Title3_4.Width
+                      X: =Title3_4.X
+                      Y: =Title3_4.Y + Title3_4.Height
+                - Title3_4:
+                    Control: Label
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      Text: =ThisItem.name
+                      FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+                      Height: =Self.Size * 1.8
+                      PaddingBottom: =0
+                      PaddingLeft: =0
+                      PaddingRight: =0
+                      PaddingTop: =0
+                      VerticalAlign: =VerticalAlign.Top
+                      Visible: =false
+                      Width: =Parent.TemplateWidth - 173
+                      X: =103
+                      Y: =(Parent.TemplateHeight - (Self.Size * 1.8 + Subtitle2_4.Size * 1.8)) / 2
+                - Image3_10:
+                    Control: Image
+                    Properties:
+                      OnSelect: =Select(Parent)
+                      Image: |-
+                        =// // Icon Color Processing Function // With( { iconName: ThisItem.icon, isSelected: ThisItem.id = locVarCurrentNav.id, iconColor: Switch( ThisItem.color,"blue", "rgb(59, 130, 246)", "orange", "rgb(249, 115, 22)", "purple", "rgb(147, 51, 234)", "green", "rgb(34, 197, 94)", "red", "rgb(239, 68, 68)", "yellow", "rgb(234, 179, 8)", "indigo", "rgb(99, 102, 241)", "pink", "rgb(236, 72, 153)", "teal", "rgb(20, 184, 166)", "cyan", "rgb(6, 182, 212)") }, "data:image/svg+xml;utf8," & EncodeUrl( Substitute( LookUp( fn_Icons, name = iconName ).value, "currentColor",// Original color placeholder /* If( isSelected, "rgb(59, 130, 246)",// Selected - Blue rgb(59, 130, 246) "rgb(107, 114, 128)"// Not Selected - Gray rgb(107, 114, 128) )*/ iconColor ) ) )
+                      Height: =72
+                      RadiusBottomLeft: =8
+                      RadiusBottomRight: =8
+                      RadiusTopLeft: =8
+                      RadiusTopRight: =8
+                      Visible: =false
+                      Width: =72
+                      X: =16
+                      Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+            - TextCanvas3:
+                Control: Text
+                Properties:
+                  Text: ="Join Domain"
+                  Weight: ='TextCanvas.Weight'.Semibold
+            - DropdownCanvas1:
+                Control: DropDown
+                Variant: pcfdataset
+                Properties:
+                  Fill: =RGBA(255, 255, 255, 1)
+                  Items: =["Yes", "No"]
+                  Height: =40
+            - TextCanvas3_2:
+                Control: Text
+                Properties:
+                  Text: ="OS Type"
+                  Weight: ='TextCanvas.Weight'.Semibold
+            - RadioGroupCanvas1:
+                Control: Radio
+                Variant: pcfdataset
+                Properties:
+                  Items: =["Windows", "Linux"]
+            - TextCanvas3_3:
+                Control: Text
+                Properties:
+                  Text: ="Disk Size"
+                  Weight: ='TextCanvas.Weight'.Semibold
+        - conFormButtons:
+            Control: GroupContainer
+            Variant: horizontalAutoLayoutContainer
+            Properties:
+              DropShadow: =DropShadow.None
+              FillPortions: =0
+              Height: =80
+              LayoutAlignItems: =LayoutAlignItems.Center
+              LayoutGap: =20
+              LayoutJustifyContent: =LayoutJustifyContent.End
+              LayoutMode: =LayoutMode.Auto
+              PaddingLeft: =20
+              PaddingRight: =20
+            Children:
+            - Button3_1:
+                Control: Classic/Button
+                Properties:
+                  OnSelect: =UpdateContext({locStep:LookUp(colProgressSteps, order = galFormSteps.Selected.order-1)})
+                  Text: ="Back"
+                  BorderColor: =RGBA(59,130,246,1)
+                  Color: =RGBA(59,130,246,1)
+                  Fill: =RGBA(255, 255, 255, 1)
+                  Font: =Font.Lato
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverFill: =ColorFade(Self.Fill, -20%)
+                  Size: =13
+                  Visible: =galFormSteps.Selected.order >1
+                  Width: =200
+            - Button3_2:
+                Control: Classic/Button
+                Properties:
+                  OnSelect: =UpdateContext({locStep:LookUp(colProgressSteps, order = galFormSteps.Selected.order+1)})
+                  Text: ="Continue to Resource Group"
+                  BorderStyle: =BorderStyle.None
+                  Fill: =RGBA(59,130,246,1)
+                  Font: =Font.Lato
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverFill: =ColorFade(Self.Fill, -20%)
+                  Size: =13
+                  Width: =270
+    - ButtonCanvas2:
+        Control: Button
+        Properties:
+          OnSelect: =NewForm(Form2)
+          Visible: =false
+          X: =141
+          Y: =633
+    - Container5:
+        Control: GroupContainer
+        Variant: verticalAutoLayoutContainer
+        Properties:
+          Height: |+
+            =App.Height
+          LayoutDirection: =LayoutDirection.Vertical
+          LayoutGap: =10
+          LayoutMode: =LayoutMode.Auto
+          Visible: =false
+          Width: =App.Width
+        Children:
+        - HeaderContainer1_1:
+            Control: GroupContainer
+            Variant: horizontalAutoLayoutContainer
+            Properties:
+              DropShadow: =DropShadow.None
+              Fill: =ColorValue(Theme.BackgroundPrimaryColor)
+              FillPortions: =0
+              Height: =75
+              LayoutAlignItems: =LayoutAlignItems.Center
+              LayoutGap: =15
+              LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+              LayoutMode: =LayoutMode.Auto
+              PaddingLeft: =15
+              PaddingRight: =15
+              RadiusBottomLeft: =8
+              RadiusBottomRight: =8
+              RadiusTopLeft: =8
+              RadiusTopRight: =8
+            Children:
+            - Image3_6:
+                Control: Image
+                Properties:
+                  OnSelect: =Back()
+                  Image: |-
+                    =With(
+                        {
+                            svg: EncodeUrl(
+                                LookUp(
+                                    fn_Icons,
+                                    ThisRecord.name = "ArrowLeft"
+                                ).value
+                            )
+                        },
+                        "data:image/svg+xml;utf8, " & svg
+                    )
+                  Fill: =Color.Transparent
+                  Height: =50
+                  PaddingLeft: =10
+                  PaddingRight: =10
+                  RadiusBottomLeft: =100
+                  RadiusBottomRight: =100
+                  RadiusTopLeft: =100
+                  RadiusTopRight: =100
+                  Width: =50
+            - Label3_3:
+                Control: Label
+                Properties:
+                  Text: ="New Resource Request"
+                  AlignInContainer: =AlignInContainer.Stretch
+                  Color: =ColorValue(Theme.TextPrimaryColor)
+                  FillPortions: =1
+                  Font: =Theme.Font
+                  FontWeight: =FontWeight.Semibold
+                  Height: =100
+                  PaddingRight: =20
+                  Size: =16
+            - Image3_7:
+                Control: Image
+                Properties:
+                  Image: =//"data:image/svg+xml;utf8, "&EncodeUrl(""&Substitute( appIcons.User,"currentColor",Theme.TextPrimaryColor) &"")
+                  Fill: =ColorValue(Theme.BackgroundTertiaryColor)
+                  Height: =50
+                  PaddingLeft: =10
+                  PaddingRight: =10
+                  RadiusBottomLeft: =100
+                  RadiusBottomRight: =100
+                  RadiusTopLeft: =100
+                  RadiusTopRight: =100
+                  Visible: =false
+                  Width: =50
+            - searchbox_1:
+                Control: GroupContainer
+                Variant: horizontalAutoLayoutContainer
+                Properties:
+                  AlignInContainer: =AlignInContainer.Center
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  BorderThickness: =1
+                  DropShadow: =DropShadow.Semilight
+                  Fill: =RGBA(255, 255, 255, 1)
+                  FillPortions: =0
+                  Height: =60
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutGap: =10
+                  LayoutJustifyContent: =LayoutJustifyContent.Center
+                  LayoutMode: =LayoutMode.Auto
+                  PaddingBottom: =10
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =10
+                  RadiusBottomLeft: =10
+                  RadiusBottomRight: =10
+                  RadiusTopLeft: =10
+                  RadiusTopRight: =10
+                  Visible: =false
+                  Width: =400
+                  X: =120
+                  Y: =189
+                Children:
+                - input_search_1:
+                    Control: Classic/TextInput
+                    Properties:
+                      Default: ="Search"
+                      BorderColor: =RGBA(0, 0, 0, 0)
+                      Height: =38
+                      Width: =310
+                      X: =20
+                      Y: =11
+                - search_icon_1:
+                    Control: Image
+                    Properties:
+                      Image: ="data:image/svg+xml;utf8, " &EncodeUrl("<svg width='40' height='40' viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'> <path d='M17.081 4.99915C19.3645 4.99886 21.6013 5.64563 23.5323 6.86451C25.4633 8.08339 27.0093 9.82447 27.9914 11.886C28.9734 13.9476 29.3512 16.2451 29.0809 18.5126C28.8106 20.78 27.9034 22.9245 26.4643 24.6974L34.631 32.8641C34.8552 33.0869 34.9867 33.3863 34.9991 33.7021C35.0114 34.018 34.9036 34.3267 34.6974 34.5663C34.4912 34.8059 34.202 34.9584 33.8878 34.9933C33.5737 35.0281 33.258 34.9427 33.0043 34.7541L32.8643 34.6324L24.696 26.4658C23.1941 27.6843 21.4217 28.5245 19.5277 28.9158C17.6337 29.3072 15.6734 29.2381 13.8116 28.7145C11.9498 28.191 10.2409 27.2281 8.82848 25.907C7.41606 24.5858 6.3414 22.9449 5.69481 21.1222C5.04822 19.2995 4.8486 17.3481 5.11272 15.4323C5.37685 13.5164 6.09699 11.6919 7.21265 10.1121C8.3283 8.53232 9.80686 7.24341 11.5241 6.35369C13.2413 5.46397 15.147 4.99944 17.081 4.99915ZM17.081 7.49915C15.8225 7.49915 14.5763 7.74703 13.4136 8.22864C12.2509 8.71025 11.1945 9.41615 10.3046 10.306C9.41466 11.1959 8.70875 12.2524 8.22715 13.4151C7.74554 14.5778 7.49766 15.8239 7.49766 17.0824C7.49766 18.3409 7.74554 19.5871 8.22715 20.7498C8.70875 21.9125 9.41466 22.969 10.3046 23.8589C11.1945 24.7488 12.2509 25.4547 13.4136 25.9363C14.5763 26.4179 15.8225 26.6658 17.081 26.6658C19.6226 26.6658 22.0602 25.6561 23.8574 23.8589C25.6546 22.0616 26.6643 19.6241 26.6643 17.0824C26.6643 14.5408 25.6546 12.1033 23.8574 10.306C22.0602 8.50882 19.6226 7.49915 17.081 7.49915Z' fill='#53596C'/> </svg>")
+                      Height: =40
+                      Width: =40
+                      X: =340
+                      Y: =10
+        - Container6:
+            Control: GroupContainer
+            Variant: horizontalAutoLayoutContainer
+            Properties:
+              LayoutGap: =10
+              LayoutMode: =LayoutMode.Auto
+              PaddingBottom: =10
+              PaddingLeft: =10
+              PaddingRight: =10
+              PaddingTop: =10
+            Children:
+            - Container7:
+                Control: GroupContainer
+                Variant: verticalAutoLayoutContainer
+                Properties:
+                  FillPortions: =0
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutMode: =LayoutMode.Auto
+                  Width: =400
+                Children:
+                - Gallery6:
+                    Control: Gallery
+                    Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+                    Properties:
+                      Items: =Choices('Resource Type (Resources_1)')
+                      DelayItemLoading: =true
+                      Layout: =Layout.Vertical
+                      LoadingSpinner: =LoadingSpinner.Data
+                      TemplatePadding: =0
+                      TemplateSize: =104
+                    Children:
+                    - Button3:
+                        Control: Classic/Button
+                        Properties:
+                          OnSelect: =Select(Parent)
+                          Text: =ThisItem.Value
+                          Align: =Align.Left
+                          Color: =RGBA(0, 0, 0, 1)
+                          Fill: =If( ThisItem.IsSelected, RGBA(56, 96, 178, 0.25),Color.Transparent)
+                          Font: =Font.Lato
+                          Height: =Parent.TemplateHeight -(Parent.TemplateHeight*.15)
+                          HoverColor: =RGBA(0, 0, 0, 1)
+                          HoverFill: =ColorFade(RGBA(56, 96, 178, 0.25), 20%)
+                          PaddingLeft: =80
+                          Size: =13
+                          Width: =Parent.TemplateWidth -(Parent.TemplateWidth*.05)
+                          X: '=(Parent.TemplateWidth-Self.Width)/2 '
+                          Y: =(Parent.TemplateHeight-Self.Height)/2
+                    - Rectangle3:
+                        Control: Rectangle
+                        Properties:
+                          OnSelect: =Select(Parent)
+                          Height: =Parent.TemplateHeight - Separator3.Height
+                          Visible: =//ThisItem.IsSelected
+                          Width: =4
+                    - Separator3:
+                        Control: Rectangle
+                        Properties:
+                          OnSelect: =Select(Parent)
+                          Fill: =RGBA(255, 255, 255, 1)
+                          Height: =8
+                          Visible: =false
+                          Width: =Parent.TemplateWidth
+                          Y: =Parent.TemplateHeight - Self.Height
+                    - NextArrow3:
+                        Control: Classic/Icon
+                        Variant: ChevronRight
+                        Properties:
+                          OnSelect: =Select(Parent)
+                          AccessibleLabel: =Self.Tooltip
+                          Tooltip: ="View item details"
+                          BorderColor: =RGBA(0, 0, 0, 1)
+                          Color: =RGBA(166, 166, 166, 1)
+                          DisabledBorderColor: =RGBA(56, 56, 56, 1)
+                          DisabledColor: =RGBA(119, 119, 119, 1)
+                          Height: =50
+                          Icon: =Icon.ChevronRight
+                          PaddingBottom: =16
+                          PaddingLeft: =16
+                          PaddingRight: =16
+                          PaddingTop: =16
+                          Width: =50
+                          X: =Parent.TemplateWidth - Self.Width - 12
+                          Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+                    - Subtitle5:
+                        Control: Label
+                        Properties:
+                          OnSelect: =Select(Parent)
+                          Text: =ThisItem.Value
+                          FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+                          Height: =Self.Size * 1.8
+                          PaddingBottom: =0
+                          PaddingLeft: =0
+                          PaddingRight: =0
+                          PaddingTop: =0
+                          VerticalAlign: =VerticalAlign.Top
+                          Visible: =false
+                          Width: =Title8.Width
+                          X: =Title8.X
+                          Y: =Title8.Y + Title8.Height
+                    - Title8:
+                        Control: Label
+                        Properties:
+                          OnSelect: =Select(Parent)
+                          Text: =ThisItem.Value
+                          FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+                          Height: =Self.Size * 1.8
+                          PaddingBottom: =0
+                          PaddingLeft: =0
+                          PaddingRight: =0
+                          PaddingTop: =0
+                          VerticalAlign: =VerticalAlign.Top
+                          Visible: =false
+                          Width: =Parent.TemplateWidth - 173
+                          X: =103
+                          Y: =(Parent.TemplateHeight - (Self.Size * 1.8 + Subtitle5.Size * 1.8)) / 2
+                    - Image8:
+                        Control: Image
+                        Properties:
+                          OnSelect: =Select(Parent)
+                          Image: |-
+                            =With(
+                                {
+                                    svg: EncodeUrl(
+                                        LookUp(
+                                            fn_Icons,
+                                            ThisRecord.name = Switch(
+                                                ThisItem.Value,
+                                                'Resource Type (Resources_1)'.'Windows Virtual Machine',
+                                                "Server",
+                                                'Resource Type (Resources_1)'.'Linux Virtual Machine',
+                                                "Database",
+                                                'Resource Type (Resources_1)'.'Storage Account',
+                                                "Key"
+                                            )
+                                        ).value
+                                    )
+                                },
+                                "data:image/svg+xml;utf8, " & svg
+                            )
+                          Height: =50
+                          PaddingBottom: =5
+                          PaddingTop: =5
+                          RadiusBottomLeft: =8
+                          RadiusBottomRight: =8
+                          RadiusTopLeft: =8
+                          RadiusTopRight: =8
+                          Width: =50
+                          X: =25
+                          Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+            - Container8:
+                Control: GroupContainer
+                Variant: verticalAutoLayoutContainer
+                Properties:
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutMode: =LayoutMode.Auto
+                  X: =40
+                  Y: =40
+                Children:
+                - TextCanvas2:
+                    Control: Text
+                    Properties:
+                      Size: =20
+                - Form2:
+                    Control: Form
+                    Layout: vertical
+                    Properties:
+                      DataSource: =Resources_1
+                      X: =20
+                      Y: =20
+                    Children:
+                    - Display Name_DataCard2:
+                        Control: TypedDataCard
+                        Variant: textualEditCard
+                        Properties:
+                          DataField: ="cr33b_displayname"
+                          Default: =ThisItem.'Display Name'
+                          DisplayName: =DataSourceInfo([@Resources_1],DataSourceInfo.DisplayName,'Display Name')
+                          MaxLength: =DataSourceInfo([@Resources_1], DataSourceInfo.MaxLength, 'Display Name')
+                          Required: =true
+                          Update: =DataCardValue7.Text
+                          BorderColor: =ColorValue( Theme.BorderPrimaryColor)
+                          DisplayMode: =Parent.DisplayMode
+                          Height: =50
+                          Width: =312
+                        Children:
+                        - StarVisible7:
+                            Control: Label
+                            Properties:
+                              Text: ="*"
+                              Align: =Align.Center
+                              Height: =DataCardKey7.Height
+                              Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                              Width: =30
+                              Wrap: =false
+                              Y: =DataCardKey7.Y
+                        - ErrorMessage7:
+                            Control: Label
+                            Properties:
+                              Live: =Live.Assertive
+                              Text: =Parent.Error
+                              AutoHeight: =true
+                              Height: =10
+                              PaddingBottom: =0
+                              PaddingLeft: =0
+                              PaddingRight: =0
+                              PaddingTop: =0
+                              Visible: =Parent.DisplayMode=DisplayMode.Edit
+                              Width: =Parent.Width - 60
+                              X: =30
+                              Y: =DataCardValue7.Y + DataCardValue7.Height
+                        - DataCardValue7:
+                            Control: Classic/TextInput
+                            Properties:
+                              Default: =Parent.Default
+                              DelayOutput: =true
+                              MaxLength: =Parent.MaxLength
+                              Tooltip: =Parent.DisplayName
+                              BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                              DisplayMode: =Parent.DisplayMode
+                              PaddingLeft: =5
+                              RadiusBottomLeft: =10
+                              RadiusBottomRight: =10
+                              RadiusTopLeft: =10
+                              RadiusTopRight: =10
+                              Width: =Parent.Width - 60
+                              X: =30
+                              Y: =DataCardKey7.Y + DataCardKey7.Height + 5
+                        - DataCardKey7:
+                            Control: Label
+                            Properties:
+                              Text: =Parent.DisplayName
+                              AutoHeight: =true
+                              Height: =34
+                              Width: =Parent.Width - 60
+                              Wrap: =false
+                              X: =30
+                              Y: =10
+                    - Resource Type_DataCard2:
+                        Control: TypedDataCard
+                        Variant: comboBoxOptionSetSingleEditCard
+                        Properties:
+                          DataField: ="cr33b_resourcetype"
+                          Default: =Coalesce(Gallery6.Selected.Value, ThisItem.'Resource Type')
+                          DisplayName: =DataSourceInfo([@Resources_1],DataSourceInfo.DisplayName,'Resource Type')
+                          Required: =true
+                          Update: =DataCardValue10.Selected.Value
+                          BorderColor: =ColorValue( Theme.BorderPrimaryColor)
+                          DisplayMode: =Parent.DisplayMode
+                          Height: =50
+                          Visible: =false
+                          Width: =312
+                          X: =1
+                        Children:
+                        - StarVisible10:
+                            Control: Label
+                            Properties:
+                              Text: ="*"
+                              Align: =Align.Center
+                              Height: =DataCardKey10.Height
+                              Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                              Width: =30
+                              Wrap: =false
+                              Y: =DataCardKey10.Y
+                        - ErrorMessage10:
+                            Control: Label
+                            Properties:
+                              Live: =Live.Assertive
+                              Text: =Parent.Error
+                              AutoHeight: =true
+                              Height: =10
+                              PaddingBottom: =0
+                              PaddingLeft: =0
+                              PaddingRight: =0
+                              PaddingTop: =0
+                              Visible: =Parent.DisplayMode=DisplayMode.Edit
+                              Width: =Parent.Width - 60
+                              X: =30
+                              Y: =DataCardValue10.Y + DataCardValue10.Height
+                        - DataCardValue10:
+                            Control: Classic/ComboBox
+                            Properties:
+                              DefaultSelectedItems: =[Parent.Default]
+                              IsSearchable: =false
+                              Items: =Choices('Resource Type (Resources_1)')
+                              SelectMultiple: =false
+                              Tooltip: =Parent.DisplayName
+                              BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                              DisplayMode: =Parent.DisplayMode
+                              PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                              Width: =Parent.Width - 60
+                              X: =30
+                              Y: =DataCardKey10.Y + DataCardKey10.Height + 5
+                        - DataCardKey10:
+                            Control: Label
+                            Properties:
+                              Text: =Parent.DisplayName
+                              AutoHeight: =true
+                              Height: =34
+                              Width: =Parent.Width - 60
+                              Wrap: =false
+                              X: =30
+                              Y: =10
+                    - Group Permissions_DataCard2:
+                        Control: TypedDataCard
+                        Variant: textualEditCard
+                        Properties:
+                          DataField: ="cr33b_grouppermissions"
+                          Default: =ThisItem.'Group Permissions'
+                          DisplayName: =DataSourceInfo([@Resources_1],DataSourceInfo.DisplayName,'Group Permissions')
+                          MaxLength: =DataSourceInfo([@Resources_1], DataSourceInfo.MaxLength, 'Group Permissions')
+                          Required: =true
+                          Update: =DataCardValue8.Text
+                          BorderColor: =ColorValue( Theme.BorderPrimaryColor)
+                          DisplayMode: =Parent.DisplayMode
+                          Height: =50
+                          Width: =312
+                          X: =2
+                        Children:
+                        - StarVisible8:
+                            Control: Label
+                            Properties:
+                              Text: ="*"
+                              Align: =Align.Center
+                              Height: =DataCardKey8.Height
+                              Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                              Width: =30
+                              Wrap: =false
+                              Y: =DataCardKey8.Y
+                        - ErrorMessage8:
+                            Control: Label
+                            Properties:
+                              Live: =Live.Assertive
+                              Text: =Parent.Error
+                              AutoHeight: =true
+                              Height: =10
+                              PaddingBottom: =0
+                              PaddingLeft: =0
+                              PaddingRight: =0
+                              PaddingTop: =0
+                              Visible: =Parent.DisplayMode=DisplayMode.Edit
+                              Width: =Parent.Width - 60
+                              X: =30
+                              Y: =DataCardValue8.Y + DataCardValue8.Height
+                        - DataCardValue8:
+                            Control: Classic/TextInput
+                            Properties:
+                              Default: =Parent.Default
+                              DelayOutput: =true
+                              MaxLength: =Parent.MaxLength
+                              Tooltip: =Parent.DisplayName
+                              BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                              DisplayMode: =Parent.DisplayMode
+                              PaddingLeft: =5
+                              RadiusBottomLeft: =10
+                              RadiusBottomRight: =10
+                              RadiusTopLeft: =10
+                              RadiusTopRight: =10
+                              Width: =Parent.Width - 60
+                              X: =30
+                              Y: =DataCardKey8.Y + DataCardKey8.Height + 5
+                        - DataCardKey8:
+                            Control: Label
+                            Properties:
+                              Text: =Parent.DisplayName
+                              AutoHeight: =true
+                              Height: =34
+                              Width: =Parent.Width - 60
+                              Wrap: =false
+                              X: =30
+                              Y: =10
+                    - IsActive_DataCard2:
+                        Control: TypedDataCard
+                        Variant: comboBoxOptionSetSingleEditCard
+                        Properties:
+                          DataField: ="cr33b_isactive"
+                          Default: =ThisItem.IsActive
+                          DisplayName: =DataSourceInfo([@Resources_1],DataSourceInfo.DisplayName,IsActive)
+                          Required: =true
+                          Update: =DataCardValue9.Selected.Value
+                          BorderColor: =ColorValue( Theme.BorderPrimaryColor)
+                          DisplayMode: =Parent.DisplayMode
+                          Height: =50
+                          Visible: =false
+                          Width: =312
+                          Y: =1
+                        Children:
+                        - StarVisible9:
+                            Control: Label
+                            Properties:
+                              Text: ="*"
+                              Align: =Align.Center
+                              Height: =DataCardKey9.Height
+                              Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                              Width: =30
+                              Wrap: =false
+                              Y: =DataCardKey9.Y
+                        - ErrorMessage9:
+                            Control: Label
+                            Properties:
+                              Live: =Live.Assertive
+                              Text: =Parent.Error
+                              AutoHeight: =true
+                              Height: =10
+                              PaddingBottom: =0
+                              PaddingLeft: =0
+                              PaddingRight: =0
+                              PaddingTop: =0
+                              Visible: =Parent.DisplayMode=DisplayMode.Edit
+                              Width: =Parent.Width - 60
+                              X: =30
+                              Y: =DataCardValue9.Y + DataCardValue9.Height
+                        - DataCardValue9:
+                            Control: Classic/ComboBox
+                            Properties:
+                              DefaultSelectedItems: =[Parent.Default]
+                              IsSearchable: =false
+                              Items: =Choices('IsActive (Resources_1)')
+                              SelectMultiple: =false
+                              Tooltip: =Parent.DisplayName
+                              BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                              DisplayMode: =Parent.DisplayMode
+                              PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                              Width: =Parent.Width - 60
+                              X: =30
+                              Y: =DataCardKey9.Y + DataCardKey9.Height + 5
+                        - DataCardKey9:
+                            Control: Label
+                            Properties:
+                              Text: =Parent.DisplayName
+                              AutoHeight: =true
+                              Height: =34
+                              Width: =Parent.Width - 60
+                              Wrap: =false
+                              X: =30
+                              Y: =10
+                    - Description_DataCard2:
+                        Control: TypedDataCard
+                        Variant: textualMultiLineEditCard
+                        Properties:
+                          DataField: ="cr33b_description"
+                          Default: =ThisItem.Description
+                          DisplayName: =DataSourceInfo([@Resources_1],DataSourceInfo.DisplayName,Description)
+                          Update: =DataCardValue6.Text
+                          BorderColor: =ColorValue( Theme.BorderPrimaryColor)
+                          DisplayMode: =Parent.DisplayMode
+                          Height: =50
+                          Width: =312
+                          WidthFit: =true
+                          X: =1
+                          Y: =1
+                        Children:
+                        - StarVisible6:
+                            Control: Label
+                            Properties:
+                              Text: ="*"
+                              Align: =Align.Center
+                              Height: =DataCardKey6.Height
+                              Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                              Width: =30
+                              Wrap: =false
+                              Y: =DataCardKey6.Y
+                        - ErrorMessage6:
+                            Control: Label
+                            Properties:
+                              Live: =Live.Assertive
+                              Text: =Parent.Error
+                              AutoHeight: =true
+                              Height: =10
+                              PaddingBottom: =0
+                              PaddingLeft: =0
+                              PaddingRight: =0
+                              PaddingTop: =0
+                              Visible: =Parent.DisplayMode=DisplayMode.Edit
+                              Width: =Parent.Width - 60
+                              X: =30
+                              Y: =DataCardValue6.Y + DataCardValue6.Height
+                        - DataCardValue6:
+                            Control: Classic/TextInput
+                            Properties:
+                              Default: =Parent.Default
+                              DelayOutput: =true
+                              Tooltip: =Parent.DisplayName
+                              BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                              DisplayMode: =Parent.DisplayMode
+                              Height: =80
+                              Mode: =TextMode.MultiLine
+                              PaddingLeft: =5
+                              RadiusBottomLeft: =10
+                              RadiusBottomRight: =10
+                              RadiusTopLeft: =10
+                              RadiusTopRight: =10
+                              Width: =Parent.Width - 60
+                              X: =30
+                              Y: =DataCardKey6.Y + DataCardKey6.Height + 5
+                        - DataCardKey6:
+                            Control: Label
+                            Properties:
+                              Text: =Parent.DisplayName
+                              AutoHeight: =true
+                              Height: =34
+                              Width: =Parent.Width - 60
+                              Wrap: =false
+                              X: =30
+                              Y: =10
+                - Container9:
+                    Control: GroupContainer
+                    Variant: horizontalAutoLayoutContainer
+                    Properties:
+                      FillPortions: =0
+                      Height: =60
+                      LayoutAlignItems: =LayoutAlignItems.Center
+                      LayoutGap: =15
+                      LayoutJustifyContent: =LayoutJustifyContent.End
+                      LayoutMode: =LayoutMode.Auto
+                      PaddingRight: =15
+                    Children:
+                    - ButtonCanvas3:
+                        Control: Button
+                        Properties:
+                          OnSelect: =Back()
+                          Appearance: ='ButtonCanvas.Appearance'.Secondary
+                          BorderRadius: =5
+                          Text: ="Cancel"
+                    - ButtonCanvas4:
+                        Control: Button
+                        Properties:
+                          BorderRadius: =5
+                          Text: ="Submit Request"
+                          Width: =150
+    - Form5:
+        Control: Form
+        Variant: PowerApps_CoreControls_Form
+        Layout: vertical
+        Properties:
+          DataSource: =Resources_1
+          Visible: =false
+          X: =255
+          Y: =250
+        Children:
+        - Description_DataCard3:
+            Control: TypedDataCard
+            Variant: fluentV9TextualMultiLineEditCard
+            Properties:
+              DataField: ="cr33b_description"
+              Default: =ThisItem.Description
+              DisplayName: =DataSourceInfo([@Resources_1],DataSourceInfo.DisplayName,Description)
+              Update: =DataCardValue19.Value
+              DisplayMode: =Parent.DisplayMode
+              Height: =166
+              Width: =266
+            Children:
+            - StarVisible18:
+                Control: Text
+                Properties:
+                  Align: ='TextCanvas.Align'.Center
+                  Text: ="*"
+                  Height: =30
+                  Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                  Width: =30
+                  Y: =DataCardKey19.Y
+            - ErrorMessage18:
+                Control: Text
+                Properties:
+                  Text: =Parent.Error
+                  Height: =30
+                  Visible: =And(!IsBlank(Parent.Error), Parent.DisplayMode=DisplayMode.Edit)
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =DataCardValue19.Y + DataCardValue19.Height
+            - DataCardValue19:
+                Control: TextInput
+                Properties:
+                  AccessibleLabel: =Parent.DisplayName
+                  Mode: ='TextInputCanvas.Mode'.Multiline
+                  Required: =Parent.Required
+                  ValidationState: =If(IsBlank(Parent.Error), "None", "Error")
+                  Value: =Parent.Default
+                  DisplayMode: =Parent.DisplayMode
+                  Height: =144
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =DataCardKey19.Y + DataCardKey19.Height + 4
+            - DataCardKey19:
+                Control: Text
+                Properties:
+                  Text: =Parent.DisplayName
+                  Weight: ='TextCanvas.Weight'.Semibold
+                  Wrap: =false
+                  Height: =22
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =10
+        - Display Name_DataCard3:
+            Control: TypedDataCard
+            Variant: fluentV9TextualEditCard
+            Properties:
+              DataField: ="cr33b_displayname"
+              Default: =ThisItem.'Display Name'
+              DisplayName: =DataSourceInfo([@Resources_1],DataSourceInfo.DisplayName,'Display Name')
+              MaxLength: =DataSourceInfo([@Resources_1], DataSourceInfo.MaxLength, 'Display Name')
+              Required: =true
+              Update: =DataCardValue20.Value
+              DisplayMode: =Parent.DisplayMode
+              Height: =70
+              Width: =266
+              X: =1
+            Children:
+            - StarVisible19:
+                Control: Text
+                Properties:
+                  Align: ='TextCanvas.Align'.Center
+                  Text: ="*"
+                  Height: =30
+                  Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                  Width: =30
+                  Y: =20
+            - ErrorMessage19:
+                Control: Text
+                Properties:
+                  Text: =Parent.Error
+                  Height: =30
+                  Visible: =And(!IsBlank(Parent.Error), Parent.DisplayMode=DisplayMode.Edit)
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =DataCardValue20.Y + DataCardValue20.Height
+            - DataCardValue20:
+                Control: TextInput
+                Properties:
+                  AccessibleLabel: =Parent.DisplayName
+                  Mode: ="'TextInputCanvas.Mode'.TextInputModeSingleLine"
+                  Required: =Parent.Required
+                  ValidationState: =If(IsBlank(Parent.Error), "None", "Error")
+                  Value: =Parent.Default
+                  DisplayMode: =Parent.DisplayMode
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =DataCardKey20.Y + DataCardKey20.Height + 4
+            - DataCardKey20:
+                Control: Text
+                Properties:
+                  Text: =Parent.DisplayName
+                  Weight: ='TextCanvas.Weight'.Semibold
+                  Wrap: =false
+                  Height: =22
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =10
+        - Group Permissions_DataCard3:
+            Control: TypedDataCard
+            Variant: fluentV9TextualEditCard
+            Properties:
+              DataField: ="cr33b_grouppermissions"
+              Default: =ThisItem.'Group Permissions'
+              DisplayName: =DataSourceInfo([@Resources_1],DataSourceInfo.DisplayName,'Group Permissions')
+              MaxLength: =DataSourceInfo([@Resources_1], DataSourceInfo.MaxLength, 'Group Permissions')
+              Update: =DataCardValue21.Value
+              DisplayMode: =Parent.DisplayMode
+              Height: =70
+              Width: =266
+              X: =2
+            Children:
+            - StarVisible20:
+                Control: Text
+                Properties:
+                  Align: ='TextCanvas.Align'.Center
+                  Text: ="*"
+                  Height: =30
+                  Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                  Width: =30
+                  Y: =DataCardKey21.Y
+            - ErrorMessage20:
+                Control: Text
+                Properties:
+                  Text: =Parent.Error
+                  Height: =30
+                  Visible: =And(!IsBlank(Parent.Error), Parent.DisplayMode=DisplayMode.Edit)
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =DataCardValue21.Y + DataCardValue21.Height
+            - DataCardValue21:
+                Control: TextInput
+                Properties:
+                  AccessibleLabel: =Parent.DisplayName
+                  Mode: ="'TextInputCanvas.Mode'.TextInputModeSingleLine"
+                  Required: =Parent.Required
+                  ValidationState: =If(IsBlank(Parent.Error), "None", "Error")
+                  Value: =Parent.Default
+                  DisplayMode: =Parent.DisplayMode
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =DataCardKey21.Y + DataCardKey21.Height + 4
+            - DataCardKey21:
+                Control: Text
+                Properties:
+                  Text: =Parent.DisplayName
+                  Weight: ='TextCanvas.Weight'.Semibold
+                  Wrap: =false
+                  Height: =22
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =10
+        - IsActive_DataCard3:
+            Control: TypedDataCard
+            Variant: fluentV9ComboBoxOptionSetSingleEditCard
+            Properties:
+              DataField: ="cr33b_isactive"
+              Default: =ThisItem.IsActive
+              DisplayName: =DataSourceInfo([@Resources_1],DataSourceInfo.DisplayName,IsActive)
+              Update: =DataCardValue22.Selected.Value
+              DisplayMode: =Parent.DisplayMode
+              Height: =70
+              Width: =266
+              Y: =1
+            Children:
+            - StarVisible21:
+                Control: Text
+                Properties:
+                  Align: ='TextCanvas.Align'.Center
+                  Text: ="*"
+                  Height: =20
+                  Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                  Width: =30
+                  Y: =DataCardKey22.Y
+            - ErrorMessage21:
+                Control: Text
+                Properties:
+                  Text: =Parent.Error
+                  Height: =30
+                  Visible: =And(!IsBlank(Parent.Error), Parent.DisplayMode=DisplayMode.Edit)
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =DataCardValue22.Y + DataCardValue22.Height
+            - DataCardValue22:
+                Control: ComboBox
+                Variant: pcfdataset
+                Properties:
+                  AccessibleLabel: =Parent.DisplayName
+                  DefaultSelectedItems: =[Parent.Default]
+                  Items: =Choices('IsActive (Resources_1)')
+                  Required: =Parent.Required
+                  ValidationState: =If(IsBlank(Parent.Error), "None", "Error")
+                  DisplayMode: =Parent.DisplayMode
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =DataCardKey22.Y + DataCardKey22.Height + 4
+            - DataCardKey22:
+                Control: Text
+                Properties:
+                  Text: =Parent.DisplayName
+                  Weight: ='TextCanvas.Weight'.Semibold
+                  Wrap: =false
+                  Height: =22
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =10
+        - Resource Type_DataCard3:
+            Control: TypedDataCard
+            Variant: fluentV9ComboBoxOptionSetSingleEditCard
+            Properties:
+              DataField: ="cr33b_resourcetype"
+              Default: =ThisItem.'Resource Type'
+              DisplayName: =DataSourceInfo([@Resources_1],DataSourceInfo.DisplayName,'Resource Type')
+              Update: =DataCardValue23.Selected.Value
+              DisplayMode: =Parent.DisplayMode
+              Height: =70
+              Width: =266
+              X: =1
+              Y: =1
+            Children:
+            - StarVisible26:
+                Control: Text
+                Properties:
+                  Align: ='TextCanvas.Align'.Center
+                  Text: ="*"
+                  Height: =20
+                  Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                  Width: =30
+                  Y: =DataCardKey23.Y
+            - ErrorMessage26:
+                Control: Text
+                Properties:
+                  Text: =Parent.Error
+                  Height: =30
+                  Visible: =And(!IsBlank(Parent.Error), Parent.DisplayMode=DisplayMode.Edit)
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =DataCardValue23.Y + DataCardValue23.Height
+            - DataCardValue23:
+                Control: ComboBox
+                Variant: pcfdataset
+                Properties:
+                  AccessibleLabel: =Parent.DisplayName
+                  DefaultSelectedItems: =[Parent.Default]
+                  Items: =Choices('Resource Type (Resources_1)')
+                  Required: =Parent.Required
+                  ValidationState: =If(IsBlank(Parent.Error), "None", "Error")
+                  DisplayMode: =Parent.DisplayMode
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =DataCardKey23.Y + DataCardKey23.Height + 4
+            - DataCardKey23:
+                Control: Text
+                Properties:
+                  Text: =Parent.DisplayName
+                  Weight: ='TextCanvas.Weight'.Semibold
+                  Wrap: =false
+                  Height: =22
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =10
+        - Tags_DataCard4:
+            Control: TypedDataCard
+            Variant: fluentV9TextualEditCard
+            Properties:
+              DataField: ="cr33b_tags"
+              Default: =ThisItem.Tags
+              DisplayName: =DataSourceInfo([@Resources_1],DataSourceInfo.DisplayName,Tags)
+              MaxLength: =DataSourceInfo([@Resources_1], DataSourceInfo.MaxLength, Tags)
+              Update: =DataCardValue24.Value
+              DisplayMode: =Parent.DisplayMode
+              Height: =70
+              Width: =266
+              X: =2
+              Y: =1
+            Children:
+            - StarVisible27:
+                Control: Text
+                Properties:
+                  Align: ='TextCanvas.Align'.Center
+                  Text: ="*"
+                  Height: =30
+                  Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                  Width: =30
+                  Y: =DataCardKey24.Y
+            - ErrorMessage27:
+                Control: Text
+                Properties:
+                  Text: =Parent.Error
+                  Height: =30
+                  Visible: =And(!IsBlank(Parent.Error), Parent.DisplayMode=DisplayMode.Edit)
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =DataCardValue24.Y + DataCardValue24.Height
+            - DataCardValue24:
+                Control: TextInput
+                Properties:
+                  AccessibleLabel: =Parent.DisplayName
+                  Mode: ="'TextInputCanvas.Mode'.TextInputModeSingleLine"
+                  Required: =Parent.Required
+                  ValidationState: =If(IsBlank(Parent.Error), "None", "Error")
+                  Value: =Parent.Default
+                  DisplayMode: =Parent.DisplayMode
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =DataCardKey24.Y + DataCardKey24.Height + 4
+            - DataCardKey24:
+                Control: Text
+                Properties:
+                  Text: =Parent.DisplayName
+                  Weight: ='TextCanvas.Weight'.Semibold
+                  Wrap: =false
+                  Height: =22
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =10
+        - Type_DataCard1:
+            Control: TypedDataCard
+            Variant: fluentV9ComboBoxOptionSetSingleEditCard
+            Properties:
+              DataField: ="cr33b_type"
+              Default: =ThisItem.Type
+              DisplayName: =DataSourceInfo([@Resources_1],DataSourceInfo.DisplayName,Type)
+              Update: =DataCardValue29.Selected.Value
+              DisplayMode: =Parent.DisplayMode
+              Height: =70
+              Width: =266
+              Y: =2
+            Children:
+            - StarVisible28:
+                Control: Text
+                Properties:
+                  Align: ='TextCanvas.Align'.Center
+                  Text: ="*"
+                  Height: =20
+                  Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                  Width: =30
+                  Y: =DataCardKey29.Y
+            - ErrorMessage28:
+                Control: Text
+                Properties:
+                  Text: =Parent.Error
+                  Height: =30
+                  Visible: =And(!IsBlank(Parent.Error), Parent.DisplayMode=DisplayMode.Edit)
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =DataCardValue29.Y + DataCardValue29.Height
+            - DataCardValue29:
+                Control: ComboBox
+                Variant: pcfdataset
+                Properties:
+                  AccessibleLabel: =Parent.DisplayName
+                  DefaultSelectedItems: =[Parent.Default]
+                  Items: =Choices('Type (Resources_1)')
+                  Required: =Parent.Required
+                  ValidationState: =If(IsBlank(Parent.Error), "None", "Error")
+                  DisplayMode: =Parent.DisplayMode
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =DataCardKey29.Y + DataCardKey29.Height + 4
+            - DataCardKey29:
+                Control: Text
+                Properties:
+                  Text: =Parent.DisplayName
+                  Weight: ='TextCanvas.Weight'.Semibold
+                  Wrap: =false
+                  Height: =22
+                  Width: =Parent.Width - 48
+                  X: =24
+                  Y: =10
