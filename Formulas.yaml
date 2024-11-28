@@ -1,0 +1,87 @@
+ValidateName(Name: Text, Type: Text): Text = 
+   With({ 
+            ResourcePattern: "^[a-zA-Z0-9\-\_\.]{3,90}$",
+            ResourceGroupPattern: "^[a-zA-Z0-9\-\_]{3,90}$",
+            MinLength: If(Type = "ResourceGroup", 1, 3), 
+            MaxLength: 90
+   },
+    With(
+        {
+           Pattern: If(Type = "ResourceGroup", ResourceGroupPattern, ResourcePattern),
+            LengthValid: Len(Name) >= MinLength && Len(Name) <= MaxLength,
+            RegexValid: If(
+            Type = "ResourceGroup",
+            IsMatch(Name, "^[a-zA-Z0-9\-\_]{3,90}$"),
+            IsMatch(Name, "^[a-zA-Z0-9\-\_\.]{3,90}$")
+            )
+        },
+        If(
+            !RegexValid, 
+            "Invalid: Name contains invalid characters.", 
+            If(
+                !LengthValid, 
+                "Invalid: Name must be between " & MinLength & " and " & MaxLength & " characters.", 
+                "Valid"
+            )
+        )
+   ));
+
+dataResources =ForAll(
+    Table(ParseJSON(AzureData.Resources)) As Resourcess,
+        {
+            // Extracting other properties from the JSON
+            id: Substitute(Text(JSON(Resourcess.Value.id)), """", ""),
+            name: Substitute(Text(JSON(Resourcess.Value.name)), """", ""),
+            location: Substitute(Text(JSON(Resourcess.Value.location)), """", ""),
+            skuName: Substitute(Text(JSON(Resourcess.Value.skuName)), """", ""),
+            skuTier: Substitute(Text(JSON(Resourcess.Value.skuTier)), """", ""),
+            tags: Substitute(Text(JSON(Resourcess.Value.tags)), """", "")
+        }
+    
+);
+
+dataResourceGroups =ForAll(
+    Table(ParseJSON(AzureData.resourcegroups)) As Resourcess,
+        {
+            // Extracting other properties from the JSON
+            id: Substitute(Text(JSON(Resourcess.Value.id)), """", ""),
+            name: Substitute(Text(JSON(Resourcess.Value.name)), """", ""),
+            location: Substitute(Text(JSON(Resourcess.Value.location)), """", ""),
+            properties: Substitute(Text(JSON(Resourcess.Value.properties)), """", ""),
+            tags: Substitute(Text(JSON(Resourcess.Value.tags)), """", "")
+        }
+    
+);
+
+dataLocations =ForAll(
+    Table(ParseJSON(AzureData.Locations)) As Resourcess,
+        {
+            // Extracting other properties from the JSON
+            name: Substitute(Text(JSON(Resourcess.Value.name)), """", ""),
+            displayName: Substitute(Text(JSON(Resourcess.Value.displayName)), """", "")
+        }
+    
+);
+
+dataSubscriptions = ForAll(
+   Table(ParseJSON(AzureData.subscriptions)) As Subscriptions,
+       {
+            id: Substitute(Text(JSON(Subscriptions.Value.id)),"""",""),
+            authorizationSource:Substitute(Text(JSON(Subscriptions.Value.authorizationSource)),"""",""),
+            subscriptionId: Substitute(Text(JSON(Subscriptions.Value.subscriptionId)),"""",""),
+            displayName: Substitute(Text(JSON(Subscriptions.Value.displayName)),"""",""),
+            state: Substitute(Text(JSON(Subscriptions.Value.state)),"""",""),
+            subscriptionPolicies: Text(JSON(Subscriptions.Value.subscriptionPolicies))
+        }
+);
+
+tags = ForAll(
+    Table(ParseJSON(AzureData.tags)) As Tags,
+        {
+            // Extracting other properties from the JSON
+            id: Substitute(Text(JSON(Tags.Value.Id)), """", ""),
+            tagName: Substitute(Text(JSON(Tags.Value.tagName)), """", ""),
+            tagValues: Substitute(Text(JSON(Tags.Value.tagValues)), """", "")
+        }
+    
+);
