@@ -1,0 +1,16 @@
+//second part
+ForAll(
+    Filter(Split(Substitute(ThisItem.variableContent, Char(10), ""), "},"), "object(" in Value) As Objects,
+    With(
+        {
+            // Step 1: Locate the Start of "object({" and Remove It
+            cleanedObject:
+                Mid(
+                    Objects.Value,
+                    Find("object({", Objects.Value) + Len("object({"),
+                    Len(Objects.Value) - Find("object({", Objects.Value) - Len("object({") + 1
+                )
+        },
+       Trim(cleanedObject)
+    )
+)
