@@ -1,0 +1,51 @@
+// Step 1: Split the file into lines and index them
+ClearCollect(
+    colIndexedLines1,
+        ForAll( Filter(
+            Split(terraformFile, Char(10)),
+            !IsBlank(Trim(Value)) 
+        ),Value)
+
+    );
+/*ClearCollect(
+    colIndexedLines,
+    AddColumns(
+        Filter(
+            Split(terraformFile, Char(10)),
+            !IsBlank(Trim(Value)) 
+        ),
+        LineNumber, CountRows(Filter(
+            Split(terraformFile, Char(10)),
+            !IsBlank(Trim(Value))
+        )) + 1
+    )
+);*/
+ClearCollect(
+    colIndexedLines,
+    ForAll(
+        Sequence(CountRows(colIndexedLines1)),
+        Patch(
+            Last(FirstN(colIndexedLines1, Value)),
+            {
+                LineNumber: Value
+            }
+        )
+    )
+);
+// Step 2: Identify variable start lines and extract variable names
+ClearCollect(
+    colVariableStarts,
+    AddColumns(
+        Filter(
+            colIndexedLines,
+            StartsWith(Trim(Value), "variable ")
+        ),
+        VariableName, 
+        Mid(
+            Value,
+            Find("""", Value) + 1,
+            Find("""", Value, Find("""", Value) + 1) - Find("""", Value) - 1
+        ),
+        StartLineNumber, LineNumber
+    )
+);
