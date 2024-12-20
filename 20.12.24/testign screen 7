@@ -1,0 +1,1978 @@
+- Screen7:
+    Control: Screen
+    Children:
+    - ButtonCanvas17:
+        Control: Button
+        Properties:
+          OnSelect: |-
+            =// Step 2: Assign Parent Wrappers and Wrapper Relationships
+            Clear(colParsedRows);
+
+            ForAll(
+                tfBreak1 As topRow,
+                Collect(
+                    colParsedRows,
+                    ForAll(
+                        Filter(
+                            tfBreak1,
+                            indentLevel > topRow.indentLevel && sectionName = topRow.sectionName
+                        ) As innerRow,
+                        With(
+                            {
+                                parentWrapper: LookUp(
+                                    tfBreak1,
+                                    indentLevel < innerRow.indentLevel &&
+                                    indentLevel = First(
+                                        Sort(
+                                            Filter(
+                                                tfBreak1,
+                                                indentLevel < innerRow.indentLevel && sectionName = innerRow.sectionName
+                                            ),
+                                            indentLevel,
+                                            SortOrder.Descending
+                                        )
+                                    ).indentLevel,
+                                    key
+                                ),
+                                startWrapper: LookUp(
+                                    tfBreak1,
+                                    indentLevel < innerRow.indentLevel &&
+                                    indentLevel = First(
+                                        Sort(
+                                            Filter(
+                                                tfBreak1,
+                                                indentLevel < innerRow.indentLevel && sectionName = innerRow.sectionName
+                                            ),
+                                            indentLevel,
+                                            SortOrder.Descending
+                                        )
+                                    ).indentLevel,
+                                    detectedWrapper
+                                )
+                            },
+                            {
+                                sectionName: innerRow.sectionName,
+                                indentLevel: innerRow.indentLevel,
+                                key: innerRow.key,
+                                value: innerRow.value,
+                                detectedWrapper: innerRow.detectedWrapper,
+                                isStartWrapper: innerRow.isStartWrapper,
+                                isEndWrapper: innerRow.isEndWrapper,
+                                parentWrapper: parentWrapper,
+                                startWrapper: startWrapper
+                            }
+                        )
+                    )
+                )
+            );
+          BasePaletteColor: =RGBA(21, 66, 21, 1)
+          X: =664
+          Y: =143
+    - ButtonCanvas16:
+        Control: Button
+        Properties:
+          OnSelect: "=  \r\n  Clear(colFlatRows);\r\n  \r\n  ForAll(\r\n        Filter(\r\n            Split(terraformFile, \"# --------------------------------------------------------- #\"),\r\n            Len(Trim(ThisRecord.Value)) > 0 // Exclude empty sections\r\n        ) As sections,Collect(\r\n    colFlatRows,\r\n  \r\n        ForAll(\r\n            Filter(\r\n                Split(sections.Value, Char(10)),\r\n                Len(Trim(Value)) > 0 // Exclude empty lines\r\n            ) As Line,\r\n            With(\r\n                {\r\n                    indentLevel: Len(Line.Value) - Len(Trim(Line.Value)), // Calculate indentation\r\n                    key: If(\r\n                        \" = \" in Line.Value,\r\n                        Trim(First(Split(Line.Value, \" = \")).Value),\r\n                        Blank()\r\n                    ),\r\n                    value: If(\r\n                        \" = \" in Line.Value,\r\n                        Trim(Last(Split(Line.Value, \" = \")).Value),\r\n                        Blank()\r\n                    ),\r\n                    isStartWrapper: \"object(\" in Line.Value || \"map(\" in Line.Value || \"optional(\" in Line.Value,\r\n                    isEndWrapper: Find(\"})\", Line.Value) > 0 || Find(\"}\", Line.Value) > 0,\r\n                    detectedWrapper: If(\r\n                        \"object(\" in Line.Value,\r\n                        \"object\",\r\n                        If(\r\n                            \"map(\" in Line.Value,\r\n                            \"map\",\r\n                            If(\"optional(\" in Line.Value, \"optional\", Blank())\r\n                        )\r\n                    ), \r\n                    currentWrapperField: If(\"object(\" in Line.Value || \"map(\" in Line.Value || \"optional(\" in Line.Value, If( \" = \" in Line.Value, Trim(First(Split(Line.Value, \" = \")).Value), Blank() ), Blank())\r\n                },\r\n                {\r\n                    sectionName: Text(\r\n                        Mid(\r\n                            sections.Value,\r\n                            Find(\"\"\"\", sections.Value) + 1,\r\n                            Find(\"\"\"\", Mid(sections.Value, Find(\"\"\"\", sections.Value) + 1)) - 1\r\n                        )\r\n                    ),\r\n                    indentLevel: indentLevel,\r\n                    key: key,\r\n                    value: value,\r\n                    detectedWrapper: detectedWrapper,\r\n                    isStartWrapper: isStartWrapper,\r\n                    isEndWrapper: isEndWrapper, \r\n                    currentWrapperField:currentWrapperField\r\n                }\r\n            )\r\n        )\r\n    )\r\n);\r\n\r\n// Step 2: Propagate the Wrapper Field\r\nClear(colParsedRows);\r\n\r\nForAll(\r\n    colFlatRows As topRow,\r\n    Collect(\r\n        colParsedRows,\r\n        ForAll(\r\n            Filter(\r\n                colFlatRows,\r\n                sectionName = topRow.sectionName\r\n            ) As innerRow,\r\n            With(\r\n                {\r\n                    // Track the current wrapper field based on indentation and start/end\r\n                    wrapperField: If(\r\n                        innerRow.isStartWrapper,\r\n                        innerRow.key, // Start a new wrapper\r\n                        If(\r\n                            innerRow.isEndWrapper,\r\n                            Blank(), // Clear wrapper when ending\r\n                            LookUp(\r\n                                colFlatRows,\r\n                                indentLevel < innerRow.indentLevel && sectionName = innerRow.sectionName,\r\n                                currentWrapperField\r\n                            )\r\n                        )\r\n                    )\r\n                },\r\n                {\r\n                    sectionName: innerRow.sectionName,\r\n                    indentLevel: innerRow.indentLevel,\r\n                    key: innerRow.key,\r\n                    value: innerRow.value,\r\n                    detectedWrapper: innerRow.detectedWrapper,\r\n                    isStartWrapper: innerRow.isStartWrapper,\r\n                    isEndWrapper: innerRow.isEndWrapper,\r\n                    wrapperField: wrapperField\r\n                }\r\n            )\r\n        )\r\n    )\r\n);"
+          BasePaletteColor: =RGBA(8, 222, 8, 1)
+          X: =664
+          Y: =103
+    - ButtonCanvas12_3:
+        Control: Button
+        Properties:
+          OnSelect: |-
+            =
+            Clear(colParsedRows);
+            // Step 1: Parse Rows with Initial Data
+            ClearCollect(
+                colFlatRows,
+                ForAll(
+                    Filter(
+                        Split(terraformFile, "# --------------------------------------------------------- #"),
+                        Len(Trim(ThisRecord.Value)) > 0 // Exclude empty sections
+                    ) As sections,
+                    ForAll(
+                        Filter(
+                            Split(sections.Value, Char(10)),
+                            Len(Trim(Value)) > 0 // Exclude empty lines
+                        ) As Line,
+                        With(
+                            {
+                                indentLevel: Len(Line.Value) - Len(Trim(Line.Value)), // Calculate indentation
+                                key: If(
+                                    " = " in Line.Value,
+                                    Trim(First(Split(Line.Value, " = ")).Value),
+                                    Blank()
+                                ),
+                                value: If(
+                                    " = " in Line.Value,
+                                    Trim(Last(Split(Line.Value, " = ")).Value),
+                                    Blank()
+                                ),
+                                isObject: "object(" in Line.Value,
+                                isMap: "map(" in Line.Value,
+                                isOptional: "optional(" in Line.Value,
+                                isStartOfStructure: Find("(", Line.Value) > 0,
+                                isEndOfStructure: Find("})", Line.Value) > 0 || Find("}", Line.Value) > 0,
+                                detectedWrapper: If(
+                                    "object(" in Line.Value,
+                                    "object",
+                                    If(
+                                        "map(" in Line.Value,
+                                        "map",
+                                        If("optional(" in Line.Value, "optional", Blank())
+                                    )
+                                )
+                            },
+                            {
+                                sectionName: Text(
+                                    Mid(
+                                        sections.Value,
+                                        Find("""", sections.Value) + 1,
+                                        Find("""", Mid(sections.Value, Find("""", sections.Value) + 1)) - 1
+                                    )
+                                ),
+                                indentLevel: indentLevel,
+                                key: key,
+                                value: value,
+                                detectedWrapper: detectedWrapper
+                            }
+                        )
+                    )
+                )
+            );
+            Clear(colParsedRows);
+            // Step 2: Assign Parent Wrappers
+            ForAll(
+                colFlatRows As topRow,
+                Collect(
+                    colParsedRows,
+                    ForAll(topRow.Value As innerRow, With(
+                        {
+                            parentWrapper: LookUp(
+                                topRow.Value,
+                                indentLevel < innerRow.indentLevel && indentLevel = First(Sort(Filter(topRow.Value, indentLevel < innerRow.indentLevel && key <> Blank()), indentLevel, SortOrder.Descending)).indentLevel,
+                                key
+                            ),
+                            topWrapper: LookUp(
+                                topRow.Value,
+                                indentLevel < innerRow.indentLevel && indentLevel = First(Sort(Filter(topRow.Value, indentLevel = 0 && key <> Blank()), indentLevel, SortOrder.Descending)).indentLevel,
+                                key
+                            ),
+
+                            defaultValue: If("optional(map" in innerRow.value || "optional(object" in innerRow.value,
+                                Text(Mid(innerRow.value, Find(",", innerRow.value) + 1,
+                                    Len(innerRow.value) - Find(",", innerRow.value))), Blank())
+                        },
+                        {
+                            sectionName: innerRow.sectionName,
+                            indentLevel: innerRow.indentLevel,
+                            key: innerRow.key,
+                            value: innerRow.value,
+                            detectedWrapper: innerRow.detectedWrapper,
+                            parentWrapper: parentWrapper,
+                            topWrapper: topWrapper, 
+                            defaultValue: defaultValue
+                        }
+                    )
+                    )
+                )
+            );
+          Text: ="variable and types"
+          Height: =60
+          X: =975
+          Y: =439
+    - ButtonCanvas15:
+        Control: Button
+        Properties:
+          OnSelect: |-
+            =ClearCollect(
+                colParsedData,
+                ForAll(
+                    Filter(
+                        Split(terraformFile, "# --------------------------------------------------------- #"),
+                        Len(Trim(ThisRecord.Value)) > 0 // Exclude empty sections
+                    ) As sections,
+                    ForAll(
+                        Filter(
+                            Split(sections.Value, Char(10)),
+                            Len(Trim(Value)) > 0 // Exclude empty lines
+                        ) As Line,
+                        With(
+                            {
+                                indentLevel: Len(Line.Value) - Len(Trim(Line.Value)), // Calculate indentation
+                                key: If(
+                                    " = " in Line.Value,
+                                    Trim(First(Split(Line.Value, " = ")).Value),
+                                    Blank()
+                                ),
+                                value: If(
+                                    " = " in Line.Value,
+                                    Trim(Last(Split(Line.Value, " = ")).Value),
+                                    Blank()
+                                ),
+                                detectedWrapper: If(
+                                    "object(" in Line.Value,
+                                    "object",
+                                    If(
+                                        "map(" in Line.Value,
+                                        "map",
+                                        If("optional(" in Line.Value, "optional", Blank())
+                                    )
+                                ),
+
+                                // Wrapping Logic: Assign dynamic wrapper columns
+                                topWrapper: If(
+                                    indentLevel = 0,
+                                    key, // First-level wrapper
+                                    LookUp(
+                                        colParsedData,
+                                        indentLevel = Max(Filter(colParsedData, indentLevel < ThisRecord.indentLevel).indentLevel),
+                                        key
+                                    )
+                                ),
+                                secondWrapper: If(
+                                    indentLevel = 1,
+                                    key,
+                                    LookUp(
+                                        colParsedData,
+                                        indentLevel = Max(Filter(colParsedData, indentLevel < ThisRecord.indentLevel).indentLevel - 1),
+                                        key
+                                    )
+                                )
+                            },
+                            {
+                                sectionName: Text(
+                                    Mid(
+                                        sections.Value,
+                                        Find("""", sections.Value) + 1,
+                                        Find("""", Mid(sections.Value, Find("""", sections.Value) + 1)) - 1
+                                    )
+                                ),
+                                indentLevel: indentLevel,
+                                key: key,
+                                value: value,
+                                detectedWrapper: detectedWrapper,
+                                topWrapper: topWrapper,
+                                secondWrapper: secondWrapper
+                            }
+                        )
+                    )
+                )
+            );
+          X: =1071
+          Y: =543
+    - ButtonCanvas14:
+        Control: Button
+        Properties:
+          OnSelect: |-
+            =// Step 1: Parse Rows with Initial Data
+            ClearCollect(
+                colFlatRows,
+                ForAll(
+                    Filter(
+                        Split(terraformFile, "# --------------------------------------------------------- #"),
+                        Len(Trim(ThisRecord.Value)) > 0 // Exclude empty sections
+                    ) As sections,
+                    ForAll(
+                        Filter(
+                            Split(sections.Value, Char(10)),
+                            Len(Trim(Value)) > 0 // Exclude empty lines
+                        ) As Line,
+                        With(
+                            {
+                                indentLevel: Len(Line.Value) - Len(Trim(Line.Value)), // Calculate indentation
+                                key: If(
+                                    " = " in Line.Value,
+                                    Trim(First(Split(Line.Value, " = ")).Value),
+                                    Blank()
+                                ),
+                                value: If(
+                                    " = " in Line.Value,
+                                    Trim(Last(Split(Line.Value, " = ")).Value),
+                                    Blank()
+                                ),
+                                isObject: "object(" in Line.Value,
+                                isMap: "map(" in Line.Value,
+                                isOptional: "optional(" in Line.Value,
+                                detectedWrapper: If(
+                                    "object(" in Line.Value,
+                                    "object",
+                                    If(
+                                        "map(" in Line.Value,
+                                        "map",
+                                        If("optional(" in Line.Value, "optional", Blank())
+                                    )
+                                )
+                            },
+                            {
+                                sectionName: Text(
+                                    Mid(
+                                        sections.Value,
+                                        Find("""", sections.Value) + 1,
+                                        Find("""", Mid(sections.Value, Find("""", sections.Value) + 1)) - 1
+                                    )
+                                ),
+                                indentLevel: indentLevel,
+                                key: key,
+                                value: value,
+                                detectedWrapper: detectedWrapper
+                            }
+                        )
+                    )
+                )
+            );
+
+            // Step 2: Assign Parent Wrappers
+            ForAll(
+                colFlatRows As topRow,
+                Collect(
+                    colParsedRows,
+                    ForAll(
+                        topRow.Value As innerRow,
+                        With(
+                            {
+                                // Calculate the indentation level
+                                indentLevel: Len(innerRow.value) - Len(Trim(innerRow.value)),
+
+                                // Extract key and value
+                                key: If(
+                                    " = " in innerRow.value,
+                                    Trim(First(Split(innerRow.value, " = ")).Value),
+                                    Blank()
+                                ),
+                                value: If(
+                                    " = " in innerRow.value,
+                                    Trim(Last(Split(innerRow.value, " = ")).Value),
+                                    Blank()
+                                ),
+
+                                // Detect wrapper type
+                                detectedWrapper: If(
+                                    "object(" in innerRow.value,
+                                    "object",
+                                    If(
+                                        "map(" in innerRow.value,
+                                        "map",
+                                        If("optional(" in innerRow.value, "optional", Blank())
+                                    )
+                                ),
+
+                                // Find the parent wrapper by looking for the closest higher-level key
+                                parentWrapper: LookUp(
+                                    topRow.Value,
+                                    indentLevel < Len(innerRow.value) - Len(Trim(innerRow.value)) &&
+                                    indentLevel = First(
+                                        Sort(
+                                            Filter(
+                                                topRow.Value,
+                                                indentLevel < Len(innerRow.value) - Len(Trim(innerRow.value))
+                                            ),
+                                            indentLevel,
+                                            SortOrder.Descending
+                                        )
+                                    ).indentLevel,
+                                    key
+                                ), 
+                                defaultValue: If(  "optional(map" in innerRow.value ||  "optional(object" in innerRow.value , 
+                                Text( Mid(innerRow.value, Find(",",innerRow.value) +1 , 
+                                Len(innerRow.value) - Find(",", innerRow.value) )),Blank())
+                            },
+                            {
+                                // Extract and include all necessary fields
+                                sectionName: First(topRow.Value).sectionName,
+                                indentLevel: indentLevel,
+                                key: key,
+                                value: value,
+                                detectedWrapper: detectedWrapper,
+                                parentWrapper: parentWrapper, 
+                                defaultValue:defaultValue
+                            }
+                        )
+                    )
+                )
+            );
+          X: =1230
+          Y: =575
+    - ButtonCanvas13:
+        Control: Button
+        Properties:
+          OnSelect: |-
+            =ForAll(
+                colFlatRows As topRow,
+                Collect(
+                    colParsedRows,
+                    ForAll(topRow.Value As innerRow, With(
+                        {
+                            parentWrapper: LookUp(
+                                topRow.Value,
+                                indentLevel < innerRow.indentLevel && indentLevel = First(Sort(Filter(topRow.Value, indentLevel < innerRow.indentLevel),SortOrder.Ascending)).indentLevel,
+                                key
+                            )
+                        },
+                        {
+                            sectionName: innerRow.sectionName,
+                            indentLevel: innerRow.indentLevel,
+                            key: innerRow.key,
+                            value: innerRow.value,
+                            detectedWrapper: innerRow.detectedWrapper,
+                            parentWrapper: parentWrapper
+                        }
+                    )
+                    )
+                )
+            );
+          X: =1210
+          Y: =497
+    - ButtonCanvas12_2:
+        Control: Button
+        Properties:
+          OnSelect: |-
+            =// Step 1: Parse Rows with Initial Data
+            ClearCollect(
+                colFlatRows,
+                ForAll(
+                    Filter(
+                        Split(terraformFile, "# --------------------------------------------------------- #"),
+                        Len(Trim(ThisRecord.Value)) > 0 // Exclude empty sections
+                    ) As sections,
+                    ForAll(
+                        Filter(
+                            Split(sections.Value, Char(10)),
+                            Len(Trim(Value)) > 0 // Exclude empty lines
+                        ) As Line,
+                        With(
+                            {
+                                indentLevel: Len(Line.Value) - Len(Trim(Line.Value)), // Calculate indentation
+                                key: If(
+                                    " = " in Line.Value,
+                                    Trim(First(Split(Line.Value, " = ")).Value),
+                                    Blank()
+                                ),
+                                value: If(
+                                    " = " in Line.Value,
+                                    Trim(Last(Split(Line.Value, " = ")).Value),
+                                    Blank()
+                                ),
+                                isObject: "object(" in Line.Value,
+                                isMap: "map(" in Line.Value,
+                                isOptional: "optional(" in Line.Value,
+                                isStartOfStructure: Find("(", Line.Value) > 0,
+                                isEndOfStructure: Find("})", Line.Value) > 0 || Find("}", Line.Value) > 0,
+                                detectedWrapper: If(
+                                    "object(" in Line.Value,
+                                    "object",
+                                    If(
+                                        "map(" in Line.Value,
+                                        "map",
+                                        If("optional(" in Line.Value, "optional", Blank())
+                                    )
+                                )
+                            },
+                            {
+                                sectionName: Text(
+                                    Mid(
+                                        sections.Value,
+                                        Find("""", sections.Value) + 1,
+                                        Find("""", Mid(sections.Value, Find("""", sections.Value) + 1)) - 1
+                                    )
+                                ),
+                                indentLevel: indentLevel,
+                                key: key,
+                                value: value,
+                                detectedWrapper: detectedWrapper
+                            }
+                        )
+                    )
+                )
+            );
+
+            // Step 2: Assign Parent Wrappers
+            ForAll(
+                colFlatRows As topRow,
+                Collect(
+                    colParsedRows,
+                    ForAll(topRow.Value As innerRow, With(
+                        {
+                            parentWrapper: LookUp(
+                                topRow.Value,
+                                indentLevel < innerRow.indentLevel && indentLevel = First(Sort(Filter(topRow.Value, indentLevel < innerRow.indentLevel),SortOrder.Ascending)).indentLevel,
+                                key
+                            )
+                        },
+                        {
+                            sectionName: innerRow.sectionName,
+                            indentLevel: innerRow.indentLevel,
+                            key: innerRow.key,
+                            value: innerRow.value,
+                            detectedWrapper: innerRow.detectedWrapper,
+                            parentWrapper: parentWrapper
+                        }
+                    )
+                    )
+                )
+            );
+          Text: ="variable and types"
+          Height: =60
+          X: =1240
+          Y: =292
+    - ButtonCanvas12_1:
+        Control: Button
+        Properties:
+          OnSelect: |-
+            =ClearCollect(colTFdata3,
+                ForAll(
+                    Filter(
+                        Split(terraformFile, "# --------------------------------------------------------- #"),
+                        Len(Trim(ThisRecord.Value)) > 0 // Exclude empty sections
+                    ),
+                    With(
+                        {
+                            // Step 2: Extract Variable Name
+                            variableName: Text(
+                                Mid(
+                                    ThisRecord.Value,
+                                    Find("""", ThisRecord.Value) + 1,
+                                    Find("""", Mid(ThisRecord.Value, Find("""", ThisRecord.Value) + 1)) - 1
+                                )
+                            ),
+
+                            // Step 4: Split Block into Lines (Retain Indentation)  -> Parse Lines and Track Nesting
+                            parsedContent: ForAll(
+                                Filter(
+                                    Split(ThisRecord.Value, Char(10)),
+                                    Len(Trim(Value)) > 0 // Exclude empty lines
+                                ) As Line,
+                                With(
+                                    {
+                                        // Step 4.1: Calculate Indentation Level
+                                        indentLevel: Len(Line.Value) - Len(Trim(Line.Value)),
+
+                                        // Step 4.2: Identify Line Content
+                                        isObject: "object(" in Line.Value,
+                                        isMap: "map(" in Line.Value,
+                                        isOptional: "optional(" in Line.Value,
+                                        isStartOfStructure: Find("(", Line.Value) > 0,
+                                        isEndOfStructure: Find("})", Line.Value) > 0 || Find("}", Line.Value) > 0,
+
+                                        // Step 4.3: Extract Key and Value
+                                        keyValuePair: If(
+                                            " = " in Line.Value,
+                                            Split(Line.Value, " = "),
+                                            Blank()
+                                        ),
+                                        key: If(
+                                            !IsBlank(If( " = " in Line.Value, Split(Line.Value, " = "), Blank() )),
+                                            Trim(First(If( " = " in Line.Value, Split(Line.Value, " = "), Blank() )).Value),
+                                            Blank()
+                                        ),
+                                        value: If(
+                                            !IsBlank(If( " = " in Line.Value, Split(Line.Value, " = "), Blank() )),
+                                            Trim(Last(If( " = " in Line.Value, Split(Line.Value, " = "), Blank() )).Value),
+                                            Blank()
+                                        )
+                                    },
+                                    {
+                                        key: key,
+                                        value: value,
+                                        indentLevel: indentLevel,
+                                        isObject: isObject,
+                                        isMap: isMap,
+                                        isOptional: isOptional,
+                                        isStartOfStructure: isStartOfStructure,
+                                        isEndOfStructure: isEndOfStructure,
+                                        parentKey: "" // Placeholder for grouping later
+                                    }
+                                )
+                            )
+                        },
+                        {
+                            variableName: variableName,
+                            parsedContent: parsedContent
+                        }
+                    )
+                )
+            );
+          Text: ="variable and types"
+          Height: =60
+          X: =1230
+          Y: =167
+    - ButtonCanvas12:
+        Control: Button
+        Properties:
+          OnSelect: |-
+            =ClearCollect(colTFdata2,
+                ForAll(
+                    Filter(
+                        Split(terraformFile, "# --------------------------------------------------------- #"),
+                        Len(Trim(ThisRecord.Value)) > 0 // Exclude empty sections
+                    ),
+                    With(
+                        {
+                            // Step 1: Extract Variable Block
+                            //Trim(ThisRecord.Value): Trim(ThisRecord.Value),
+
+                            // Step 2: Extract Variable Name
+                            variableName: Text(
+                                Mid(
+                                    Trim(ThisRecord.Value),
+                                    Find("""", Trim(ThisRecord.Value)) + 1,
+                                    Find("""", Mid(Trim(ThisRecord.Value), Find("""", Trim(ThisRecord.Value)) + 1)) - 1
+                                )
+                            ),
+
+                            // Step 3: Split into Lines for Processing
+                            //variableLines: Split(Trim(ThisRecord.Value), Char(10)),
+
+                            // Step 4: Parse Nested Structures Using Indentation
+                            nestedContent: ForAll(
+                                Filter(
+                                    Split(Trim(ThisRecord.Value), Char(10)),
+                                    Len(Trim(Value)) > 0 && !StartsWith(Value, "#") // Exclude empty and comment lines
+                                ) As Line,
+                                With(
+                                    {
+                                        // Identify Current Indentation Level
+                                        indentLevel: Len(Line.Value) - Len(Trim(Line.Value)),
+
+                                        // Check if Line Contains a Nested Structure
+                                        isObject: "object(" in Line.Value,
+                                        isMap: "map(" in Line.Value,
+                                        isList: "list(" in Line.Value,
+
+                                        // Extract Key and Value
+                                        //keyValuePair: If( " = " in Line.Value, Split(Line.Value, " = "), Blank() ),
+
+                                        key: If(
+                                            !IsBlank(If( " = " in Line.Value, Split(Line.Value, " = "), Blank() )),
+                                            Trim(First(If( " = " in Line.Value, Split(Line.Value, " = "), Blank() )).Value),
+                                            Blank()
+                                        ),
+
+                                        value: If(
+                                            !IsBlank(If( " = " in Line.Value, Split(Line.Value, " = "), Blank() )),
+                                            Trim(Last(If( " = " in Line.Value, Split(Line.Value, " = "), Blank() )).Value),
+                                            Blank()
+                                        ),
+
+                                        // Determine Closing Bracket for Nested Structures
+                                        isEndOfStructure: Right(Trim(Value), 1) = "}"
+                                    },
+                                    {
+                                        key: key,
+                                        value: value,
+                                        indentLevel: indentLevel,
+                                        isObject: isObject,
+                                        isMap: isMap,
+                                        isList: isList,
+                                        isEndOfStructure: isEndOfStructure
+                                    }
+                                )
+                            )
+                        },
+                        {
+                            variableName: variableName,
+                            nestedContent: nestedContent
+                        }
+                    )
+                )
+            );
+          Text: ="variable and types"
+          Height: =60
+          X: =1210
+    - TextCanvas13:
+        Control: Text
+        Properties:
+          Text: =Len("----------")
+          X: =442
+          Y: =116
+    - TextCanvas12:
+        Control: Text
+        Properties:
+          Fill: =RGBA(255, 184, 174, 1)
+          Text: |-
+            ="
+            # Updated ON: 01.10.24
+            # Updated BY: Eduard Gurman
+            # ---------------- Base Name -------------------- #
+            ## Need to check limits on the frontend - VM limits 15 characters
+            variable ""base_name"" {
+              type = string
+            }
+            variable ""enviroment_short_name"" {
+              type = string
+              validation {
+                condition     = contains([""dev"", ""stag"", ""prod"", ""poc"", """"], var.enviroment_short_name)
+                error_message = ""Valid values for var: enviroment_short_name are (dev, stag, prod, poc).""
+              }
+            }
+            # --------------------------------------------------------- #
+            # ---------------- Location -------------------- #
+            ## Should be set by the selected subscription\RG in the frontend
+            variable ""location"" {
+              type        = string
+              description = ""Region where in which the resources will be deployed""
+            }
+            # --------------------------------------------------------- #
+            # ---------------- Resource Groups -------------------- #
+            variable ""deployment_resource_group_name"" {
+              type        = string
+              description = ""Name of the resource group where the resources will be deployed - needed if RG is not created in the same deployment""
+              default     = null
+              nullable    = true
+            }
+            # --------------------------------------------------------- #
+
+            # ---------------- Providers Subscriptions -------------------- #
+            variable ""deployment_subscription_id"" {
+              type        = string
+              description = ""Subscription ID in which the resources will be deployed""
+              #Used in main for provider
+            }
+            variable ""management_subscription_id"" {
+              type        = string
+              default     = ""5f106ae9-0794-4702-a5ee-cbed11a70019""
+              description = ""Subscription ID in which the KeyVaults are located""
+              #Used in main for provider
+            }
+            variable ""monitoring_subscription_id"" {
+              type        = string
+              default     = ""1a101401-e138-41f3-9784-28164684d577""
+              description = ""Subscription ID in which the Log Analytics are located""
+              #Used in main for provider
+            }
+            # --------------------------------------------------------- #
+            # ---------------- Modules -------------------- #
+            variable ""RG"" {
+              type = object({
+                tags                               = map(string)
+                group_names_permission_reader      = optional(list(string), [])
+                group_names_permission_contributor = optional(list(string), [])
+                bypass_resource_group_name         = optional(string, null)
+              })
+
+              default = null
+
+              nullable = true
+            }
+            # --------------------------------------------------------- #
+
+            variable ""Storage_Account"" {
+            # ---------- Type Map Object Start ---------- #
+              type = map(object({
+                make_public                                   = optional(bool, null)
+                allowed_snets_ids                             = optional(list(string), null)
+                allowed_ips                                   = optional(list(string), null)
+                create_blob_pl                                = optional(bool, null)
+                create_file_pl                                = optional(bool, null)
+                create_table_pl                               = optional(bool, null)
+                create_queue_pl                               = optional(bool, null)
+                tags                                          = optional(map(string), null)
+                endpoint_resource_id                          = optional(list(string), null)
+                enable_backup                                 = optional(bool, null)
+                group_names_permission_blob_data_reader       = optional(list(string), null)
+                group_names_permission_blob_data_contributor  = optional(list(string), null)
+                group_names_permission_file_data_reader       = optional(list(string), null)
+                group_names_permission_file_data_contributor  = optional(list(string), null)
+                group_names_permission_table_data_reader      = optional(list(string), null)
+                group_names_permission_table_data_contributor = optional(list(string), null)
+                group_names_permission_queue_data_reader      = optional(list(string), null)
+                group_names_permission_queue_data_contributor = optional(list(string), null)
+                spn_names_permission_blob_data_reader         = optional(list(string), null)
+                spn_names_permission_blob_data_contributor    = optional(list(string), null)
+                sftp_enabled                                  = optional(bool, null)
+                cross_tenant_replication_enabled              = optional(bool, null)
+                # ----- Create Containers Object Start ----- #
+                create_containers = optional(map(object({
+                  name                  = string
+                  container_access_type = string
+                })), null)
+                # ---------- Blob Properties Object Start ---------- #
+                blob_properties = optional(object({
+                  cors_rule = optional(object({
+                    allowed_headers    = optional(list(string), null)
+                    allowed_methods    = optional(list(string), null)
+                    allowed_origins    = optional(list(string), null)
+                    exposed_headers    = optional(list(string), null)
+                    max_age_in_seconds = optional(number, null)
+                  }), null)
+                  # ---------- Blob Properties Object End ---------- #
+                  delete_retention_policy = optional(object({
+                    days                     = optional(number, null)
+                    permanent_delete_enabled = optional(bool, null)
+                  }), null)
+                  restore_policy = optional(object({
+                    days = optional(number, null)
+                  }), null)
+                  versioning_enabled            = optional(bool, null)
+                  change_feed_enabled           = optional(bool, null)
+                  change_feed_retention_in_days = optional(number, null)
+                  default_service_version       = optional(string, null)
+                  last_access_time_enabled      = optional(bool, null)
+                  container_delete_retention_policy = optional(object({
+                    days = optional(number, null)
+                  }), null)
+                }), null)
+                bypass_storage_account_name                                     = optional(string, null)
+                bypass_storage_account_account_kind                             = optional(string, null)
+                bypass_storage_account_account_tier                             = optional(string, null)
+                bypass_storage_account_account_replication_type                 = optional(string, null)
+                bypass_storage_account_min_tls_version                          = optional(string, null)
+                bypass_storage_account_is_hns_enabled                           = optional(bool, null)
+                bypass_storage_account_public_network_access_enabled            = optional(bool, null)
+                bypass_storage_account_allow_nested_items_to_be_public          = optional(bool, null)
+                bypass_storage_account_cross_tenant_replication_enabled         = optional(bool, null)
+                bypass_storage_account_network_rules_default_action             = optional(string, null)
+                bypass_storage_account_network_rules_virtual_network_subnet_ids = optional(list(string), null)
+                bypass_storage_account_network_rules_ip_rules                   = optional(list(string), null)
+                bypass_blob_private_endpoint_name                               = optional(string, null)
+                bypass_blob_private_service_connection_name                     = optional(string, null)
+                bypass_file_private_endpoint_name                               = optional(string, null)
+                bypass_file_private_service_connection_name                     = optional(string, null)
+                bypass_queue_private_endpoint_name                              = optional(string, null)
+                bypass_queue_private_service_connection_name                    = optional(string, null)
+                bypass_table_private_endpoint_name                              = optional(string, null)
+                bypass_table_private_service_connection_name                    = optional(string, null)
+                bypass_storage_account_location                                 = optional(string, null)
+                bypass_storage_account_access_tier                              = optional(string, null)
+
+              }))
+
+              default = {}
+            }
+            # --------------------------------------------------------- #
+
+            variable ""VM_Win"" {
+              type = map(object({
+                vm_size                        = string
+                join_domain                    = bool
+                virtual_machine_trusted_launch = bool
+                vulnerability_assessment       = bool
+                tags                           = map(string)
+                accelerated_networking_enabled = optional(bool, false)
+                ado_agent = optional(object({
+                  ado_url   = string
+                  ado_pat   = string
+                  ado_pool  = string
+                  ado_agent = string
+                }))
+                additional_disks_sizes                                           = optional(list(number), [])
+                zone                                                             = optional(number, null)
+                bypass_domain_name                                               = optional(string, null)
+                bypass_join_domain_ou_path                                       = optional(string, null)
+                bypass_join_domain_bypass_user                                   = optional(string, null)
+                bypass_join_domain_bypass_password                               = optional(string, null)
+                bypass_windows_virtual_machine_name                              = optional(string, null)
+                bypass_windows_virtual_machine_network_interface_ids             = optional(list(string), null)
+                bypass_windows_virtual_machine_computer_name                     = optional(string, null)
+                bypass_windows_virtual_machine_admin_username                    = optional(string, null)
+                bypass_windows_virtual_machine_admin_password                    = optional(string, null)
+                bypass_windows_virtual_machine_size                              = optional(string, null)
+                bypass_windows_virtual_machine_enable_automatic_updates          = optional(bool, null)
+                bypass_windows_virtual_machine_license_type                      = optional(string, null)
+                bypass_windows_virtual_machine_vtpm_enabled                      = optional(bool, null)
+                bypass_windows_virtual_machine_secure_boot_enabled               = optional(bool, null)
+                bypass_windows_virtual_machine_source_image_reference_offer      = optional(string, null)
+                bypass_windows_virtual_machine_source_image_reference_publisher  = optional(string, null)
+                bypass_windows_virtual_machine_source_image_reference_sku        = optional(string, null)
+                bypass_windows_virtual_machine_source_image_reference_version    = optional(string, null)
+                bypass_windows_virtual_machine_os_disk_caching                   = optional(string, null)
+                bypass_windows_virtual_machine_os_disk_disk_size_gb              = optional(number, null)
+                bypass_windows_virtual_machine_os_disk_name                      = optional(string, null)
+                bypass_windows_virtual_machine_os_disk_write_accelerator_enabled = optional(bool, null)
+                bypass_windows_virtual_machine_os_disk_storage_account_type      = optional(string, null)
+                bypass_network_interface_name                                    = optional(string, null)
+                bypass_network_interface_ip_configuration_name                   = optional(string, null)
+                bypass_network_interface_subnet_id                               = optional(string, null)
+                bypass_network_interface_primary                                 = optional(bool, null)
+                bypass_network_interface_private_ip_address_allocation           = optional(string, null)
+                bypass_additional_disks_name                                     = optional(list(string), [])
+                bypass_additional_disks_storage_account_type                     = optional(list(string), [])
+                bypass_additional_disks_create_option                            = optional(list(string), [])
+                bypass_additional_disks_sizes                                    = optional(list(number), [])
+                bypass_additional_disks_lun                                      = optional(list(number), [])
+              }))
+
+              default = {}
+            }
+            # --------------------------------------------------------- #
+            variable ""VM_Lin"" {
+              type = map(object({
+                vm_size                                                                             = string
+                virtual_machine_trusted_launch                                                      = bool
+                vulnerability_assessment                                                            = bool
+                tags                                                                                = map(string)
+                accelerated_networking_enabled                                                      = optional(bool, false)
+                additional_disks_sizes                                                              = optional(list(number), [])
+                zone                                                                                = optional(number, null)
+                bypass_linux_virtual_machine_name                                                   = optional(string, null)
+                bypass_linux_virtual_machine_network_interface_ids                                  = optional(list(string), null)
+                bypass_linux_virtual_machine_computer_name                                          = optional(string, null)
+                bypass_linux_virtual_machine_admin_username                                         = optional(string, null)
+                bypass_linux_virtual_machine_size                                                   = optional(string, null)
+                bypass_linux_virtual_machine_enable_automatic_updates                               = optional(bool, null)
+                bypass_linux_virtual_machine_license_type                                           = optional(string, null)
+                bypass_linux_virtual_machine_vtpm_enabled                                           = optional(bool, null)
+                bypass_linux_virtual_machine_secure_boot_enabled                                    = optional(bool, null)
+                bypass_linux_virtual_machine_source_image_reference_offer                           = optional(string, null)
+                bypass_linux_virtual_machine_source_image_reference_publisher                       = optional(string, null)
+                bypass_linux_virtual_machine_source_image_reference_sku                             = optional(string, null)
+                bypass_linux_virtual_machine_source_image_reference_version                         = optional(string, null)
+                bypass_linux_virtual_machine_os_disk_caching                                        = optional(string, null)
+                bypass_linux_virtual_machine_os_disk_disk_size_gb                                   = optional(number, null)
+                bypass_linux_virtual_machine_os_disk_name                                           = optional(string, null)
+                bypass_linux_virtual_machine_os_disk_write_accelerator_enabled                      = optional(bool, null)
+                bypass_linux_virtual_machine_os_disk_storage_account_type                           = optional(string, null)
+                bypass_linux_virtual_machine_source_image_id                                        = optional(string, null)
+                bypass_linux_virtual_machine_bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, null)
+                bypass_linux_virtual_machine_disable_password_authentication                        = optional(bool, null)
+                bypass_linux_virtual_machine_patch_mode                                             = optional(string, null)
+                bypass_resource_group_name                                                          = optional(string, null)
+                bypass_network_interface_name                                                       = optional(string, null)
+                bypass_network_interface_ip_configuration_name                                      = optional(string, null)
+                bypass_network_interface_subnet_id                                                  = optional(string, null)
+                bypass_network_interface_primary                                                    = optional(bool, null)
+                bypass_network_interface_private_ip_address_allocation                              = optional(string, null)
+                bypass_additional_disks_name                                                        = optional(list(string), [])
+                bypass_additional_disks_storage_account_type                                        = optional(list(string), [])
+                bypass_additional_disks_create_option                                               = optional(list(string), [])
+                bypass_additional_disks_sizes                                                       = optional(list(number), [])
+                bypass_additional_disks_lun                                                         = optional(list(number), [])
+              }))
+
+              default = {}
+            }
+            # --------------------------------------------------------- #
+
+            variable ""Key_Vault"" {
+              type = map(object({
+                allowed_snets_ids                            = optional(list(string), [])
+                allowed_ips                                  = optional(list(string), [])
+                tags                                         = optional(map(string), {})
+                group_names_permission_key_vault_secret_user = optional(list(string), [])
+                make_public                                  = optional(string, false)
+                bypass_key_vault_name                        = optional(string, null)
+                bypass_enable_rbac_authorization             = optional(bool, null)
+                bypass_enabled_for_disk_encryption           = optional(bool, null)
+                bypass_soft_delete_retention_days            = optional(number, null)
+                bypass_enabled_for_deployment                = optional(bool, null)
+                bypass_enabled_for_template_deployment       = optional(bool, null)
+              }))
+              default = {}
+            }
+            # --------------------------------------------------------- #
+            variable ""SQL_MI"" {
+              type = map(object({
+                sql_admin_ad_group_name   = string
+                sql_mi_user_name_windows  = optional(string, null)
+                sql_mi_pass_windows       = optional(string, null)
+                skip_role_assignment      = optional(bool, false)
+                sql_mi_sku_name           = optional(string, null)
+                sql_mi_storage_size_in_gb = optional(number, null)
+                sql_mi_vcores             = optional(number, null)
+
+                sql_vm = map(object({
+                  vm_size                                                          = string
+                  additional_disks_sizes                                           = optional(list(number), [])
+                  tags                                                             = map(string)
+                  vulnerability_assessment                                         = bool
+                  virtual_machine_trusted_launch                                   = optional(bool, null)
+                  bypass_domain_name                                               = optional(string, null)
+                  bypass_join_domain_ou_path                                       = optional(string, null)
+                  bypass_join_domain_bypass_user                                   = optional(string, null)
+                  bypass_join_domain_bypass_password                               = optional(string, null)
+                  bypass_windows_virtual_machine_name                              = optional(string, null)
+                  bypass_windows_virtual_machine_network_interface_ids             = optional(list(string), null)
+                  bypass_windows_virtual_machine_computer_name                     = optional(string, null)
+                  bypass_windows_virtual_machine_admin_username                    = optional(string, null)
+                  bypass_windows_virtual_machine_admin_password                    = optional(string, null)
+                  bypass_windows_virtual_machine_size                              = optional(string, null)
+                  bypass_windows_virtual_machine_enable_automatic_updates          = optional(bool, null)
+                  bypass_windows_virtual_machine_license_type                      = optional(string, null)
+                  bypass_windows_virtual_machine_vtpm_enabled                      = optional(bool, null)
+                  bypass_windows_virtual_machine_secure_boot_enabled               = optional(bool, null)
+                  bypass_windows_virtual_machine_source_image_reference_offer      = optional(string, null)
+                  bypass_windows_virtual_machine_source_image_reference_publisher  = optional(string, null)
+                  bypass_windows_virtual_machine_source_image_reference_sku        = optional(string, null)
+                  bypass_windows_virtual_machine_source_image_reference_version    = optional(string, null)
+                  bypass_windows_virtual_machine_os_disk_caching                   = optional(string, null)
+                  bypass_windows_virtual_machine_os_disk_disk_size_gb              = optional(number, null)
+                  bypass_windows_virtual_machine_os_disk_name                      = optional(string, null)
+                  bypass_windows_virtual_machine_os_disk_write_accelerator_enabled = optional(bool, null)
+                  bypass_windows_virtual_machine_os_disk_storage_account_type      = optional(string, null)
+                  bypass_network_interface_name                                    = optional(string, null)
+                  bypass_network_interface_ip_configuration_name                   = optional(string, null)
+                  bypass_network_interface_subnet_id                               = optional(string, null)
+                  bypass_network_interface_primary                                 = optional(bool, null)
+                  bypass_network_interface_private_ip_address_allocation           = optional(string, null)
+                  bypass_additional_disks_name                                     = optional(list(string), null)
+                  bypass_additional_disks_storage_account_type                     = optional(list(string), null)
+                  bypass_additional_disks_create_option                            = optional(list(string), null)
+                  bypass_additional_disks_sizes                                    = optional(list(number), null)
+                }))
+
+                bypass_mssql_managed_instance_name     = optional(string, null)
+                bypass_private_endpoint_name           = optional(string, null)
+                bypass_private_service_connection_name = optional(string, null)
+                bypass_sql_mi_license_type             = optional(string, null)
+                bypass_sql_mi_storage_account_type     = optional(string, null)
+                bypass_sql_mi_timezone_id              = optional(string, null)
+                bypass_sql_mi_collation                = optional(string, null)
+                bypass_sql_mi_proxy_override           = optional(string, null)
+              }))
+              default = {}
+            }
+            # --------------------------------------------------------- #
+            variable ""Cognitive_Account"" {
+              type = map(object({
+                cognitive_account_kind                  = string
+                cognitive_account_sku_name              = string
+                cognitive_account_custom_subdomain_name = string
+                make_public                             = optional(bool, false)
+                cognitive_account_ip_rules              = optional(list(string), [])
+                cognitive_account_allowed_snets = optional(map(object({
+                  subnet_id                            = string
+                  ignore_missing_vnet_service_endpoint = bool
+                })), {})
+                group_names_permission_cognitive_services_contributor        = optional(list(string), [])
+                group_names_permission_cognitive_services_openai_contributor = optional(list(string), [])
+                group_names_permission_cognitive_services_openai_user        = optional(list(string), [])
+                group_names_permission_cognitive_services_usages_reader      = optional(list(string), [])
+                group_names_permission_cognitive_services_user               = optional(list(string), [])
+                spn_permission_cognitive_services_contributor                = optional(list(string), [])
+                spn_permission_cognitive_services_openai_contributor         = optional(list(string), [])
+                spn_permission_cognitive_services_openai_user                = optional(list(string), [])
+                spn_permission_cognitive_services_usages_reader              = optional(list(string), [])
+                spn_permission_cognitive_services_user                       = optional(list(string), [])
+
+                bypass_cognitive_account_name                           = optional(string, null)
+                bypass_cognitive_account_location                       = optional(string, null)
+                bypass_private_endpoint_name                            = optional(string, null)
+                bypass_private_endpoint_custom_network_interface_name   = optional(string, null)
+                bypass_private_endpoint_private_service_connection_name = optional(string, null)
+              }))
+              default = {}
+            }
+            # --------------------------------------------------------- #
+            variable ""Automation_Account"" {
+              type = map(object({
+                public_network_access_enabled = optional(bool)
+                sku_name                      = optional(string)
+                hybrid_worker_vms = optional(map(object({
+                  vm_size                                                   = string
+                  additional_disks_sizes                                    = optional(list(number), null)
+                  join_domain                                               = optional(bool, true)
+                  virtual_machine_trusted_launch                            = optional(bool, true)
+                  vulnerability_assessment                                  = optional(bool, true)
+                  tags                                                      = map(string)
+                  bypass_network_interface_name                             = optional(string, null)
+                  bypass_windows_virtual_machine_computer_name              = optional(string, null)
+                  bypass_windows_virtual_machine_name                       = optional(string, null)
+                  bypass_windows_virtual_machine_os_disk_name               = optional(string, null)
+                  bypass_windows_virtual_machine_source_image_reference_sku = optional(string, null)
+                  bypass_network_interface_ip_configuration_name            = optional(string, null)
+                  bypass_network_interface_private_ip_address_allocation    = optional(string, null)
+                })), null)
+                source_control = optional(object({
+                  folder_path         = string
+                  token               = string
+                  token_type          = string
+                  repository_url      = string
+                  source_control_type = string
+                  branch_name         = string
+                }), null)
+                bypass_management_key_vault_name                        = optional(string, null)
+                bypass_hybrid_worker_user                               = optional(string, null)
+                bypass_hybrid_worker_password                           = optional(string, null)
+                bypass_automation_account_name                          = optional(string, null)
+                bypass_private_endpoint_name                            = optional(string, null)
+                bypass_private_endpoint_custom_network_interface_name   = optional(string, null)
+                bypass_private_endpoint_private_service_connection_name = optional(string, null)
+                bypass_hybrid_runbook_worker_group_name                 = optional(string, null)
+                bypass_hybrid_runbook_worker_name                       = optional(string, null)
+              }))
+              default = {}
+            }
+            # --------------------------------------------------------- #
+            variable ""Azure_SQL_Server"" {
+              type = map(object({
+                sql_admin_ad_group_name = string
+                is_production           = bool
+                tags                    = map(string)
+                databases = optional(map(object({
+                  name                 = string
+                  database_max_size_gb = number
+                  database_sku_name    = string
+                  tags                 = map(string)
+                  geo_backup_enabled   = bool
+                })), null)
+                firewall_rules = list(string)
+
+                bypass_mssql_server_name                                = optional(string, null)
+                bypass_mssql_server_public_network_access_enabled       = optional(bool, null)
+                bypass_private_endpoint_name                            = optional(string, null)
+                bypass_private_endpoint_custom_network_interface_name   = optional(string, null)
+                bypass_private_endpoint_private_service_connection_name = optional(string, null)
+                bypass_database_name                                    = optional(map(string), null)
+                bypass_database_collation                               = optional(map(string), null)
+                bypass_database_license_type                            = optional(map(string), null)
+                bypass_data_base_storage_account_type                   = optional(map(string), null)
+                bypass_storage_account_name                             = optional(string, null)
+                bypass_storage_account_container_name                   = optional(string, null)
+                bypass_storage_account_is_hns_enabled                   = optional(bool, null)
+                bypass_storage_account_allow_nested_items_to_be_public  = optional(bool, null)
+                bypass_storage_account_allowed_snets_ids                = optional(list(string), null)
+                bypass_storage_account_allowed_ips                      = optional(list(string), null)
+
+              }))
+
+              default = {}
+            }
+            # --------------------------------------------------------- #
+            variable ""App_Service_Plan"" {
+              default = {}
+
+              type = map(object({
+                service_plan = object({
+                  os_type                      = string
+                  sku_name                     = string
+                  worker_count                 = optional(number, null)
+                  maximum_elastic_worker_count = optional(number, null)
+                  zone_balancing_enabled       = optional(bool, null)
+                  log_analytics_workspace_id   = optional(string, null)
+                })
+                linux_web_app = optional(map(object({
+                  name                          = string
+                  always_on                     = optional(bool, true)
+                  https_only                    = optional(bool, true)
+                  public_network_access_enabled = optional(bool, false)
+                  site_config = object({
+                    ip_restriction_default_action     = optional(string, null)
+                    scm_ip_restriction_default_action = optional(string, null)
+                    app_command_line                  = optional(string, null)
+                    ftps_state                        = optional(string, ""FtpsOnly"")
+                    application_stack = object({
+                      dotnet_version      = optional(string, null)
+                      go_version          = optional(string, null)
+                      java_server         = optional(string, null)
+                      java_server_version = optional(string, null)
+                      java_version        = optional(string, null)
+                      node_version        = optional(string, null)
+                      php_version         = optional(string, null)
+                      python_version      = optional(string, null)
+                      ruby_version        = optional(string, null)
+                    })
+                    ip_restriction = optional(map(object({
+                      action = optional(string, null)
+                      headers = optional(list(object({
+                        x_azure_fdid      = optional(list(string), null)
+                        x_fd_health_probe = optional(list(string), null)
+                        x_forwarded_for   = optional(list(string), null)
+                        x_forwarded_host  = optional(list(string), null)
+                      })), null)
+                      ip_address                = optional(string, null)
+                      name                      = optional(string, null)
+                      priority                  = optional(number, null)
+                      service_tag               = optional(string, null)
+                      virtual_network_subnet_id = optional(string, null)
+                      description               = optional(string, null)
+                    })), null)
+                  })
+                  logs = optional(object({
+                    log_analytics_id   = optional(string, null)
+                    storage_account_id = optional(string, null)
+                    file_system = optional(object({
+                      detailed_error_messages = bool
+                      failed_request_tracing  = bool
+                      retention_in_days       = number
+                      retention_in_mb         = number
+                    }), null)
+                  }), null)
+                  use_log_analytics = bool
+                  application_insights = optional(object({
+                    name                = string
+                    resource_group_name = string
+                  }), null)
+                  create_slot = optional(bool, false)
+                })), null)
+                tags                                                                       = map(string)
+                bypass_service_plan_name                                                   = optional(string, null)
+                bypass_linux_web_app_name                                                  = optional(map(string), null)
+                bypass_linux_web_app_private_endpoint_name                                 = optional(map(string), null)
+                bypass_linux_web_app_private_endpoint_private_service_connection_name      = optional(map(string), null)
+                bypass_linux_web_app_slot_name                                             = optional(map(string), null)
+                bypass_linux_web_app_slot_private_endpoint_name                            = optional(map(string), null)
+                bypass_linux_web_app_slot_private_endpoint_private_service_connection_name = optional(map(string), null)
+                bypass_linux_web_app_diagnostic_setting_name                               = optional(map(string), null)
+                bypass_service_plan_disable_diagnostinc_settings                           = optional(bool, null)
+                bypass_linux_web_app_diagnostinc_settings_name                             = optional(map(string), null)
+              }))
+            }
+            # --------------------------------------------------------- #
+            variable ""Dev_Center"" {
+
+              type = map(object({
+                dev_box_project = map(object({
+                  name                       = string
+                  project_subnet_id          = string
+                  maximum_dev_boxes_per_user = optional(number, null)
+                  definitions = map(object({
+                    name                    = string
+                    sku_name                = optional(string, null)
+                    image_reference_id_name = string
+                    shared_gallery_name     = string
+                  }))
+                }))
+                tags                                      = map(string)
+                bypass_dev_center_name                    = optional(string, null)
+                bypass_dev_center_network_connection_name = optional(map(string), null)
+                bypass_dev_center_dev_box_definition_name = optional(map(string), null)
+                bypass_dev_center_dev_box_project_name    = optional(map(string), null)
+                bypass_dev_center_user_assigned_name      = optional(string, null)
+              }))
+
+              default = {}
+
+            }
+            # --------------------------------------------------------- #
+            # --------------------------------------------------------- #
+            # --------------------------------------------------------- #
+            # --------------------------------------------------------- #
+            # --------------------------------------------------------- #
+            # --------------------------------------------------------- #
+            # --------------------------------------------------------- #
+            # --------------------------------------------------------- #
+            # --------------------------------------------------------- #
+            # --------------------------------------------------------- #
+            # --------------------------------------------------------- #
+            # --------------------------------------------------------- #
+            # --------------------------------------------------------- #
+            # --------------------------------------------------------- #
+            "
+          Height: =555
+          Width: =305
+          Y: =213
+    - ButtonCanvas11:
+        Control: Button
+        Properties:
+          OnSelect: "=ClearCollect(\n    colRows,\n    ForAll(Filter(\n        Split(terraformFile, \"# --------------------------------------------------------- #\"),\n        Len(Trim(ThisRecord.Value)) > 0 // Exclude empty sections\n    ) As sections,\n     \n            {\n                variableName: Text(\n                    Mid(\n                        sections.Value,\n                        Find(\"\"\"\", sections.Value) + 1,\n                        Find(\"\"\"\", Mid(sections.Value, Find(\"\"\"\", sections.Value) + 1)) - 1\n                    )\n                ),\n                rows: ForAll(\n                    Filter(\n                        Split(sections.Value, Char(10)),\n                        Len(Trim(Value)) > 0 // Exclude empty lines\n                    ) As Line,\n\n                    {\n                        // Step 1: Extract Variable Name\n                        variableName: Text(\n                            Mid(\n                                sections.Value,\n                                Find(\"\"\"\", sections.Value) + 1,\n                                Find(\"\"\"\", Mid(sections.Value, Find(\"\"\"\", sections.Value) + 1)) - 1\n                            )\n                        ),\n\n                        // Step 2: Parse Lines and Track Nesting\n\n                        indent: Len(Line.Value) - Len(Trim(Line.Value)),\n                        // Step 2.1: Calculate Indentation Level\n                        indentLevel: Len(Line.Value) - Len(Trim(Line.Value)),\n\n                        // Step 2.2: Identify Line Content\n                        isObject: \"object(\" in Line.Value,\n                        isMap: \"map(\" in Line.Value,\n                        isOptional: \"optional(\" in Line.Value,\n                        isStartOfStructure: Find(\"(\", Line.Value) > 0,\n                        isEndOfStructure: Find(\"})\", Line.Value) > 0 || Find(\"}\", Line.Value) > 0,\n\n                        // Step 2.3: Extract Key and Value\n                        key: If(\n                            !IsBlank(If(\" = \" in Line.Value, Split(Line.Value, \" = \"), Blank())),\n                            Trim(First(If(\" = \" in Line.Value, Split(Line.Value, \" = \"), Blank())).Value),\n                            Blank()\n                        ),\n                        value: If(\n                            !IsBlank(If(\" = \" in Line.Value, Split(Line.Value, \" = \"), Blank())),\n                            Trim(Last(If(\" = \" in Line.Value, Split(Line.Value, \" = \"), Blank())).Value),\n                            Blank()\n                        )\n                    }\n                )\n            }\n        )\n    )\n;"
+          X: =826
+          Y: =247
+    - ButtonCanvas10:
+        Control: Button
+        Properties:
+          OnSelect: "=ClearCollect(colTFdata,\r\n    ForAll(\r\n        Filter(\r\n            Split(terraformFile, \"variable\"),\r\n            Len(Trim(ThisRecord.Value)) > 0, // Exclude empty blocks\r\n            !StartsWith(Value, \"#\") // Exclude comments\r\n        ),\r\n        With(\r\n            {\r\n                // Step 1: Extract Variable Name\r\n                variableName: Text(\r\n                    Mid(\r\n                        ThisRecord.Value,\r\n                        Find(\"\"\"\", ThisRecord.Value) + 1,\r\n                        Find(\"\"\"\", Mid(ThisRecord.Value, Find(\"\"\"\", ThisRecord.Value) + 1)) - 1\r\n                    )\r\n                ),\r\n\r\n                // Step 2: Extract the Type Row\r\n                variableType: Text(\r\n                    Last(\r\n                        Split(\r\n                            LookUp(\r\n                                Split(ThisRecord.Value, Char(10)) As type,\r\n                                StartsWith(Trim(type.Value), \"type =\")\r\n                            ).Value,\r\n                            \"=\"\r\n                        )\r\n                    ).Value\r\n                ),\r\n\r\n                // Step 3: Extract the Variable Content (Raw Content)\r\n                variableContent:\r\n                    Substitute(\r\n                       \r\n                                Concat(\r\n                                    Filter(\r\n                                        Split(ThisRecord.Value, Char(10)),\r\n                                       !(\"#\" in Value) // Exclude comments\r\n                                    ) As Row,\r\n                                    Row.Value,Char(10)\r\n                            ),\r\n                        Char(10) & \",\", \"\"\r\n                    )\r\n                ,\r\n\r\n                // Step 4: Extract Default Value\r\n                defaultValue: If(\r\n                    Find(\"default =\", ThisRecord.Value) > 0,\r\n                    Text(\r\n                        Mid(\r\n                            First(\r\n                                Filter(\r\n                                    Split(ThisRecord.Value, Char(10)),\r\n                                    StartsWith(Trim(ThisRecord.Value), \"default =\")\r\n                                )\r\n                            ).Value,\r\n                            Find(\"=\", First(Filter(Split(ThisRecord.Value, Char(10)), StartsWith(Trim(ThisRecord.Value), \"default =\"))).Value) + 1,\r\n                            Len(ThisRecord.Value)\r\n                        )\r\n                    ),\r\n                    Blank()\r\n                ),\r\n\r\n                // Step 5: Extract Validation Block\r\n                validationBlock: If(\r\n                    Find(\"validation {\", ThisRecord.Value) > 0,\r\n                    Text(\r\n                        Mid(\r\n                            ThisRecord.Value,\r\n                            Find(\"validation {\", ThisRecord.Value),\r\n                            Find(\"}\", ThisRecord.Value, Find(\"validation {\", ThisRecord.Value)) - Find(\"validation {\", ThisRecord.Value) + 1\r\n                        )\r\n                    ),\r\n                    Blank()\r\n                ),\r\n                // Step 6: Handle Nested Objects and Map(Object) Parsing\r\n                nestedContent: ForAll(\r\n                    Filter(\r\n                        Split(\r\n                            Substitute(\r\n                                    // Exclude comments\r\n                                    Concat(Filter(Split(ThisRecord.Value, Char(10)), !(\"#\" in Value)) As Row, Row.Value,  Char(10)),\r\n                                Char(10) & \",\", \"\"\r\n                            ), \"},\"), // Split content by delimiters\r\n                        \"object(\" in Value || \"map(\" in Value // Identify rows with nested structures\r\n                    ) As Objects,\r\n                    With(\r\n                        {\r\n                            // Step 6.1: Clean the Nested Structure\r\n                            //cleanedContent: Trim(Substitute(Substitute(Objects.Value,\"object({\",\"\"),\"map(object({\",\"\")),\r\n                            objectStart: Find(\"{\",Objects.Value),\r\n                            objectEnd: Find(\"}\", Objects.Value, Find(\"{\",Objects.Value)),\r\n                            cleanedContent:Mid(\r\n                            Objects.Value, Find(\"{\",Objects.Value)+1,  Find(\"}\", Objects.Value, Find(\"{\",Objects.Value)) - Find(\"{\",Objects.Value) -1) ,\r\n                            nestedLevel: CountIf(Split(Objects.Value, \"\") As obj1, obj1.Value = \"{\") - CountIf(Split(Objects.Value, \"\") As obj2, obj2.Value = \"}\"),\r\n                            // Step 6.2: Remove Trailing \r\n                            finalContent: If(\r\n                                Right(Trim(Substitute(Substitute(Objects.Value, \"object({\", \"\"), \"map(object({\", \"\")), 2) = \"})\",\r\n                                Left(Trim(Substitute(Substitute(Objects.Value, \"object({\", \"\"), \"map(object({\", \"\")), Len(Trim(Substitute(Substitute(Objects.Value, \"object({\", \"\"), \"map(object({\", \"\"))) - 2),\r\n                                Trim(Substitute(Substitute(Objects.Value, \"object({\", \"\"), \"map(object({\", \"\"))\r\n                            ),\r\n                            finalRough: Substitute(Objects.Value, \"{,\", \"{\")\r\n                        },\r\n                        // Step 6.3: Parse Key-Value Pairs from the Cleaned Content\r\n                        ForAll(\r\n                            Split(finalRough, Char(10)) As final, // Split by commas to get key-value pairs\r\n                            With(\r\n                                {\r\n                                    keyValuePair: Split(final.Value, \"=\") // Split each row into key and value\r\n                                },\r\n                                {\r\n                                    key: First(keyValuePair).Value, // Extract the key\r\n                                    value: Last(keyValuePair).Value, // Extract the value\r\n                                    isOptional: \"optional\" in Last(keyValuePair).Value,  // Determine if it's optional\r\n                                    //keyValuePair:keyValuePair\r\n                                    finalRough: final,\r\n                                    objectStart:objectStart,\r\n                                    objectEnd:objectEnd,\r\n                                    nestedLevel:nestedLevel\r\n                                   // finalContent: [{value: finalContent}]\r\n                                }\r\n                            )\r\n                        )\r\n                    )\r\n                )\r\n            },\r\n            {\r\n                // Final Output for Each Variable\r\n                variableName: variableName,\r\n                variableType: variableType,\r\n                defaultValue: defaultValue,\r\n                validationBlock: validationBlock,\r\n                variableContent: Substitute(\r\n                    Substitute(\r\n                        Substitute(variableContent, \"\"\"\" & variableName & \"\"\"\", variableName & \":\"),\r\n                        \"{,\", \"{\"\r\n                    ),\r\n                    \", }\", \"}\"\r\n                ),\r\n                nestedContent: First(nestedContent).Value\r\n            }\r\n        )\r\n    )\r\n)"
+          FontWeight: =FontWeight.Normal
+          X: =975
+          Y: =78
+    - Gallery12:
+        Control: Gallery
+        Variant: BrowseLayout_Flexible_SocialFeed_ver5.0
+        Properties:
+          Items: |-
+            =ForAll(
+                Filter(
+                    Split(terraformFile, "variable"),
+                    Len(Trim(ThisRecord.Value)) > 0, // Exclude empty blocks
+                    !StartsWith(Value, "#") // Exclude comments
+                ),
+                With(
+                    {
+                        // Step 1: Extract Variable Name
+                        variableName: Text(
+                            Mid(
+                                ThisRecord.Value,
+                                Find("""", ThisRecord.Value) + 1,
+                                Find("""", Mid(ThisRecord.Value, Find("""", ThisRecord.Value) + 1)) - 1
+                            )
+                        ),
+
+                        // Step 2: Extract the Type Row
+                        variableType: Text(
+                            Last(
+                                Split(
+                                    LookUp(
+                                        Split(ThisRecord.Value, Char(10)) As type,
+                                        StartsWith(Trim(type.Value), "type =")
+                                    ).Value, 
+                                    "="
+                                )
+                            ).Value
+                        ),
+
+                        // Step 3: Extract the Variable Content (Raw Content)
+                        variableContent: Trim(
+                            Substitute(
+                                Substitute(
+                                    Trim(
+                                        Concat(
+                                            Filter(
+                                                Split(ThisRecord.Value, Char(10)),
+                                                !("#" in Value) // Exclude comments
+                                            ) As Row, 
+                                            Row.Value,
+                                            "," & Char(10)
+                                        )
+                                    ), 
+                                    "=", ":"
+                                ), 
+                                Char(10) & ",", ""
+                            )
+                        ),
+
+                        // Step 4: Extract Default Value
+                        defaultValue: If(
+                            Find("default =", ThisRecord.Value) > 0,
+                            Text(
+                                Mid(
+                                    First(
+                                        Filter(
+                                            Split(ThisRecord.Value, Char(10)),
+                                            StartsWith(Trim(ThisRecord.Value), "default =")
+                                        )
+                                    ).Value,
+                                    Find("=", First(Filter(Split(ThisRecord.Value, Char(10)), StartsWith(Trim(ThisRecord.Value), "default ="))).Value) + 1,
+                                    Len(ThisRecord.Value)
+                                )
+                            ),
+                            Blank()
+                        ),
+
+                        // Step 5: Extract Validation Block
+                        validationBlock: If(
+                            Find("validation {", ThisRecord.Value) > 0,
+                            Text(
+                                Mid(
+                                    ThisRecord.Value,
+                                    Find("validation {", ThisRecord.Value),
+                                    Find("}", ThisRecord.Value, Find("validation {", ThisRecord.Value)) - Find("validation {", ThisRecord.Value) + 1
+                                )
+                            ),
+                            Blank()
+                        ),
+
+                        // Step 6: Handle Nested Objects and Map(Object) Parsing
+                        nestedContent: ForAll(
+                            Filter(
+                                Split(Substitute(Trim(
+                            Substitute(
+                                Substitute(
+                                    Trim(
+                                        Concat(
+                                            Filter(
+                                                Split(ThisRecord.Value, Char(10)),
+                                                !("#" in Value) // Exclude comments
+                                            ) As Row, 
+                                            Row.Value,
+                                            "," & Char(10)
+                                        )
+                                    ), 
+                                    "=", ":"
+                                ), 
+                                Char(10) & ",", ""
+                            )
+                        ), Char(10), ""), "},"), // Split content by delimiters
+                                "object(" in Value || "map(" in Value // Identify rows with nested structures
+                            ) As Objects,
+                            With(
+                                {
+                                    // Step 6.1: Clean the Nested Structure
+                                    cleanedContent: Trim(
+                                        Substitute(
+                                            Substitute(
+                                                Objects.Value,
+                                                "object({",
+                                                ""
+                                            ),
+                                            "map(object({",
+                                            ""
+                                        )
+                                    ),
+
+                                    // Step 6.2: Remove Trailing "})"
+                                    finalContent: If(
+                                        Right(Trim(Substitute(Substitute(Objects.Value,"object({",""),"map(object({","")), 2) = "})",
+                                        Left(Trim(Substitute(Substitute(Objects.Value,"object({",""),"map(object({","")), Len(Trim(Substitute(Substitute(Objects.Value,"object({",""),"map(object({",""))) - 2), // Remove "})"
+                                        Trim(Substitute(Substitute(Objects.Value,"object({",""),"map(object({",""))
+                                    )
+                                },
+                                // Step 6.3: Parse Key-Value Pairs from the Cleaned Content
+                                ForAll(
+                                    Split(finalContent, ","), // Split by commas to get key-value pairs
+                                    With(
+                                        {
+                                            keyValuePair: Split(ThisRecord.Value, ":") // Split each row into key and value
+                                        },
+                                        {
+                                            key: First(keyValuePair).Value, // Extract the key
+                                            value: Last(keyValuePair).Value // Extract the value
+                                        }
+                                    )
+                                )
+                            )
+                        )
+                    },
+                    {
+                        // Final Output for Each Variable
+                        variableName: variableName,
+                        variableType: variableType,
+                        defaultValue: defaultValue,
+                        validationBlock: validationBlock,
+                        variableContent: Substitute(
+                            Substitute(
+                                Substitute(variableContent, """" & variableName & """", variableName & ":"),
+                                "{,", "{"
+                            ), 
+                            ", }", "}"
+                        ),
+                        nestedContent: nestedContent
+                    }
+                )
+            )
+          DelayItemLoading: =true
+          Fill: =RGBA(255, 255, 255, 1)
+          Layout: =Layout.Vertical
+          LoadingSpinner: =LoadingSpinner.Data
+          TemplatePadding: =4
+          TemplateSize: =126
+          Width: =1059
+          X: =226
+          Y: =45
+        Children:
+        - TextCanvas11:
+            Control: Text
+            Properties:
+              Text: =ThisItem.validationBlock
+              X: =40
+              Y: =40
+        - TextCanvas10:
+            Control: Text
+            Properties:
+              AutoHeight: =true
+              Text: =ThisItem.variableContent
+              Height: =98
+              Width: =412
+              Y: =21
+        - Gallery13:
+            Control: Gallery
+            Variant: BrowseLayout_Flexible_SocialFeed_ver5.0
+            Properties:
+              Items: =First(ThisItem.nestedContent).Value
+              DelayItemLoading: =true
+              Height: =515
+              Layout: =Layout.Vertical
+              LoadingSpinner: =LoadingSpinner.Data
+              TemplatePadding: =4
+              TemplateSize: =100//Min(870, Self.Height - 60)
+              X: =658
+            Children:
+            - Body5:
+                Control: Label
+                Properties:
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.value
+                  AutoHeight: =true
+                  FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+                  Height: =Self.Size * 4
+                  PaddingBottom: =0
+                  PaddingLeft: =0
+                  PaddingRight: =0
+                  PaddingTop: =0
+                  VerticalAlign: =VerticalAlign.Top
+                  Visible: =false
+                  Width: =Parent.TemplateWidth - 32
+            - Title7:
+                Control: Label
+                Properties:
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.key
+                  AutoHeight: =true
+                  FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+                  Height: =Self.Size * 1.8
+                  PaddingBottom: =0
+                  PaddingLeft: =0
+                  PaddingRight: =0
+                  PaddingTop: =0
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =Parent.TemplateWidth - 112
+        - Body4:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.variableType
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =25
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Width: =1159
+              X: =138
+        - Title6:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.variableName
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =Self.Size * 1.8
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Width: =Parent.TemplateWidth - 112
+    - TextCanvas7_1:
+        Control: Text
+        Properties:
+          Fill: =RGBA(214, 221, 224, 1)
+          Text: |-
+            =Concat(ForAll(
+                Filter(
+                    Split(terraformFile, "variable"),
+                    Len(Trim(ThisRecord.Value)) > 0 &&!StartsWith(Value, "#")
+                ) As Var,
+                //Substitute(Substitute(Trim( Concat(Filter(Split(Var.Value,Char(10)), !("#" in Value))  As Row, Row.Value,","&Char(10))), "=", ":"),Char(10)&",","")
+
+            {VariableName:fnExtractVariableName(Var)}
+
+            ),
+                Substitute(Value,"{,","{")
+            )
+          Height: =110
+          Width: =729
+          X: =442
+          Y: =620
+    - TextCanvas7:
+        Control: Text
+        Properties:
+          Fill: =RGBA(214, 221, 224, 1)
+          Text: |-
+            =Concat(ForAll(
+                Filter(
+                    Split(terraformFile, "variable"),
+                    Len(Trim(ThisRecord.Value)) > 0, // Exclude empty blocks
+                    !StartsWith(Value, "#")
+                ) As Var,
+                Substitute(Substitute(Trim( Concat(Filter(Split(Var.Value,Char(10)), !("#" in Value))  As Row, Row.Value,","&Char(10))), "=", ":"),Char(10)&",","")
+            ),
+                Substitute(Value,"{,","{")
+            )
+          Height: =588
+          Width: =475
+          Y: =72
+    - Gallery11:
+        Control: Gallery
+        Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+        Properties:
+          Items: |-
+            =ForAll(
+                Filter(
+                    Split(terraformFile, "variable"),
+                    Len(Trim(ThisRecord.Value)) > 0, // Exclude empty blocks
+                    !StartsWith(Value,"#")
+                ),
+                With(
+                    {
+                        // Extract Variable Name
+                        variableName: Text(
+                            Mid(
+                                ThisRecord.Value,
+                                Find("""", ThisRecord.Value) + 1,
+                                Find("""", Mid(ThisRecord.Value, Find("""", ThisRecord.Value) + 1)) - 1
+                            )
+                        ),
+                        // Extract the type row
+                        variableType: Text(
+                               Last(Split(LookUp(
+                                    Split(ThisRecord.Value, Char(10)) As type,
+                                    StartsWith(Trim(type.Value), "type =")
+                                ).Value,"=")).Value
+                        ),
+                        variableContent: Substitute(Substitute(Trim( Concat(Filter(Split(ThisRecord.Value,Char(10)), !("#" in Value))  As Row, Row.Value,","&Char(10))), "=", ":"),Char(10)&",","")
+                    },
+                    { 
+                        variableName: variableName,
+                        variableType: variableType,
+                        variableContent:  Substitute(Substitute(Substitute(variableContent,""""&variableName&"""",variableName&":"),"{,","{"),",}","}")
+
+                    }
+                )
+            )
+          DelayItemLoading: =true
+          Fill: =RGBA(255, 255, 255, 1)
+          Layout: =Layout.Vertical
+          LoadingSpinner: =LoadingSpinner.Data
+          TemplatePadding: =0
+          TemplateSize: =104
+          X: =24
+        Children:
+        - TextCanvas9:
+            Control: Text
+            Properties:
+              Text: =ThisItem.variableContent
+              Height: =70
+              Width: =574
+              Y: =21
+        - Rectangle7:
+            Control: Rectangle
+            Properties:
+              OnSelect: =Select(Parent)
+              Height: =Parent.TemplateHeight - Separator6.Height
+              Visible: =ThisItem.IsSelected
+              Width: =4
+        - Separator6:
+            Control: Rectangle
+            Properties:
+              OnSelect: =Select(Parent)
+              Fill: =RGBA(255, 255, 255, 1)
+              Height: =8
+              Width: =Parent.TemplateWidth
+              Y: =Parent.TemplateHeight - Self.Height
+        - NextArrow6:
+            Control: Classic/Icon
+            Variant: ChevronRight
+            Properties:
+              OnSelect: =Select(Parent)
+              AccessibleLabel: =Self.Tooltip
+              Tooltip: ="View item details"
+              BorderColor: =RGBA(0, 0, 0, 1)
+              Color: =RGBA(166, 166, 166, 1)
+              DisabledBorderColor: =RGBA(56, 56, 56, 1)
+              DisabledColor: =RGBA(119, 119, 119, 1)
+              Height: =50
+              Icon: =Icon.ChevronRight
+              PaddingBottom: =16
+              PaddingLeft: =16
+              PaddingRight: =16
+              PaddingTop: =16
+              Width: =50
+              X: =Parent.TemplateWidth - Self.Width - 12
+              Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+        - Subtitle8:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.variableType
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =Self.Size * 1.8
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Width: =Title13.Width
+              X: =125
+        - Title13:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.variableName
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =Self.Size * 1.8
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Width: =Parent.TemplateWidth - 173
+        - Image13:
+            Control: Image
+            Properties:
+              OnSelect: =Select(Parent)
+              Height: =72
+              RadiusBottomLeft: =8
+              RadiusBottomRight: =8
+              RadiusTopLeft: =8
+              RadiusTopRight: =8
+              Visible: =false
+              Width: =72
+              X: =16
+              Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+    - ButtonCanvas2_1:
+        Control: Button
+        Properties:
+          OnSelect: |-
+            =/*Set( terraformFile,
+              First(TerraformFiles).'File Content'
+            )*/
+          Height: =67
+          X: =1171
+          Y: =247
+    - Gallery10:
+        Control: Gallery
+        Variant: BrowseLayout_Flexible_SocialFeed_ver5.0
+        Properties:
+          Items: |+
+            =ForAll(
+                Filter(
+                    Split(terraformFile, "variable"),
+                    Len(Trim(ThisRecord.Value)) > 0 // Exclude empty blocks
+                ),
+                With(
+                    {
+                        // Extract Variable Name
+                        variableName: Text(
+                            Mid(
+                                ThisRecord.Value,
+                                Find("""", ThisRecord.Value) + 1,
+                                Find("""", Mid(ThisRecord.Value, Find("""", ThisRecord.Value) + 1)) - 1
+                            )
+                        ),
+                        // Extract the type row
+                        typeRow: Text(
+                                Substitute(Trim(First(Filter(
+                                    Split(ThisRecord.Value, Char(10)) As type,
+                                    StartsWith(Trim(type.Value), "type =")//,
+                                    //Substitute( Value,"type =","")
+                                )).Value),"type =","")
+                        ),
+                        // Extract Default Value
+                        defaultValue: If(
+                            Find("default =", ThisRecord.Value) > 0,
+                            Text(
+                                Mid(
+                                    First(
+                                        Filter(
+                                            Split(ThisRecord.Value, Char(10)),
+                                            StartsWith(Trim(ThisRecord.Value), "default =")
+                                        )
+                                    ).Value,
+                                    Find("=", First(Filter(Split(ThisRecord.Value, Char(10)), StartsWith(Trim(ThisRecord.Value), "default ="))).Value) + 1,
+                                    Len(ThisRecord.Value)
+                                )
+                            ),
+                            Blank()
+                        ),
+                        // Extract Validation Block
+                        validationBlock: If(
+                            Find("validation {", ThisRecord.Value) > 0,
+                            Text(
+                                Mid(
+                                    ThisRecord.Value,
+                                    Find("validation {", ThisRecord.Value),
+                                    Find("}", ThisRecord.Value, Find("validation {", ThisRecord.Value)) - Find("validation {", ThisRecord.Value) + 1
+                                )
+                            ),
+                            Blank()
+                        )
+
+                    },
+                    {
+                        variableName: variableName,
+                        typeRow: typeRow,
+                        defaultValue: defaultValue,
+                        validationBlock:validationBlock
+                    }
+
+                )
+            )
+          DelayItemLoading: =true
+          Layout: =Layout.Vertical
+          LoadingSpinner: =LoadingSpinner.Data
+          TemplatePadding: =4
+          TemplateSize: =Min(870, Self.Height - 60)
+          Y: =192
+        Children:
+        - Body3:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.typeRow
+              AutoHeight: =true
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =Self.Size * 4
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Width: =Parent.TemplateWidth - 32
+              X: =16
+              Y: =Image12.Y + Image12.Height + 16
+        - Image12:
+            Control: Image
+            Properties:
+              OnSelect: =Select(Parent)
+              Height: =Min(Self.Width, Parent.TemplateHeight - 180)
+              ImagePosition: =ImagePosition.Fill
+              RadiusBottomLeft: =8
+              RadiusBottomRight: =8
+              RadiusTopLeft: =8
+              RadiusTopRight: =8
+              Width: =Parent.TemplateWidth - 32
+              X: =16
+              Y: =96
+        - Title12:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.typeRow
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =Self.Size * 1.8
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Width: =Parent.TemplateWidth - 112
+              X: =96
+              Y: =ProfileImage3.Y + (ProfileImage3.Height / 2) - (Self.Height / 2)
+        - ProfileImage3:
+            Control: Image
+            Properties:
+              OnSelect: =Select(Parent)
+              Height: =64
+              ImagePosition: =ImagePosition.Fill
+              RadiusBottomLeft: =8
+              RadiusBottomRight: =8
+              RadiusTopLeft: =8
+              RadiusTopRight: =8
+              Width: =64
+              X: =16
+              Y: =16
+    - ButtonCanvas8:
+        Control: Button
+        Properties:
+          OnSelect: |-
+            =ClearCollect(colTF,With(
+                {
+                    // Step 1: Split Terraform file into variable blocks
+                    variableBlocks: Filter(
+                        Split(terraformFile, "variable"),
+                        Len(Trim(ThisRecord.Value)) > 0 // Exclude empty blocks
+                    )
+                },
+                ForAll(
+                    variableBlocks,
+                    With(
+                        {
+                            // Extract Variable Name
+                            variableName: Text(
+                                Mid(
+                                    ThisRecord.Value,
+                                    Find("""", ThisRecord.Value) + 1,
+                                    Find("""", Mid(ThisRecord.Value, Find("""", ThisRecord.Value) + 1)) - 1
+                                )
+                            )
+                        },
+                        With(
+                            {
+                                // Extract the type row
+                                typeRow: Text(
+                                    First(
+                                        Filter(
+                                            Split(ThisRecord.variableName, Char(10)),
+                                            StartsWith(Trim(ThisRecord.Value), "type =")
+                                        )
+                                    ).Value
+                                )
+                            },
+                            With(
+                                {
+                                    // Extract Type
+                                    variableType: Text(
+                                        Mid(
+                                            typeRow,
+                                            Find("=", typeRow) + 1,
+                                            Len(typeRow) - Find("=", typeRow)
+                                        )
+                                    )
+                                },
+                                With(
+                                    {
+                                        // Extract Default Value
+                                        defaultValue: If(
+                                            Find("default =", ThisRecord.variableType) > 0,
+                                            Text(
+                                                Mid(
+                                                    First(
+                                                        Filter(
+                                                            Split(ThisRecord.variableType, Char(10)),
+                                                            StartsWith(Trim(ThisRecord.Value), "default =")
+                                                        )
+                                                    ).Value,
+                                                    Find("=", First(Filter(Split(ThisRecord.variableType, Char(10)), StartsWith(Trim(ThisRecord.Value), "default ="))).Value) + 1,
+                                                    Len(ThisRecord.variableType)
+                                                )
+                                            ),
+                                            Blank()
+                                        )
+                                    },
+                                    With(
+                                        {
+                                            // Extract Validation Block
+                                            validationBlock: If(
+                                                Find("validation {", ThisRecord.defaultValue) > 0,
+                                                Text(
+                                                    Mid(
+                                                        ThisRecord.defaultValue,
+                                                        Find("validation {", ThisRecord.defaultValue),
+                                                        Find("}", ThisRecord.defaultValue, Find("validation {", ThisRecord.defaultValue)) - Find("validation {", ThisRecord.defaultValue) + 1
+                                                    )
+                                                ),
+                                                Blank()
+                                            )
+                                        },
+                                        With(
+                                            {
+                                                // Parse Condition and Error Message from Validation Block
+                                                validationCondition: If(
+                                                    !IsBlank(validationBlock),
+                                                    Text(
+                                                        Mid(
+                                                            validationBlock,
+                                                            Find("condition = ", validationBlock) + 11,
+                                                            Find(Char(10), validationBlock, Find("condition = ", validationBlock)) - (Find("condition = ", validationBlock) + 11)
+                                                        )
+                                                    ),
+                                                    Blank()
+                                                ),
+                                                validationError: If(
+                                                    !IsBlank(validationBlock),
+                                                    Text(
+                                                        Mid(
+                                                            validationBlock,
+                                                            Find("error_message = ", validationBlock) + 15,
+                                                            Find(Char(10), validationBlock, Find("error_message = ", validationBlock)) - (Find("error_message = ", validationBlock) + 15)
+                                                        )
+                                                    ),
+                                                    Blank()
+                                                )
+                                            },
+                                            With(
+                                                {
+                                                    // Parse Nested Types (map, object, list)
+                                                    parsedType: If(
+                                                        StartsWith(Trim(variableType), "map("),
+                                                        "{ ""type"": ""map"", ""content"": """ & Mid(variableType, 5, Len(variableType) - 5) & """ }",
+                                                        If(
+                                                            StartsWith(Trim(variableType), "object("),
+                                                            "{ ""type"": ""object"", ""content"": """ & Mid(variableType, 8, Len(variableType) - 8) & """ }",
+                                                            If(
+                                                                StartsWith(Trim(variableType), "list("),
+                                                                "{ ""type"": ""list"", ""content"": """ & Mid(variableType, 6, Len(variableType) - 6) & """ }",
+                                                                variableType
+                                                            )
+                                                        )
+                                                    )
+                                                },
+                                                // Construct Final JSON Object for Each Variable
+                                                {
+                                                    VariableName: variableName,
+                                                    Type: parsedType,
+                                                    DefaultValue: defaultValue,
+                                                    Validation: {
+                                                        Condition: validationCondition,
+                                                        ErrorMessage: validationError
+                                                    }
+                                                }
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            ))
+          X: =40
+          Y: =40
