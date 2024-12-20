@@ -1,0 +1,643 @@
+- Screen9:
+    Control: Screen
+    Children:
+    - Gallery16:
+        Control: Gallery
+        Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+        Properties:
+          Items: =Sort(Ungroup(GroupBy( Sort(Filter(TerraformVariables,GroupName = "Storage_Account"),Order,SortOrder.Ascending),cr33b_parentkey,GroupedFields),GroupedFields),cr33b_formsectionname,SortOrder.Ascending)
+          WrapCount: =4
+          DelayItemLoading: =true
+          Height: =649
+          Layout: =Layout.Vertical
+          LoadingSpinner: =LoadingSpinner.Data
+          TemplatePadding: =0
+          TemplateSize: =104
+          Visible: =false
+          Width: =1230
+          X: =40
+          Y: =40
+        Children:
+        - Toggle5:
+            Control: Toggle
+            Properties:
+              OnSelect: =Select(Parent)
+              Visible: =ThisItem.cr33b_fieldtype ="bool"
+              X: =60
+              Y: =60
+        - cmbLocation_5:
+            Control: ComboBox
+            Variant: pcfdataset
+            Properties:
+              OnChange: =Patch(colRGmandatory,ThisItem,{tagValue:Self.Selected.Value})
+              BorderColor: =RGBA(106, 122, 127, 1)
+              BorderRadius: =5
+              BorderStyle: =BorderStyle.Solid
+              BorderThickness: =1
+              DefaultSelectedItems: =LookUp(Split(ThisItem.options,","), ThisItem.tagValue = ThisRecord.Value)
+              Fill: =RGBA(255, 255, 255, 1)
+              InputTextPlaceholder: ="Select "& ThisItem.tagName
+              Items: =Split(ThisItem.options,",")
+              Height: =35
+              Visible: =false//ThisItem.cr33b_islist
+              Width: =307.5
+              Y: =40
+            Children:
+            - Value4_6:
+                Control: PowerApps_CoreControls_ComboboxCanvasTemplate_dataField
+                Variant: textualColumn
+                Properties:
+                  FieldDisplayName: ="Value"
+                  FieldName: ="Value"
+                  FieldType: ="s"
+                  Order: =1
+        - InputShutDownTime_36:
+            Control: TextInput
+            Properties:
+              OnChange: =Patch(colRGmandatory,ThisItem,{tagValue:Self.Value})
+              BorderColor: =RGBA(106, 122, 127, 1)
+              BorderRadius: =5
+              BorderStyle: =BorderStyle.Solid
+              BorderThickness: =1
+              Fill: =RGBA(255, 255, 255, 1)
+              FontSize: =13
+              Placeholder: ="Enter "& ThisItem.tagName&" tag value"
+              TriggerOutput: ='TextInputCanvas.TriggerOutput'.Keypress
+              Value: =ThisItem.tagValue
+              Height: =35
+              Visible: =ThisItem.cr33b_fieldtype ="string" || ThisItem.cr33b_fieldtype ="number"
+              Width: =307.5
+              Y: =40
+        - Rectangle10:
+            Control: Rectangle
+            Properties:
+              OnSelect: =Select(Parent)
+              Height: =Parent.TemplateHeight - Separator9.Height
+              Visible: =ThisItem.IsSelected
+              Width: =4
+        - Separator9:
+            Control: Rectangle
+            Properties:
+              OnSelect: =Select(Parent)
+              Fill: =RGBA(255, 255, 255, 1)
+              Height: =8
+              Width: =Parent.TemplateWidth
+              Y: =Parent.TemplateHeight - Self.Height
+        - NextArrow9:
+            Control: Classic/Icon
+            Variant: ChevronRight
+            Properties:
+              OnSelect: =Select(Parent)
+              AccessibleLabel: =Self.Tooltip
+              Tooltip: ="View item details"
+              BorderColor: =RGBA(0, 0, 0, 1)
+              Color: =RGBA(166, 166, 166, 1)
+              DisabledBorderColor: =RGBA(56, 56, 56, 1)
+              DisabledColor: =RGBA(119, 119, 119, 1)
+              Height: =50
+              Icon: =Icon.ChevronRight
+              PaddingBottom: =16
+              PaddingLeft: =16
+              PaddingRight: =16
+              PaddingTop: =16
+              Width: =50
+              X: =Parent.TemplateWidth - Self.Width - 12
+              Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+        - Subtitle11:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.cr33b_fieldname
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =Self.Size * 1.8
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Width: =Title18.Width
+              X: =88
+        - Title18:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.cr33b_parentkey
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =19
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Width: =218
+              X: =60
+              Y: =21
+        - Image16:
+            Control: Image
+            Properties:
+              OnSelect: =Select(Parent)
+              Height: =72
+              RadiusBottomLeft: =8
+              RadiusBottomRight: =8
+              RadiusTopLeft: =8
+              RadiusTopRight: =8
+              Width: =72
+              X: =16
+              Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+    - Gallery20:
+        Control: Gallery
+        Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+        Properties:
+          Items: =dataSubscriptions
+          DelayItemLoading: =true
+          Layout: =Layout.Vertical
+          LoadingSpinner: =LoadingSpinner.Data
+          TemplatePadding: =0
+          TemplateSize: =104
+          Y: =193
+        Children:
+        - Rectangle13:
+            Control: Rectangle
+            Properties:
+              OnSelect: =Select(Parent)
+              Height: =Parent.TemplateHeight - Separator12.Height
+              Visible: =ThisItem.IsSelected
+              Width: =4
+        - Separator12:
+            Control: Rectangle
+            Properties:
+              OnSelect: =Select(Parent)
+              Fill: =RGBA(255, 255, 255, 1)
+              Height: =8
+              Width: =Parent.TemplateWidth
+              Y: =Parent.TemplateHeight - Self.Height
+        - NextArrow12:
+            Control: Classic/Icon
+            Variant: ChevronRight
+            Properties:
+              OnSelect: =Select(Parent)
+              AccessibleLabel: =Self.Tooltip
+              Tooltip: ="View item details"
+              BorderColor: =RGBA(0, 0, 0, 1)
+              Color: =RGBA(166, 166, 166, 1)
+              DisabledBorderColor: =RGBA(56, 56, 56, 1)
+              DisabledColor: =RGBA(119, 119, 119, 1)
+              Height: =50
+              Icon: =Icon.ChevronRight
+              PaddingBottom: =16
+              PaddingLeft: =16
+              PaddingRight: =16
+              PaddingTop: =16
+              Width: =50
+              X: =Parent.TemplateWidth - Self.Width - 12
+              Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+        - Subtitle15:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.displayName
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =Self.Size * 1.8
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Width: =Title22.Width
+              X: =Title22.X
+              Y: =Title22.Y + Title22.Height
+        - Title22:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.id
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =Self.Size * 1.8
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Width: =Parent.TemplateWidth - 173
+              X: =103
+              Y: =(Parent.TemplateHeight - (Self.Size * 1.8 + Subtitle15.Size * 1.8)) / 2
+        - Image20:
+            Control: Image
+            Properties:
+              OnSelect: =Select(Parent)
+              Height: =72
+              RadiusBottomLeft: =8
+              RadiusBottomRight: =8
+              RadiusTopLeft: =8
+              RadiusTopRight: =8
+              Width: =72
+              X: =16
+              Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+    - TextCanvas21:
+        Control: Text
+        Properties:
+          Text: =dataResource
+          X: =1085
+          Y: =72
+    - TextCanvas20:
+        Control: Text
+        Properties:
+          Text: =JSON(colVariables2)
+          Height: =347
+          Width: =574
+          X: =642
+          Y: =421
+    - working Top variables:
+        Control: Button
+        Properties:
+          OnSelect: |+
+            =// Clear previous collections
+            Clear(colVariables2);
+
+            // Step 1: Split the file into sections using the separator
+            ClearCollect(
+                colSections,
+                Filter(
+                    Split(
+                        First(
+                            Split(terraformFile, "# ---------------- Modules -------------------- #")
+                        ).Value, 
+                        "variable"
+                    ),
+                    !IsBlank(Trim(Value)) And !StartsWith(Value,"#")
+                )
+            );
+
+            // Step 2: Process each section to extract variables and values
+            ClearCollect(
+                colVariables2,
+                ForAll(
+                    Filter( Split( First( Split(terraformFile, "# ---------------- Modules -------------------- #") ).Value, "variable" ), !IsBlank(Trim(Value)) And !StartsWith(Value,"#") ) As currentSection,
+                    With(
+                        {
+                            // Define lines for processing
+                            variableLine: First(
+                                Filter(
+                                    Split(currentSection.Value, Char(10)),
+                                    StartsWith(Trim(Value), """")
+                                )
+                            ),
+                            typeLine: First(
+                                Filter(
+                                    Split(currentSection.Value, Char(10)),
+                                    StartsWith(Trim(Value), "type")
+                                )
+                            ),
+                            defaultLine: First(
+                                Filter(
+                                    Split(currentSection.Value, Char(10)),
+                                    StartsWith(Trim(Value), "default")
+                                )
+                            ),
+                            descriptionLine: First(
+                                Filter(
+                                    Split(currentSection.Value, Char(10)),
+                                    StartsWith(Trim(Value), "description")
+                                )
+                            ),
+                            validationLines: Filter(
+                                Split(currentSection.Value, Char(10)),
+                                StartsWith(Trim(Value), "condition") || StartsWith(Trim(Value), "error_message")
+                            )
+                        },
+                        With(
+                            {
+                                // Extract values
+                                variableName: Mid(
+                                    variableLine.Value,
+                                    Find("""", variableLine.Value) + 1,
+                                    Find("""", variableLine.Value, Find("""", variableLine.Value) + 1) - Find("""", variableLine.Value) - 1
+                                ),
+                                typeValue: If(
+                                    !IsBlank(typeLine.Value),
+                                    Trim(Mid(typeLine.Value, Find("=", typeLine.Value) + 1, Len(typeLine.Value))),
+                                    Blank()
+                                ),
+                                defaultValue: If(
+                                    !IsBlank(defaultLine.Value),
+                                    Trim(Mid(defaultLine.Value, Find("=", defaultLine.Value) + 1, Len(defaultLine.Value))),
+                                    Blank()
+                                ),
+                                descriptionValue: If(
+                                    !IsBlank(descriptionLine.Value),
+                                    Trim(Mid(descriptionLine.Value, Find("=", descriptionLine.Value) + 1, Len(descriptionLine.Value))),
+                                    Blank()
+                                ),
+                                conditionValue: First(
+                                    Filter(validationLines, StartsWith(Trim(Value), "condition"))
+                                ).Value,
+                                errorMessageValue: First(
+                                    Filter(validationLines, StartsWith(Trim(Value), "error_message"))
+                                ).Value
+                            },
+                            {
+                                VariableName: variableName,
+                                Type: typeValue,
+                                Default: defaultValue,
+                                Description: descriptionValue,
+                                Condition: If(!IsBlank(conditionValue), Trim(Mid(conditionValue, Find("=", conditionValue) + 1, Len(conditionValue))), Blank()),
+                                ErrorMessage: If(!IsBlank(errorMessageValue), Trim(Mid(errorMessageValue, Find("=", errorMessageValue) + 1, Len(errorMessageValue))), Blank())
+                            }
+                        )
+                    )
+                )
+            );
+          BasePaletteColor: =RGBA(8, 222, 8, 1)
+          Text: ="working Top variables"
+          Height: =154
+          X: =1270
+          Y: =614
+    - ButtonCanvas29:
+        Control: Button
+        Properties:
+          OnSelect: "=ClearCollect(\r\n    colSections,\r\n    Filter(\r\n        Split( First( Split(terraformFile, \"# ---------------- Modules -------------------- #\") ).Value, \"# --------------------------------------------------------- #\" ),\r\n        !IsBlank(Trim(Value)) || !(\"#\" in Value)\r\n    )\r\n);\r\nClear(colVariables);\r\n ForAll(\r\n        colSections,\r\nCollect(\r\n    colVariables,\r\n   \r\n        With(\r\n            {\r\n                sectionLines: Filter(Split(ThisRecord.Value, Char(10)) As SplitLine, !IsBlank(Trim(SplitLine.Value))) // Split section into lines\r\n            },\r\n            ForAll(\r\n                sectionLines As Line,\r\n                With(\r\n                    {\r\n\r\n                        // Extract variable name\r\n                        variableName: If(\r\n                            StartsWith(Trim(Line.Value), \"variable\"),\r\n                            Mid(Trim(Line.Value), Find(\"\"\"\", Trim(Line.Value)) + 1, Find(\"\"\"\", Mid(Trim(Line.Value), Find(\"\"\"\", Trim(Line.Value)) + 1)) - 1)\r\n                        ),\r\n\r\n                        // Extract key-value pairs\r\n                        key: If(\r\n                            \" = \" in Trim(Line.Value),\r\n                            Trim(First(Split(Trim(Line.Value), \" = \")).Value),\r\n                            Blank()\r\n                        ),\r\n                        value: If(\r\n                            \" = \" in Trim(Line.Value),\r\n                            Trim(Last(Split(Trim(Line.Value), \" = \")).Value),\r\n                            Blank()\r\n                        ),\r\n\r\n                        // Detect validation condition and error_message\r\n                        isCondition: StartsWith(Trim(Line.Value), \"condition\"),\r\n                        isErrorMessage: StartsWith(Trim(Line.Value), \"error_message\")\r\n                    },\r\n                    {\r\n                        variableName: variableName,\r\n                        key: key,\r\n                        value: value,\r\n                        condition: If(isCondition, value, Blank()),\r\n                        error_message: If(isErrorMessage, value, Blank())\r\n                    }\r\n                )\r\n            )\r\n        )\r\n    )\r\n);\r\n"
+          X: =404
+          Y: =104
+    - ButtonCanvas28:
+        Control: Button
+        Properties:
+          OnSelect: |+
+            =ClearCollect(
+                colTerraformVariables,
+                ForAll(
+                    Filter(
+                        Split(
+                            First(
+                                Split(terraformFile, "# ---------------- Modules -------------------- #")
+                            ).Value, 
+                            "# --------------------------------------------------------- #"
+                        ),
+                        Len(Trim(ThisRecord.Value)) > 0 // Remove any empty sections
+                    ) As Section,
+                    With(
+                        {
+                            // Store the raw section for processing
+                            rawContent: Section.Value
+                        },
+                        {
+                            rawContent: rawContent
+                        }
+                    )
+                )
+            );
+            ClearCollect(
+                colParsedVariables,
+                ForAll(
+                    colTerraformVariables,
+                    With(
+                        {
+                            // Extract Variable Name
+                            variableName: If(
+                                Find("variable", rawContent) > 0,
+                                Mid(
+                                    rawContent,
+                                    Find("""", rawContent) + 1,
+                                    Find("""", Mid(rawContent, Find("""", rawContent) + 1)) - 1
+                                ),
+                                Blank()
+                            ),
+
+                            // Extract Type
+                            variableType: If(
+                                Find("type =", rawContent) > 0,
+                                Trim(
+                                    Mid(
+                                        rawContent,
+                                        Find("type =", rawContent) + 6,
+                                        Find(Char(10), Mid(rawContent, Find("type =", rawContent) + 6)) - 1
+                                    )
+                                ),
+                                Blank()
+                            ),
+
+                            // Extract Default Value
+                            defaultValue: If(
+                                Find("default =", rawContent) > 0,
+                                Trim(
+                                    Mid(
+                                        rawContent,
+                                        Find("default =", rawContent) + 8,
+                                        Find(Char(10), Mid(rawContent, Find("default =", rawContent) + 8)) - 1
+                                    )
+                                ),
+                                Blank()
+                            ),
+
+                            // Extract Validation Block
+
+                            // Extract Validation Condition
+                            validationCondition: If(
+                                Find("condition =", If( Find("validation {", rawContent) > 0, Mid( rawContent, Find("validation {", rawContent), Find("}", rawContent, Find("validation {", rawContent)) - Find("validation {", rawContent) + 1 ), Blank() )) > 0,
+                                Trim(
+                                    Mid(
+                                        If( Find("validation {", rawContent) > 0, Mid( rawContent, Find("validation {", rawContent), Find("}", rawContent, Find("validation {", rawContent)) - Find("validation {", rawContent) + 1 ), Blank() ),
+                                        Find("condition =", If( Find("validation {", rawContent) > 0, Mid( rawContent, Find("validation {", rawContent), Find("}", rawContent, Find("validation {", rawContent)) - Find("validation {", rawContent) + 1 ), Blank() )) + 10,
+                                        Find(Char(10), Mid(If( Find("validation {", rawContent) > 0, Mid( rawContent, Find("validation {", rawContent), Find("}", rawContent, Find("validation {", rawContent)) - Find("validation {", rawContent) + 1 ), Blank() ), Find("condition =", If( Find("validation {", rawContent) > 0, Mid( rawContent, Find("validation {", rawContent), Find("}", rawContent, Find("validation {", rawContent)) - Find("validation {", rawContent) + 1 ), Blank() )) + 10)) - 1
+                                    )
+                                ),
+                                Blank()
+                            ),
+
+                            // Extract Validation Error Message
+                            validationErrorMessage: If(
+                                Find("error_message =", If( Find("validation {", rawContent) > 0, Mid( rawContent, Find("validation {", rawContent), Find("}", rawContent, Find("validation {", rawContent)) - Find("validation {", rawContent) + 1 ), Blank() )) > 0,
+                                Trim(
+                                    Mid(
+                                        If( Find("validation {", rawContent) > 0, Mid( rawContent, Find("validation {", rawContent), Find("}", rawContent, Find("validation {", rawContent)) - Find("validation {", rawContent) + 1 ), Blank() ),
+                                        Find("error_message =", If( Find("validation {", rawContent) > 0, Mid( rawContent, Find("validation {", rawContent), Find("}", rawContent, Find("validation {", rawContent)) - Find("validation {", rawContent) + 1 ), Blank() )) + 14,
+                                        Find(Char(10), Mid(If( Find("validation {", rawContent) > 0, Mid( rawContent, Find("validation {", rawContent), Find("}", rawContent, Find("validation {", rawContent)) - Find("validation {", rawContent) + 1 ), Blank() ), Find("error_message =", If( Find("validation {", rawContent) > 0, Mid( rawContent, Find("validation {", rawContent), Find("}", rawContent, Find("validation {", rawContent)) - Find("validation {", rawContent) + 1 ), Blank() )) + 14)) - 1
+                                    )
+                                ),
+                                Blank()
+                            )
+                        },
+                        {
+                            variableName: variableName,
+                            variableType: variableType,
+                            defaultValue: defaultValue,
+                            validationCondition: validationCondition,
+                            validationErrorMessage: validationErrorMessage
+                        }
+                    )
+                )
+            );
+          X: =1120
+          Y: =168
+    - ButtonCanvas27:
+        Control: Button
+        Properties:
+          OnSelect: |-
+            =ClearCollect(colTFdata,
+            ForAll(
+                Filter(
+                    Split(terraformFile, "variable"),
+                    Len(Trim(ThisRecord.Value)) > 0, // Exclude empty blocks
+                    !StartsWith(Value, "#") // Exclude comments
+                ),
+                With(
+                    {
+                        // Step 1: Extract Variable Name
+                        variableName: Text(
+                            Mid(
+                                ThisRecord.Value,
+                                Find("""", ThisRecord.Value) + 1,
+                                Find("""", Mid(ThisRecord.Value, Find("""", ThisRecord.Value) + 1)) - 1
+                            )
+                        ),
+
+                        // Step 2: Extract the Type Row
+                        variableType: Text(
+                            Last(
+                                Split(
+                                    LookUp(
+                                        Split(ThisRecord.Value, Char(10)) As type,
+                                        StartsWith(Trim(type.Value), "type =")
+                                    ).Value, 
+                                    "="
+                                )
+                            ).Value
+                        ),
+
+                        // Step 3: Extract the Variable Content (Raw Content)
+                        variableContent: Trim(
+                            Substitute(
+                                Substitute(
+                                    Trim(
+                                        Concat(
+                                            Filter(
+                                                Split(ThisRecord.Value, Char(10)),
+                                                !("#" in Value) // Exclude comments
+                                            ) As Row, 
+                                            Row.Value,
+                                            "," & Char(10)
+                                        )
+                                    ), 
+                                    "=", ":"
+                                ), 
+                                Char(10) & ",", ""
+                            )
+                        ),
+
+                        // Step 4: Extract Default Value
+                        defaultValue: If(
+                            Find("default =", ThisRecord.Value) > 0,
+                            Text(
+                                Mid(
+                                    First(
+                                        Filter(
+                                            Split(ThisRecord.Value, Char(10)),
+                                            StartsWith(Trim(ThisRecord.Value), "default =")
+                                        )
+                                    ).Value,
+                                    Find("=", First(Filter(Split(ThisRecord.Value, Char(10)), StartsWith(Trim(ThisRecord.Value), "default ="))).Value) + 1,
+                                    Len(ThisRecord.Value)
+                                )
+                            ),
+                            Blank()
+                        ),
+
+                        // Step 5: Extract Validation Block
+                        validationBlock: If(
+                            Find("validation {", ThisRecord.Value) > 0,
+                            Text(
+                                Mid(
+                                    ThisRecord.Value,
+                                    Find("validation {", ThisRecord.Value),
+                                    Find("}", ThisRecord.Value, Find("validation {", ThisRecord.Value)) - Find("validation {", ThisRecord.Value) + 1
+                                )
+                            ),
+                            Blank()
+                        ),
+
+                        // Step 6: Handle Nested Objects and Map(Object) Parsing
+                        nestedContent: ForAll(
+                            Filter(
+                                Split(Substitute(Trim(
+                            Substitute(
+                                Substitute(
+                                    Trim(
+                                        Concat(
+                                            Filter(
+                                                Split(ThisRecord.Value, Char(10)),
+                                                !("#" in Value) // Exclude comments
+                                            ) As Row, 
+                                            Row.Value,
+                                            "," & Char(10)
+                                        )
+                                    ), 
+                                    "=", ":"
+                                ), 
+                                Char(10) & ",", ""
+                            )
+                        ), Char(10), ""), "},"), // Split content by delimiters
+                                "object(" in Value || "map(" in Value // Identify rows with nested structures
+                            ) As Objects,
+                            With(
+                                {
+                                    // Step 6.1: Clean the Nested Structure
+                                    //cleanedContent: Trim(Substitute(Substitute(Objects.Value,"object({",""),"map(object({","")),
+
+                                    // Step 6.2: Remove Trailing 
+                                    finalContent: If(
+                                        Right(Trim(Substitute(Substitute(Objects.Value,"object({",""),"map(object({","")), 2) = "})",
+                                        Left(Trim(Substitute(Substitute(Objects.Value,"object({",""),"map(object({","")), Len(Trim(Substitute(Substitute(Objects.Value,"object({",""),"map(object({",""))) - 2), 
+                                        Trim(Substitute(Substitute(Objects.Value,"object({",""),"map(object({",""))
+                                    ),
+                                    finalRough: Objects.Value
+                                },
+                                // Step 6.3: Parse Key-Value Pairs from the Cleaned Content
+                                ForAll(
+                                    Split(finalRough, ","), // Split by commas to get key-value pairs
+                                    With(
+                                        {
+                                            keyValuePair: Split(ThisRecord.Value, ":") // Split each row into key and value
+                                        },
+                                        {
+                                            key: First(keyValuePair).Value, // Extract the key
+                                            value: Last(keyValuePair).Value // Extract the value
+                                        }
+                                    )
+                                )
+                            )
+                        )
+                    },
+                    {
+                        // Final Output for Each Variable
+                        variableName: variableName,
+                        variableType: variableType,
+                        defaultValue: defaultValue,
+                        validationBlock: validationBlock,
+                        variableContent: Substitute(
+                            Substitute(
+                                Substitute(variableContent, """" & variableName & """", variableName & ":"),
+                                "{,", "{"
+                            ), 
+                            ", }", "}"
+                        ),
+                        nestedContent: First(nestedContent).Value
+                    }
+                )
+            )
+            )
+          X: =900
+          Y: =72
+    - TextCanvas18:
+        Control: Text
+        Properties:
+          Text: =AzureData2.data
+          Height: =518
+          Width: =429
+          X: =309
+          Y: =40
+    - ButtonCanvas24:
+        Control: Button
+        Properties:
+          OnSelect: =Set(AzureData2,GetUserData.Run(nf_CurrentUser.Id))
+          Text: ="Get data"
+          X: =820
+          Y: =336
