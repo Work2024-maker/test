@@ -1,0 +1,1894 @@
+- Screen6:
+    Control: Screen
+    Variant: phoneLayout_FluidGridWithHeaderPageLayout_ver3.0
+    Children:
+    - ButtonCanvas31:
+        Control: Button
+        Properties:
+          OnSelect: "=// Clear previous collections\r\nClear(colVariables);\r\nClear(colVariableDetails);\r\n\r\n// Step 1: Split the file into sections using the separator\r\nClearCollect(\r\n    colSections,\r\n    Filter(\r\n        Split(\r\n            Last(\r\n                Split(terraformFile, \"# ---------------- Modules -------------------- #\")\r\n            ).Value,\r\n            \"# --------------------------------------------------------- #\"\r\n        ),\r\n        !IsBlank(Trim(Value))\r\n    )\r\n);\r\n\r\n// Step 2: Extract variables and their \"type\" rows\r\n\r\n    ForAll(\r\n        colSections As currentSection,\r\n        Collect(\r\n    colVariables,\r\n        With(\r\n            {\r\n                variableLine: First(\r\n                    Filter(Split(currentSection.Value, Char(10)), StartsWith(Trim(Value), \"variable \"))\r\n                ),\r\n                typeLines: Filter(\r\n                    Split(currentSection.Value, Char(10)), StartsWith(Trim(Value), \"type = map(object({\")\r\n                ),\r\n                defaultLine: First(\r\n                    Filter(Split(currentSection.Value, Char(10)), StartsWith(Trim(Value), \"default\"))\r\n                ),\r\n                descriptionLine: First(\r\n                    Filter(Split(currentSection.Value, Char(10)), StartsWith(Trim(Value), \"description\"))\r\n                )\r\n            },\r\n            ForAll(\r\n                typeLines As typeLine,\r\n                {\r\n                    VariableName: If(\r\n                        !IsBlank(variableLine.Value),\r\n                        Mid(\r\n                            variableLine.Value,\r\n                            Find(\"\"\"\", variableLine.Value) + 1,\r\n                            Find(\"\"\"\", variableLine.Value, Find(\"\"\"\", variableLine.Value) + 1) - Find(\"\"\"\", variableLine.Value) - 1\r\n                        ),\r\n                        Blank()\r\n                    ),\r\n                    TypeRow: Trim(typeLine.Value), // Entire type definition\r\n                    Default: If(\r\n                        !IsBlank(defaultLine.Value),\r\n                        Trim(Mid(defaultLine.Value, Find(\"=\", defaultLine.Value) + 1, Len(defaultLine.Value))),\r\n                        Blank()\r\n                    ),\r\n                    Description: If(\r\n                        !IsBlank(descriptionLine.Value),\r\n                        Trim(Mid(descriptionLine.Value, Find(\"=\", descriptionLine.Value) + 1, Len(descriptionLine.Value))),\r\n                        Blank()\r\n                    )\r\n                }\r\n            )\r\n        )\r\n    )\r\n);\r\n\r\n// Step 3: Parse \"type\" rows into detailed structures\r\n\r\n    ForAll(\r\n        colVariables As currentRow,\r\n        Collect(\r\n    colVariableDetails,\r\n        With(\r\n            {\r\n                typeContent: Mid(\r\n                    currentRow.Type,\r\n                    Find(\"=\", currentRow.Type) + 1,\r\n                    Len(currentRow.Type)\r\n                )\r\n            },\r\n            With(\r\n                {\r\n                    // Preprocess the type into lines and handle nested objects\r\n                    parsedTypeLines: Filter(\r\n                        Split(\r\n                            Substitute(typeContent, \"=\", \":\"), // Replace '=' for easier splitting\r\n                            Char(10)\r\n                        ),\r\n                        !IsBlank(Trim(Value))\r\n                    )\r\n                },\r\n                ForAll(\r\n                    parsedTypeLines As fieldLine,\r\n                    With(\r\n                        {\r\n                            \r\n                            isOptional: StartsWith(Trim(fieldLine.Value), \"optional(\"),\r\n                            keyName: If(\r\n                                StartsWith(Trim(fieldLine.Value), \"optional(\"),\r\n                                Mid(Trim(fieldLine.Value), 1, Find(\"=\", Trim(fieldLine.Value)) - 1),\r\n                                First(Split(Trim(fieldLine.Value), \"=\")).Value\r\n                            ),\r\n                            fieldType: If(\r\n                                StartsWith(Trim(fieldLine.Value), \"optional(\"),\r\n                                Mid(Trim(fieldLine.Value), Find(\"(\", Trim(fieldLine.Value)) + 1, Find(\",\", Trim(fieldLine.Value)) - Find(\"(\", Trim(fieldLine.Value)) - 1),\r\n                                Last(Split(Trim(fieldLine.Value), \"=\")).Value\r\n                            )\r\n                        },\r\n                        {\r\n                            VariableName: currentRow.VariableName,\r\n                            ParentType: \"object/map\", // Represents parent structure\r\n                            Key: Trim(keyName),       // Extracted field key\r\n                            FieldType: Trim(fieldType), // Extracted field type\r\n                            IsOptional: isOptional,     // Is this field optional\r\n                            TypeRow: currentRow.TypeRow // Original row for context\r\n                        }\r\n                    )\r\n                )\r\n            )\r\n        )\r\n    )\r\n);\r\n"
+          X: =720
+          Y: =707
+    - TextCanvas22:
+        Control: Text
+        Properties:
+          Text: =JSON(colVariables)
+          Height: =567
+          Width: =508
+          X: =100
+          Y: =100
+    - ButtonCanvas26:
+        Control: Button
+        Properties:
+          OnSelect: "=// Clear previous collections\r\nClear(colSections);\r\nClear(colTopSection);\r\nClear(colTopVariables);\r\n\r\n// Step 1: Split the file into sections using the \"Modules\" marker\r\nClearCollect(\r\n    colSections,\r\n    Filter(\r\n        Split(terraformFile, \"# ---------------- Modules -------------------- #\"),\r\n        !IsBlank(Trim(Value))\r\n    )\r\n);\r\n\r\n// Step 2: Extract lines from the first section (pre-Modules section)\r\nClearCollect(\r\n    colTopSection,\r\n    Filter(\r\n        Split(First(colSections).Value, Char(10)),\r\n        !IsBlank(Trim(Value)) || !(\"#\" in Value)\r\n    )\r\n);\r\n\r\n// Step 3: Extract variable names and details\r\nClearCollect(\r\n    colTopVariables,\r\n    ForAll(\r\n        Sequence(CountRows(colTopSection)) As currentLine,\r\n        With(\r\n            {\r\n               \r\n                variableName: If(\r\n                    StartsWith(Trim(Last(FirstN(colTopSection, currentLine.Value)).Value), \"variable \"),\r\n                    Mid(\r\n                        Trim(Last(FirstN(colTopSection, currentLine.Value)).Value),\r\n                        Find(\"\"\"\", Trim(Last(FirstN(colTopSection, currentLine.Value)).Value)) + 1,\r\n                        Find(\"\"\"\", Trim(Last(FirstN(colTopSection, currentLine.Value)).Value), Find(\"\"\"\", Trim(Last(FirstN(colTopSection, currentLine.Value)).Value)) + 1) - Find(\"\"\"\", Trim(Last(FirstN(colTopSection, currentLine.Value)).Value)) - 1\r\n                    )\r\n                ),\r\n                typeValue: If(\r\n                    StartsWith(Trim(Last(FirstN(colTopSection, currentLine.Value)).Value), \"type\"),\r\n                    Mid(\r\n                        Trim(Last(FirstN(colTopSection, currentLine.Value)).Value),\r\n                        Find(\"=\", Trim(Last(FirstN(colTopSection, currentLine.Value)).Value)) + 1,\r\n                        Len(Trim(Last(FirstN(colTopSection, currentLine.Value)).Value))\r\n                    )\r\n                ),\r\n                defaultValue: If(\r\n                    StartsWith(Trim(Last(FirstN(colTopSection, currentLine.Value)).Value), \"default\"),\r\n                    Mid(\r\n                        Trim(Last(FirstN(colTopSection, currentLine.Value)).Value),\r\n                        Find(\"=\", Trim(Last(FirstN(colTopSection, currentLine.Value)).Value)) + 1,\r\n                        Len(Trim(Last(FirstN(colTopSection, currentLine.Value)).Value))\r\n                    )\r\n                ),\r\n                descriptionValue: If(\r\n                    StartsWith(Trim(Last(FirstN(colTopSection, currentLine.Value)).Value), \"description\"),\r\n                    Mid(\r\n                        Trim(Last(FirstN(colTopSection, currentLine.Value)).Value),\r\n                        Find(\"=\", Trim(Last(FirstN(colTopSection, currentLine.Value)).Value)) + 1,\r\n                        Len(Trim(Last(FirstN(colTopSection, currentLine.Value)).Value))\r\n                    )\r\n                )\r\n            },\r\n            If(\r\n                !IsBlank(variableName),\r\n                {\r\n                    VariableName: variableName,\r\n                    Type: LookUp(\r\n                        colTopSection,\r\n                        Trim(Last(FirstN(colTopSection, currentLine.Value + 1)).Value) = \"type\"\r\n                    ).Value,\r\n                    Default: LookUp(\r\n                        colTopSection,\r\n                        Trim(Last(FirstN(colTopSection, currentLine.Value + 1)).Value) = \"default\"\r\n                    ).Value,\r\n                    Description: LookUp(\r\n                        colTopSection,\r\n                        Trim(Last(FirstN(colTopSection, currentLine.Value + 1)).Value) = \"description\"\r\n                    ).Value\r\n                }\r\n            )\r\n        )\r\n    )\r\n);\r\n"
+          X: =512
+          Y: =197
+    - ButtonCanvas22:
+        Control: Button
+        Properties:
+          OnSelect: "=// Step 1: Identify variables with complex types\r\nClearCollect(\r\n    colComplexVariables,\r\n    Filter(\r\n        colVariables,\r\n        StartsWith(Type, \"object(\") || StartsWith(Type, \"map(\")\r\n    )\r\n);\r\n// Step 2a: Clean the type definitions\r\nClearCollect(\r\n    colParsedComplexVariables,\r\n    AddColumns(\r\n        colComplexVariables,\r\n        InnerType,\r\n        // Remove 'object(' or 'map(' from the beginning and ')' from the end\r\n        Mid(\r\n            Type,\r\n            Find(\"(\", Type) + 1,\r\n            Len(Type) - Find(\"(\", Type) - 1\r\n        ),\r\n        InnerTypeClean,\r\n        // Substitute(Substitute(\r\n       // Substitute(\r\n            Text(Mid(Type, Find(\"(\", Type) + 1, Len(Type) - Find(\"(\", Type) - 1)\r\n               // , Char(10), \"\")\r\n            //, Char(13), \"\"), \" \", \"\")\r\n\r\n\r\n        )\r\n    )\r\n);\r\n/*\r\n// Step 2b: Prepare the inner content\r\nClearCollect(\r\n    colPreparedComplexVariables2,\r\n    AddColumns(\r\n        colParsedComplexVariables As item,\r\n       With({InnerTypeClean: Substitute(Substitute(Substitute(item.InnerType, Char(10), \"\"), Char(13), \"\"), \" \", \"\")},\r\n\r\n        InnerTypeClean : Substitute(InnerTypeClean, \"optional(\", \"optional(\")\r\n        \r\n    )\r\n    )\r\n);*/"
+          X: =1050
+          Y: =635
+    - ButtonCanvas21_1:
+        Control: Button
+        Properties:
+          OnSelect: |-
+            =// Clear previous collections
+            Clear(colSections);
+            Clear(colLines);
+            //Clear(colVariables);
+
+            // Step 1: Split the file into sections using the separator
+            ClearCollect(
+                colSections,
+                Filter(
+                    Split(First(Split(terraformFile,"# ---------------- Modules -------------------- #")).Value, "# --------------------------------------------------------- #"),
+                    !IsBlank(Trim(Value))
+                )
+            );
+            ClearCollect(
+                colSectionsIndexed,
+                ForAll(
+                    Sequence(CountRows(colSections)),
+                    Patch(
+                        Last(FirstN(colSections, Value)),
+                        {
+                            Index: Value
+                        }
+                    )
+                )
+            );
+            // Step 2: Process each section separately
+            ForAll(
+                colSectionsIndexed As currentSection,
+                With(
+                    {
+                        // Split the section into lines and index them
+                        sectionLines: Filter(
+                            Split(currentSection.Value, Char(10)),
+                            !IsBlank(Trim(Value))
+                        )
+                    },
+                    Collect(
+                        colLines,
+                        ForAll(
+                            Sequence(CountRows(sectionLines)),
+                            {
+                                SectionIndex: currentSection.Index, // Index of the section
+                                LineNumber: CountRows(colLines) + 1, // Global line number
+                                SectionLineNumber: Value, // Line number within the section
+                                Value: Trim(
+                                    Last(
+                                        FirstN(
+                                            sectionLines,
+                                            Value
+                                        )
+                                    ).Value
+                                )
+                            }
+                        )
+                    )
+                )
+            );
+
+            // Step 3: Identify variable start lines and extract variable names
+            ClearCollect(
+                colVariableStarts,
+                AddColumns(
+                    Filter(
+                        colLines,
+                        StartsWith(Value, "variable ")
+                    ),
+                    VariableName,
+                    // Extract the variable name between the first pair of double quotes
+                    Mid(
+                        Value,
+                        Find("""", Value) + 1,
+                        Find("""", Value, Find("""", Value) + 1) - Find("""", Value) - 1
+                    ),
+                    StartLineNumber,
+                    LineNumber
+                )
+            );
+
+            // Step 4: Number the variables for indexing
+            ClearCollect(
+                colVariableStartsNumbered,
+                AddColumns(
+                    colVariableStarts,
+                    Index,
+                    CountRows(
+                        Filter(
+                            colVariableStarts,
+                            LineNumber <= ThisRecord.LineNumber
+                        )
+                    )
+                )
+            );
+
+            // Step 5: Determine variable end lines within the same section
+            ClearCollect(
+                colVariableDefinitions,
+                ForAll(
+                    colVariableStartsNumbered As varStart,
+                    With(
+                        {
+                            // Find the next variable in the same section
+                            nextVarInSection: First(
+                                Sort(
+                                    Filter(
+                                        colVariableStartsNumbered,
+                                        SectionIndex = varStart.SectionIndex,
+                                        LineNumber > varStart.LineNumber
+                                    ),
+                                    LineNumber,
+                                    SortOrder.Ascending
+                                )
+                            ),
+                            varEndLineNumber: If(
+                                !IsBlank(First( Sort( Filter( colVariableStartsNumbered, SectionIndex = varStart.SectionIndex, LineNumber > varStart.LineNumber ), LineNumber, SortOrder.Ascending ) ).VariableName),
+                                First( Sort( Filter( colVariableStartsNumbered, SectionIndex = varStart.SectionIndex, LineNumber > varStart.LineNumber ), LineNumber, SortOrder.Ascending ) ).StartLineNumber - 1,
+                                // End at the end of the section
+                                Max(
+                                    Filter(
+                                        colLines,
+                                        SectionIndex = varStart.SectionIndex
+                                    ),
+                                    LineNumber
+                                )
+                            )
+                        },
+                        {
+                            VariableName: varStart.VariableName,
+                            StartLineNumber: varStart.StartLineNumber,
+                            EndLineNumber: varEndLineNumber,
+                            SectionIndex: varStart.SectionIndex
+                        }
+                    )
+                )
+            );
+
+            // Step 6: Extract variable details
+            ClearCollect(
+                colVariables,
+                ForAll(
+                    colVariableDefinitions As varDef,
+                    With(
+                        {
+                            varLines: Filter(
+                                colLines,
+                                LineNumber >= varDef.StartLineNumber && LineNumber <= varDef.EndLineNumber
+                            ),
+                            typeLines: Filter( colLines, LineNumber >= varDef.StartLineNumber && LineNumber <= varDef.EndLineNumber ,
+                                StartsWith(Value, "type") || // Start of type definition
+                                (First(LastN(Split(Value, ""), 1)).Value <> "{" && First(LastN(Split(Value, ""), 1)).Value <> "}") // Continuation lines
+                            ),
+                            defaultLines: Filter(
+                                 colLines, LineNumber >= varDef.StartLineNumber && LineNumber <= varDef.EndLineNumber ,
+                                StartsWith(Value, "default") || // Start of default definition
+                                (First(LastN(Split(Value, ""), 1)).Value <> "{" && First(LastN(Split(Value, ""), 1)).Value <> "}") // Continuation lines
+                            ),
+                            descriptionLine: First(
+                                Filter(
+                                    colLines,LineNumber >= varDef.StartLineNumber && LineNumber <= varDef.EndLineNumber,
+                                    StartsWith(Value, "description")
+                                )
+                            ),
+                            // Concatenate the type lines
+                            typeValue: Concat(
+                                Filter( colLines, LineNumber >= varDef.StartLineNumber && LineNumber <= varDef.EndLineNumber ,
+                                StartsWith(Value, "type") || // Start of type definition
+                                (First(LastN(Split(Value, ""), 1)).Value <> "{" && First(LastN(Split(Value, ""), 1)).Value <> "}") // Continuation lines
+                            ),
+                                Value & Char(10)
+                            ),
+                            // Concatenate the default lines
+                            defaultValue: Concat(
+                                Filter(
+                                 colLines, LineNumber >= varDef.StartLineNumber && LineNumber <= varDef.EndLineNumber ,
+                                StartsWith(Value, "default") || // Start of default definition
+                                (First(LastN(Split(Value, ""), 1)).Value <> "{" && First(LastN(Split(Value, ""), 1)).Value <> "}") // Continuation lines
+                            ),
+                                Value & Char(10)
+                            )
+                        },
+                        {
+                            VariableName: varDef.VariableName,
+                            Type: If(
+                                !IsBlank(typeValue),
+                                // Extract the type value after '='
+                                Trim(
+                                    Mid(
+                                        typeValue,
+                                        Find("=", typeValue) + 1,
+                                        Len(typeValue)
+                                    )
+                                ),
+                                ""
+                            ),
+                            Default: If(
+                                !IsBlank(defaultValue),
+                                // Extract the default value after '='
+                                Trim(
+                                    Mid(
+                                        defaultValue,
+                                        Find("=", defaultValue) + 1,
+                                        Len(defaultValue)
+                                    )
+                                ),
+                                ""
+                            ),
+                            Description: If(
+                                !IsBlank(descriptionLine.Value),
+                                Trim(
+                                    Mid(
+                                        descriptionLine.Value,
+                                        Find("=", descriptionLine.Value) + 1,
+                                        Len(descriptionLine.Value)
+                                    )
+                                ),
+                                ""
+                            ),
+                            SectionIndex: varDef.SectionIndex
+                        }
+                    )
+                )
+            );
+          X: =1146
+          Y: =460
+    - ButtonCanvas21:
+        Control: Button
+        Properties:
+          OnSelect: |-
+            =// Clear previous collections
+            Clear(colSections);
+            Clear(colLines);
+            //Clear(colVariables);
+
+            // Step 1: Split the file into sections using the separator
+            ClearCollect(
+                colSections,
+                Filter(
+                    Split(terraformFile, "# --------------------------------------------------------- #"),
+                    !IsBlank(Trim(Value))
+                )
+            );
+            ClearCollect(
+                colSectionsIndexed,
+                ForAll(
+                    Sequence(CountRows(colSections)),
+                    Patch(
+                        Last(FirstN(colSections, Value)),
+                        {
+                            Index: Value
+                        }
+                    )
+                )
+            );
+            // Step 2: Process each section separately
+            ForAll(
+                colSectionsIndexed As currentSection,
+                With(
+                    {
+                        // Split the section into lines and index them
+                        sectionLines: Filter(
+                            Split(currentSection.Value, Char(10)),
+                            !IsBlank(Trim(Value))
+                        )
+                    },
+                    Collect(
+                        colLines,
+                        ForAll(
+                            Sequence(CountRows(sectionLines)),
+                            {
+                                SectionIndex: currentSection.Index, // Index of the section
+                                LineNumber: CountRows(colLines) + 1, // Global line number
+                                SectionLineNumber: Value, // Line number within the section
+                                Value: Trim(
+                                    Last(
+                                        FirstN(
+                                            sectionLines,
+                                            Value
+                                        )
+                                    ).Value
+                                )
+                            }
+                        )
+                    )
+                )
+            );
+
+            // Step 3: Identify variable start lines and extract variable names
+            ClearCollect(
+                colVariableStarts,
+                AddColumns(
+                    Filter(
+                        colLines,
+                        StartsWith(Value, "variable ")
+                    ),
+                    VariableName,
+                    // Extract the variable name between the first pair of double quotes
+                    Mid(
+                        Value,
+                        Find("""", Value) + 1,
+                        Find("""", Value, Find("""", Value) + 1) - Find("""", Value) - 1
+                    ),
+                    StartLineNumber,
+                    LineNumber
+                )
+            );
+
+            // Step 4: Number the variables for indexing
+            ClearCollect(
+                colVariableStartsNumbered,
+                AddColumns(
+                    colVariableStarts,
+                    Index,
+                    CountRows(
+                        Filter(
+                            colVariableStarts,
+                            LineNumber <= ThisRecord.LineNumber
+                        )
+                    )
+                )
+            );
+
+            // Step 5: Determine variable end lines within the same section
+            ClearCollect(
+                colVariableDefinitions,
+                ForAll(
+                    colVariableStartsNumbered As varStart,
+                    With(
+                        {
+                            // Find the next variable in the same section
+                            nextVarInSection: First(
+                                Sort(
+                                    Filter(
+                                        colVariableStartsNumbered,
+                                        SectionIndex = varStart.SectionIndex,
+                                        LineNumber > varStart.LineNumber
+                                    ),
+                                    LineNumber,
+                                    SortOrder.Ascending
+                                )
+                            ),
+                            varEndLineNumber: If(
+                                !IsBlank(First( Sort( Filter( colVariableStartsNumbered, SectionIndex = varStart.SectionIndex, LineNumber > varStart.LineNumber ), LineNumber, SortOrder.Ascending ) ).VariableName),
+                                First( Sort( Filter( colVariableStartsNumbered, SectionIndex = varStart.SectionIndex, LineNumber > varStart.LineNumber ), LineNumber, SortOrder.Ascending ) ).StartLineNumber - 1,
+                                // End at the end of the section
+                                Max(
+                                    Filter(
+                                        colLines,
+                                        SectionIndex = varStart.SectionIndex
+                                    ),
+                                    LineNumber
+                                )
+                            )
+                        },
+                        {
+                            VariableName: varStart.VariableName,
+                            StartLineNumber: varStart.StartLineNumber,
+                            EndLineNumber: varEndLineNumber,
+                            SectionIndex: varStart.SectionIndex
+                        }
+                    )
+                )
+            );
+
+            // Step 6: Extract variable details
+            ClearCollect(
+                colVariables,
+                ForAll(
+                    colVariableDefinitions As varDef,
+                    With(
+                        {
+                            varLines: Filter(
+                                colLines,
+                                LineNumber >= varDef.StartLineNumber && LineNumber <= varDef.EndLineNumber
+                            ),
+                            typeLines: Filter( colLines, LineNumber >= varDef.StartLineNumber && LineNumber <= varDef.EndLineNumber ,
+                                StartsWith(Value, "type") || // Start of type definition
+                                (First(LastN(Split(Value, ""), 1)).Value <> "{" && First(LastN(Split(Value, ""), 1)).Value <> "}") // Continuation lines
+                            ),
+                            defaultLines: Filter(
+                                 colLines, LineNumber >= varDef.StartLineNumber && LineNumber <= varDef.EndLineNumber ,
+                                StartsWith(Value, "default") || // Start of default definition
+                                (First(LastN(Split(Value, ""), 1)).Value <> "{" && First(LastN(Split(Value, ""), 1)).Value <> "}") // Continuation lines
+                            ),
+                            descriptionLine: First(
+                                Filter(
+                                    colLines,LineNumber >= varDef.StartLineNumber && LineNumber <= varDef.EndLineNumber,
+                                    StartsWith(Value, "description")
+                                )
+                            ),
+                            // Concatenate the type lines
+                            typeValue: Concat(
+                                Filter( colLines, LineNumber >= varDef.StartLineNumber && LineNumber <= varDef.EndLineNumber ,
+                                StartsWith(Value, "type") || // Start of type definition
+                                (First(LastN(Split(Value, ""), 1)).Value <> "{" && First(LastN(Split(Value, ""), 1)).Value <> "}") // Continuation lines
+                            ),
+                                Value & Char(10)
+                            ),
+                            // Concatenate the default lines
+                            defaultValue: Concat(
+                                Filter(
+                                 colLines, LineNumber >= varDef.StartLineNumber && LineNumber <= varDef.EndLineNumber ,
+                                StartsWith(Value, "default") || // Start of default definition
+                                (First(LastN(Split(Value, ""), 1)).Value <> "{" && First(LastN(Split(Value, ""), 1)).Value <> "}") // Continuation lines
+                            ),
+                                Value & Char(10)
+                            )
+                        },
+                        {
+                            VariableName: varDef.VariableName,
+                            Type: If(
+                                !IsBlank(typeValue),
+                                // Extract the type value after '='
+                                Trim(
+                                    Mid(
+                                        typeValue,
+                                        Find("=", typeValue) + 1,
+                                        Len(typeValue)
+                                    )
+                                ),
+                                ""
+                            ),
+                            Default: If(
+                                !IsBlank(defaultValue),
+                                // Extract the default value after '='
+                                Trim(
+                                    Mid(
+                                        defaultValue,
+                                        Find("=", defaultValue) + 1,
+                                        Len(defaultValue)
+                                    )
+                                ),
+                                ""
+                            ),
+                            Description: If(
+                                !IsBlank(descriptionLine.Value),
+                                Trim(
+                                    Mid(
+                                        descriptionLine.Value,
+                                        Find("=", descriptionLine.Value) + 1,
+                                        Len(descriptionLine.Value)
+                                    )
+                                ),
+                                ""
+                            ),
+                            SectionIndex: varDef.SectionIndex
+                        }
+                    )
+                )
+            );
+          X: =1226
+          Y: =385
+    - ButtonCanvas20:
+        Control: Button
+        Properties:
+          OnSelect: |-
+            =/*// Clear previous collections
+            Clear(colIndexedLines);
+            Clear(colVariableStarts);
+            Clear(colVariableDefinitions);
+            Clear(colVariables);
+
+            // Step 1: Split the file into lines and index them
+            ClearCollect(
+                colIndexedLines1,
+                    ForAll( Filter(
+                        Split(terraformFile, Char(10)),
+                        !IsBlank(Trim(Value)) 
+                    ),Value)
+
+                );
+            ClearCollect(
+                colIndexedLines,
+                ForAll(
+                    Sequence(CountRows(colIndexedLines1)),
+                    Patch(
+                        Last(FirstN(colIndexedLines1, Value)),
+                        {
+                            LineNumber: Value
+                        }
+                    )
+                )
+            );
+            // Step 2: Identify variable start lines and extract variable names
+            ClearCollect(
+                colVariableStarts,
+                AddColumns(
+                    Filter(
+                        colIndexedLines,
+                        StartsWith(Trim(Value), "variable ")
+                    ),
+                    VariableName, 
+                    Mid(
+                        Value,
+                        Find("""", Value) + 1,
+                        Find("""", Value, Find("""", Value) + 1) - Find("""", Value) - 1
+                    ),
+                    StartLineNumber, LineNumber
+                )
+            );
+
+            // Step 3: Determine variable end lines
+            ClearCollect(
+                colVariableDefinitions,
+                ForAll(
+                    Sequence(CountRows(colVariableStarts)),
+                    With(
+                        {
+                            varIndex: Value,
+                            varStart: Last(FirstN(colVariableStarts, Value)),
+                            varEndLineNumber: If(
+                                Value < CountRows(colVariableStarts),
+                                First(
+                                    Sort(
+                                        Filter(
+                                            colVariableStarts,
+                                            LineNumber > Last(FirstN(colVariableStarts, Value)).StartLineNumber
+                                        ),
+                                        LineNumber,
+                                        SortOrder.Ascending
+                                    )
+                                ).StartLineNumber - 1,
+                                Max(colIndexedLines, LineNumber)
+                            )
+                        },
+                        {
+                            VariableName: varStart.VariableName,
+                            StartLineNumber: varStart.StartLineNumber,
+                            EndLineNumber: varEndLineNumber
+                        }
+                    )
+                )
+            );
+
+            // Step 4: Extract variable details
+            ClearCollect(
+                colVariables,
+                ForAll(
+                    colVariableDefinitions As varDef,
+                    With(
+                        {
+                            varLines: Filter(
+                                colIndexedLines,
+                                LineNumber > varDef.StartLineNumber && LineNumber <= varDef.EndLineNumber
+                            ),
+                            typeLine: First(
+                                Filter(
+                                    Filter(
+                                colIndexedLines,
+                                LineNumber > varDef.StartLineNumber && LineNumber <= varDef.EndLineNumber
+                            ),
+                                    StartsWith(Trim(Value), "type")
+                                )
+                            ),
+                            defaultLine: First(
+                                Filter(
+                                    Filter(
+                                colIndexedLines,
+                                LineNumber > varDef.StartLineNumber && LineNumber <= varDef.EndLineNumber
+                            ),
+                                    StartsWith(Trim(Value), "default")
+                                )
+                            ),
+                            descriptionLine: First(
+                                Filter(
+                                    Filter(
+                                colIndexedLines,
+                                LineNumber > varDef.StartLineNumber && LineNumber <= varDef.EndLineNumber
+                            ),
+                                    StartsWith(Trim(Value), "description")
+                                )
+                            )
+                        },
+                        {
+                            VariableName: varDef.VariableName,
+                            Type: If(
+                                !IsBlank(typeLine.Value),
+                                Trim(Last(Split(typeLine.Value, "=")).Value),
+                                ""
+                            ),
+                            Default: If(
+                                !IsBlank(defaultLine.Value),
+                                Trim(Last(Split(defaultLine.Value, "=")).Value),
+                                ""
+                            ),
+                            Description: If(
+                                !IsBlank(descriptionLine.Value),
+                                Trim(Last(Split(descriptionLine.Value, "=")).Value),
+                                ""
+                            )
+                        }
+                    )
+                )
+            );*/
+          X: =1226
+          Y: =567
+    - ButtonCanvas19:
+        Control: Button
+        Properties:
+          OnSelect: |-
+            =ClearCollect(
+                colParsedRows,
+                ForAll(
+                    colFlatRowsWithNumbers As CurrentRow,
+                    With(
+                        {
+                            parentWrapper: LookUp(
+                                colFlatRowsWithNumbers,
+                                currentRowNumber < CurrentRow.currentRowNumber &&
+                                indentLevel < CurrentRow.indentLevel &&
+                                isStartWrapper,
+                                key
+                            )
+                        },
+                        {
+                            RowNumber: CurrentRow.currentRowNumber,
+                            indentLevel: CurrentRow.indentLevel,
+                            key: CurrentRow.key,
+                            value: CurrentRow.value,
+                            detectedWrapper: CurrentRow.detectedWrapper,
+                            parentWrapper: parentWrapper, 
+                                 isStartWrapper: CurrentRow.isStartWrapper,
+                                 isEndWrapper: CurrentRow.isEndWrapper, 
+                                 currentWrapperField: CurrentRow.currentWrapperField
+                        }
+                    )
+                )
+            );
+          X: =1204
+          Y: =148
+    - ButtonCanvas18:
+        Control: Button
+        Properties:
+          OnSelect: |-
+            =Clear(colFlatRowsWithParent);
+
+            ForAll(
+                colFlatRows As rows,
+                Collect(
+                    colFlatRowsWithParent,
+                    With(
+                        {
+                            parentWrapper: LookUp(
+                                colFlatRows,
+                                indentLevel < rows.indentLevel &&
+                                isStartWrapper = true,
+                                key
+                            ), 
+                            currentWrapper: Filter(colFlatRows,  indentLevel < rows.indentLevel && isStartWrapper = true And sectionName = rows.sectionName)
+                        },
+                        {
+                            key: rows.key,
+                            value: rows.value,
+                            detectedWrapper: rows.detectedWrapper,
+                            parentWrapper: parentWrapper,
+                            indentLevel: rows.indentLevel, 
+                            variable: rows.sectionName, 
+                            currentWrapper:currentWrapper
+                        }
+                    )
+                )
+            )
+          X: =1007
+          Y: =133
+    - ButtonCanvas16_1:
+        Control: Button
+        Properties:
+          OnSelect: "=\r\nClear(colFlatRows);\r\n\r\nForAll(\r\n    Filter(\r\n        Split(terraformFile,\r\n            \"# --------------------------------------------------------- #\"),\r\n        Len(Trim(ThisRecord.Value)) > 0 // Exclude empty sections\r\n    ) As sections,\r\n    Collect(\r\n        colFlatRows,\r\n        With(\r\n            {\r\n                rowCounter: 0\r\n            },\r\n            ForAll(\r\n                Filter(\r\n                    Split(sections.Value, Char(10)),\r\n                    Len(Trim(Value)) > 0 // Exclude empty lines\r\n                ) As Line,\r\n                With(\r\n                    {\r\n                        currentRowNumber: rowCounter + 1,\r\n                        indentLevel: Len(Line.Value) - Len(Trim(Line.Value)), // Calculate indentation\r\n                        key: If(\r\n                            \" = \" in Line.Value,\r\n                            Trim(First(Split(Line.Value,\r\n                                \" = \")).Value),\r\n                            Blank()\r\n                        ),\r\n                        value: If(\r\n                            \" = \" in Line.Value,\r\n                            Trim(Last(Split(Line.Value,\r\n                                \" = \")).Value),\r\n                            Blank()\r\n                        ),\r\n                        isStartWrapper: \"object(\" in Line.Value || \"map(\" in Line.Value || \"optional(\" in Line.Value,\r\n                        isEndWrapper: Find(\"})\", Line.Value) > 0 || Find(\"}\", Line.Value) > 0,\r\n                        detectedWrapper: If(\r\n                            \"object(\" in Line.Value,\r\n                            \"object\",\r\n                            If(\r\n                                \"map(\" in Line.Value,\r\n                                \"map\",\r\n                                If(\"optional(\" in Line.Value,\r\n                                    \"optional\", Blank())\r\n                            )\r\n                        ),\r\n                        currentWrapperField: If(\"object(\" in Line.Value || \"map(\" in Line.Value || \"optional(\" in Line.Value, If(\" = \" in Line.Value, Trim(First(Split(Line.Value,\r\n                            \" = \")).Value), Blank()), Blank())\r\n                    },\r\n                    {\r\n                        sectionName: Text(\r\n                            Mid(\r\n                                sections.Value,\r\n                                Find(\"\"\"\", sections.Value) + 1,\r\n                                Find(\"\"\"\", Mid(sections.Value, Find(\"\"\"\", sections.Value) + 1)) - 1\r\n                            )\r\n                        ),\r\n                        indentLevel: indentLevel,\r\n                        key: key,\r\n                        value: value,\r\n                        detectedWrapper: detectedWrapper,\r\n                        isStartWrapper: isStartWrapper,\r\n                        isEndWrapper: isEndWrapper,\r\n                        currentWrapperField: currentWrapperField,\r\n                        currentRowNumber: currentRowNumber\r\n                    }\r\n                )\r\n            )\r\n        )\r\n    ));\r\n\r\nClearCollect(\r\n    colFlatRowsWithNumbers,\r\n    ForAll(\r\n        Sequence(CountRows(colFlatRows)),\r\n        Patch(\r\n            Last(FirstN(colFlatRows, Value)),\r\n            {\r\n                currentRowNumber: Value\r\n            }\r\n        )\r\n    )\r\n);\r\n/*\r\n// Step 2: Propagate the Wrapper Field\r\nClear(colParsedRows);\r\n \r\nForAll(\r\n    colFlatRows As topRow,\r\n    Collect(\r\n        colParsedRows,\r\n        ForAll(\r\n            Filter(\r\n                colFlatRows,\r\n                sectionName = topRow.sectionName\r\n            ) As innerRow,\r\n            With(\r\n                {\r\n   // Track the current wrapper field based on indentation and start/end\r\n                    wrapperField: If(\r\n                        innerRow.isStartWrapper,\r\n                        innerRow.key, // Start a new wrapper\r\n                        If(\r\n                            innerRow.isEndWrapper,\r\n                            Blank(), // Clear wrapper when ending\r\n                            LookUp(\r\n                                colFlatRows,\r\n                                indentLevel < innerRow.indentLevel && sectionName = innerRow.sectionName,\r\n                                currentWrapperField\r\n                            )\r\n                        )\r\n                    )\r\n},\r\n{\r\n                    sectionName: innerRow.sectionName,\r\n                    indentLevel: innerRow.indentLevel,\r\n                    key: innerRow.key,\r\n                    value: innerRow.value,\r\n                    detectedWrapper: innerRow.detectedWrapper,\r\n                    isStartWrapper: innerRow.isStartWrapper,\r\n                    isEndWrapper: innerRow.isEndWrapper,\r\n                    wrapperField: wrapperField\r\n}\r\n            )\r\n        )\r\n    )\r\n);*/"
+          BasePaletteColor: =RGBA(8, 222, 8, 1)
+          X: =1031
+          Y: =80
+    - Gallery14:
+        Control: Gallery
+        Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+        Properties:
+          Items: |+
+            =
+            ForAll(
+                colFlatRows As topRow,
+                    ForAll(
+                        Filter(
+                            colFlatRows,
+                            sectionName = topRow.sectionName
+                        ) As innerRow,
+                        With(
+                            {
+                                // Track the current wrapper field based on indentation and start/end
+                                wrapperField: If(
+                                    innerRow.isStartWrapper,
+                                    innerRow.key, // Start a new wrapper
+                                    If(
+                                        innerRow.isEndWrapper,
+                                        Blank(), // Clear wrapper when ending
+                                        LookUp(
+                                            colFlatRows,
+                                            indentLevel < innerRow.indentLevel && sectionName = innerRow.sectionName,
+                                            currentWrapperField
+                                        )
+                                    )
+                                )
+                            },
+                            {
+                                sectionName: innerRow.sectionName,
+                                indentLevel: innerRow.indentLevel,
+                                key: innerRow.key,
+                                value: innerRow.value,
+                                detectedWrapper: innerRow.detectedWrapper,
+                                isStartWrapper: innerRow.isStartWrapper,
+                                isEndWrapper: innerRow.isEndWrapper,
+                                wrapperField: wrapperField
+                            }
+                        )
+                    )
+                )
+          DelayItemLoading: =true
+          Layout: =Layout.Vertical
+          LoadingSpinner: =LoadingSpinner.Data
+          TemplatePadding: =0
+          TemplateSize: =104
+          X: =80
+          Y: =80
+        Children:
+        - Rectangle1:
+            Control: Rectangle
+            Properties:
+              OnSelect: =Select(Parent)
+              Height: =Parent.TemplateHeight - Separator1.Height
+              Visible: =ThisItem.IsSelected
+              Width: =4
+        - Separator1:
+            Control: Rectangle
+            Properties:
+              OnSelect: =Select(Parent)
+              Fill: =RGBA(255, 255, 255, 1)
+              Height: =8
+              Width: =Parent.TemplateWidth
+              Y: =Parent.TemplateHeight - Self.Height
+        - NextArrow1:
+            Control: Classic/Icon
+            Variant: ChevronRight
+            Properties:
+              OnSelect: =Select(Parent)
+              AccessibleLabel: =Self.Tooltip
+              Tooltip: ="View item details"
+              BorderColor: =RGBA(0, 0, 0, 1)
+              Color: =RGBA(166, 166, 166, 1)
+              DisabledBorderColor: =RGBA(56, 56, 56, 1)
+              DisabledColor: =RGBA(119, 119, 119, 1)
+              Height: =50
+              Icon: =Icon.ChevronRight
+              PaddingBottom: =16
+              PaddingLeft: =16
+              PaddingRight: =16
+              PaddingTop: =16
+              Width: =50
+              X: =Parent.TemplateWidth - Self.Width - 12
+              Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+        - Subtitle4:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =First(ThisItem.Value).key
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =Self.Size * 1.8
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Width: =Title14.Width
+              X: =Title14.X
+              Y: =Title14.Y + Title14.Height
+        - Title14:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =First(ThisItem.Value).sectionName
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =Self.Size * 1.8
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Width: =Parent.TemplateWidth - 173
+              X: =103
+              Y: =(Parent.TemplateHeight - (Self.Size * 1.8 + Subtitle4.Size * 1.8)) / 2
+        - Image7:
+            Control: Image
+            Properties:
+              OnSelect: =Select(Parent)
+              Height: =72
+              RadiusBottomLeft: =8
+              RadiusBottomRight: =8
+              RadiusTopLeft: =8
+              RadiusTopRight: =8
+              Width: =72
+              X: =16
+              Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+    - Gallery3_4:
+        Control: Gallery
+        Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+        Properties:
+          OnSelect: =UpdateContext({locVarCurrentNav:ThisItem})
+          Items: =colSubscriptions
+          DelayItemLoading: =true
+          Height: =351
+          Layout: =Layout.Vertical
+          ShowScrollbar: =false
+          TemplateSize: =140
+          Visible: =false
+          Width: =606
+          X: =726
+          Y: =416
+        Children:
+        - Container3_5:
+            Control: GroupContainer
+            Variant: horizontalAutoLayoutContainer
+            Properties:
+              BorderColor: |-
+                =// Selected - Blue rgb(59, 130, 246) - // Not Selected - transparent
+                If(ThisItem.IsSelected,RGBA(59,130,246,1),RGBA(228,228,231,1))
+              BorderThickness: =1
+              Fill: |-
+                =// Selected - Blue rgb(59, 130, 246) - // Not Selected - transparent
+                //If(ThisItem.IsSelected,RGBA(59,130,246,.15),RGBA(107,114,128,0))
+                Color.White
+              Height: =Parent.TemplateHeight-15
+              LayoutAlignItems: =LayoutAlignItems.Center
+              LayoutGap: =15
+              LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+              LayoutMode: =LayoutMode.Auto
+              PaddingBottom: =20
+              PaddingLeft: =20
+              PaddingRight: =20
+              PaddingTop: =20
+              RadiusBottomLeft: =10
+              RadiusBottomRight: =10
+              RadiusTopLeft: =10
+              RadiusTopRight: =10
+              Width: =Parent.TemplateWidth-24
+              X: =12
+              Y: =10
+            Children:
+            - Image7_8:
+                Control: Image
+                Properties:
+                  OnSelect: =
+                  Image: |
+                    =//
+                    // Icon Color Processing Function
+                    //
+                    With(
+                        {
+                            iconName: ThisItem.icon,
+                            isSelected: ThisItem.IsSelected,
+                            iconColor: Switch( ThisItem.color,"blue", "rgb(59, 130, 246)", "orange", "rgb(249, 115, 22)", "purple", "rgb(147, 51, 234)", "green", "rgb(34, 197, 94)", "red", "rgb(239, 68, 68)", "yellow", "rgb(234, 179, 8)", "indigo", "rgb(99, 102, 241)", "pink", "rgb(236, 72, 153)", "teal", "rgb(20, 184, 166)", "cyan", "rgb(6, 182, 212)")
+                        },
+                            "data:image/svg+xml;utf8," & EncodeUrl(
+                                Substitute(
+                                    LookUp(
+                                        fn_Icons,
+                                        name = iconName
+                                    ).value,
+                                    "currentColor",// Original color placeholder
+                                  "rgb(59, 130, 246)"
+                                )
+                            )
+                        )
+                  Fill: =Switch(ThisItem.color,"blue",RGBA(59,130,246,.15),"orange",RGBA(249,115,22,.15),"purple",RGBA(147,51,234,.15),"green",RGBA(34,197,94,.15),"red",RGBA(239,68,68,.15),"yellow",RGBA(234,179,8,.15),"indigo",RGBA(99,102,241,.15),"pink",RGBA(236,72,153,.15),"teal",RGBA(20,184,166,.15),"cyan",RGBA(6,182,212,.15))
+                  Height: =60
+                  ImagePosition: =ImagePosition.Fill
+                  LayoutMinHeight: =10
+                  LayoutMinWidth: =50
+                  PaddingBottom: =15
+                  PaddingLeft: =15
+                  PaddingRight: =15
+                  PaddingTop: =15
+                  RadiusBottomLeft: =10
+                  RadiusBottomRight: =10
+                  RadiusTopLeft: =10
+                  RadiusTopRight: =10
+                  Width: =60
+                  X: =//(Parent.TemplateWidth / 2) - (Self.Width / 2)
+                  Y: =16
+            - Container4_7:
+                Control: GroupContainer
+                Variant: verticalAutoLayoutContainer
+                Properties:
+                  AlignInContainer: =AlignInContainer.SetByContainer
+                  DropShadow: =DropShadow.None
+                  Height: =70
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                  LayoutMinHeight: =10
+                  LayoutMinWidth: =10
+                  LayoutMode: =LayoutMode.Auto
+                Children:
+                - Container3_12:
+                    Control: GroupContainer
+                    Variant: horizontalAutoLayoutContainer
+                    Properties:
+                      DropShadow: =DropShadow.None
+                      FillPortions: =0
+                      Height: =40
+                      LayoutAlignItems: =LayoutAlignItems.Stretch
+                      LayoutGap: =10
+                      LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                      LayoutMinHeight: =10
+                      LayoutMode: =LayoutMode.Auto
+                    Children:
+                    - Label2_12:
+                        Control: Label
+                        Properties:
+                          Text: =ThisItem.name
+                          AlignInContainer: =AlignInContainer.Stretch
+                          AutoHeight: =true
+                          FillPortions: =1
+                          Font: =Font.Lato
+                          FontWeight: =FontWeight.Semibold
+                          Height: =26
+                          LayoutMinWidth: =15
+                          Width: =3
+                    - Container3_13:
+                        Control: GroupContainer
+                        Variant: horizontalAutoLayoutContainer
+                        Properties:
+                          AlignInContainer: =AlignInContainer.Center
+                          DropShadow: =DropShadow.None
+                          Fill: =RGBA(34, 197, 94, 0.1)
+                          FillPortions: =0
+                          Height: =27
+                          LayoutAlignItems: =LayoutAlignItems.Stretch
+                          LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                          LayoutMinHeight: =10
+                          LayoutMode: =LayoutMode.Auto
+                          PaddingLeft: =5
+                          PaddingRight: =5
+                          RadiusBottomLeft: =100
+                          RadiusBottomRight: =100
+                          RadiusTopLeft: =100
+                          RadiusTopRight: =100
+                          Width: =190
+                        Children:
+                        - Image7_7:
+                            Control: Image
+                            Properties:
+                              OnSelect: =
+                              Image: |
+                                =//
+                                // Icon Color Processing Function
+                                //
+                                With(
+                                    {
+                                        iconName: "CircleCkeck",
+                                        //bgColor: "rgba(34, 197, 94, 0.1)" ,//witch( ThisItem.bgColor, "blue", "rgba(59, 130, 246, 0.1)", "purple", "rgba(147, 51, 234, 0.1)", "green", "rgba(34, 197, 94, 0.1)" ),
+                                        iconColor: "rgb(34, 197, 94)" //Switch( ThisItem.actionColor, "blue", "rgb(59, 130, 246)", "purple", "rgb(147, 51, 234)", "green", "rgb(34, 197, 94)" )
+                                    },
+                                        "data:image/svg+xml;utf8," & EncodeUrl(
+                                            Substitute(
+                                                LookUp(
+                                                    fn_Icons,
+                                                    name = "CircleCheck"
+                                                ).value,
+                                                "currentColor",// Original color placeholder
+                                               /* If(
+                                                    isSelected,
+                                                    "rgb(59, 130, 246)",// Selected - Blue rgb(59, 130, 246)
+                                                    "rgb(107, 114, 128)"// Not Selected - Gray rgb(107, 114, 128)
+                                                )*/
+                                              iconColor
+                                            )
+                                        )
+                                    )
+                              AlignInContainer: =AlignInContainer.Stretch
+                              Fill: =//Switch( ThisItem.bgColor, "blue", RGBA(59, 130, 246, 0.1), "purple", RGBA(147, 51, 234, 0.1), "green", RGBA(34, 197, 94, 0.1) )
+                              Height: =50
+                              ImagePosition: =ImagePosition.Fill
+                              LayoutMinHeight: =10
+                              LayoutMinWidth: =50
+                              PaddingBottom: =7
+                              PaddingLeft: =7
+                              PaddingRight: =7
+                              PaddingTop: =7
+                              RadiusBottomLeft: =10
+                              RadiusBottomRight: =10
+                              RadiusTopLeft: =10
+                              RadiusTopRight: =10
+                              Width: =Self.Height
+                              X: =//(Parent.TemplateWidth / 2) - (Self.Width / 2)
+                              Y: =16
+                        - Container4_8:
+                            Control: GroupContainer
+                            Variant: verticalAutoLayoutContainer
+                            Properties:
+                              AlignInContainer: =AlignInContainer.SetByContainer
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutJustifyContent: =LayoutJustifyContent.Center
+                              LayoutMinHeight: =10
+                              LayoutMinWidth: =10
+                              LayoutMode: =LayoutMode.Auto
+                            Children:
+                            - Label4_15:
+                                Control: Label
+                                Properties:
+                                  Text: ="Self-Service Enabled"
+                                  AlignInContainer: =AlignInContainer.Stretch
+                                  AutoHeight: =true
+                                  Color: =ColorFade( RGBA(34, 197, 94, 1),-40%)
+                                  LayoutMinWidth: =15
+                                  Size: =11
+                                  Width: =3
+                - Container3_14:
+                    Control: GroupContainer
+                    Variant: horizontalAutoLayoutContainer
+                    Properties:
+                      DropShadow: =DropShadow.None
+                      FillPortions: =0
+                      Height: =25
+                      LayoutAlignItems: =LayoutAlignItems.Stretch
+                      LayoutGap: =10
+                      LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                      LayoutMinHeight: =10
+                      LayoutMode: =LayoutMode.Auto
+                    Children:
+                    - Label2_13:
+                        Control: Label
+                        Properties:
+                          Text: |-
+                            ="ID: " & ThisItem.id
+                          AlignInContainer: =AlignInContainer.Center
+                          AutoHeight: =true
+                          Color: =RGBA(79, 90, 94, 1)
+                          FillPortions: =1
+                          Font: =Font.Arial
+                          Height: =26
+                          LayoutMinHeight: =30
+                          LayoutMinWidth: =15
+                          Size: =12
+                          Width: =3
+                    - Label2_14:
+                        Control: Label
+                        Properties:
+                          Text: |-
+                            ="RGs: " & ThisItem.resourceGroups
+                          AlignInContainer: =AlignInContainer.Center
+                          AutoHeight: =true
+                          Color: =RGBA(79, 90, 94, 1)
+                          FillPortions: =1
+                          Font: =Font.Arial
+                          Height: =26
+                          LayoutMinHeight: =30
+                          LayoutMinWidth: =15
+                          Size: =12
+                          Width: =3
+                    - Label4_16:
+                        Control: Label
+                        Properties:
+                          Text: |-
+                            ="Quota: "& ThisItem.quota.used &"/" & ThisItem.quota.total
+                          Align: =Align.Right
+                          AlignInContainer: =AlignInContainer.Center
+                          AutoHeight: =true
+                          Color: =RGBA(79, 90, 94, 1)
+                          FillPortions: =1
+                          Font: =Font.Arial
+                          LayoutMinHeight: =30
+                          LayoutMinWidth: =15
+                          Size: =11
+                          Width: =3
+        - Rectangle3_4:
+            Control: Rectangle
+            Properties:
+              OnSelect: =Select(Parent)
+              Height: =Parent.TemplateHeight - Separator3_4.Height
+              Visible: =false
+              Width: =4
+        - Separator3_4:
+            Control: Rectangle
+            Properties:
+              OnSelect: =Select(Parent)
+              Fill: =RGBA(255, 255, 255, 1)
+              Height: =8
+              Visible: =false
+              Width: =Parent.TemplateWidth
+              Y: =Parent.TemplateHeight - Self.Height
+        - NextArrow3_4:
+            Control: Classic/Icon
+            Variant: ChevronRight
+            Properties:
+              OnSelect: =Select(Parent)
+              AccessibleLabel: =Self.Tooltip
+              Tooltip: ="View item details"
+              BorderColor: =RGBA(0, 0, 0, 1)
+              Color: =RGBA(166, 166, 166, 1)
+              DisabledBorderColor: =RGBA(56, 56, 56, 1)
+              DisabledColor: =RGBA(119, 119, 119, 1)
+              Height: =50
+              Icon: =Icon.ChevronRight
+              PaddingBottom: =16
+              PaddingLeft: =16
+              PaddingRight: =16
+              PaddingTop: =16
+              Visible: =false
+              Width: =50
+              X: =Parent.TemplateWidth - Self.Width - 12
+              Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+        - Subtitle2_4:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.id
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =Self.Size * 1.8
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Visible: =false
+              Width: =Title3_4.Width
+              X: =Title3_4.X
+              Y: =Title3_4.Y + Title3_4.Height
+        - Title3_4:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.name
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =Self.Size * 1.8
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Visible: =false
+              Width: =Parent.TemplateWidth - 173
+              X: =103
+              Y: =(Parent.TemplateHeight - (Self.Size * 1.8 + Subtitle2_4.Size * 1.8)) / 2
+        - Image3_10:
+            Control: Image
+            Properties:
+              OnSelect: =Select(Parent)
+              Image: |-
+                =// // Icon Color Processing Function // With( { iconName: ThisItem.icon, isSelected: ThisItem.id = locVarCurrentNav.id, iconColor: Switch( ThisItem.color,"blue", "rgb(59, 130, 246)", "orange", "rgb(249, 115, 22)", "purple", "rgb(147, 51, 234)", "green", "rgb(34, 197, 94)", "red", "rgb(239, 68, 68)", "yellow", "rgb(234, 179, 8)", "indigo", "rgb(99, 102, 241)", "pink", "rgb(236, 72, 153)", "teal", "rgb(20, 184, 166)", "cyan", "rgb(6, 182, 212)") }, "data:image/svg+xml;utf8," & EncodeUrl( Substitute( LookUp( fn_Icons, name = iconName ).value, "currentColor",// Original color placeholder /* If( isSelected, "rgb(59, 130, 246)",// Selected - Blue rgb(59, 130, 246) "rgb(107, 114, 128)"// Not Selected - Gray rgb(107, 114, 128) )*/ iconColor ) ) )
+              Height: =72
+              RadiusBottomLeft: =8
+              RadiusBottomRight: =8
+              RadiusTopLeft: =8
+              RadiusTopRight: =8
+              Visible: =false
+              Width: =72
+              X: =16
+              Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+    - TextCanvas9_1:
+        Control: Text
+        Properties:
+          Text: |-
+            =LookUp(
+                Split(
+                    Trim(Gallery6.Selected.contentBlock),
+                    Char(10)
+                ),
+                StartsWith(
+                    Trim(Value),
+                    "descripiton"
+                ),
+                Mid(
+                    Value,
+                    Find(
+                        "=",
+                        Value
+                    ) + 1,
+                    Len(Value) - Find(
+                        "=",
+                        Value
+                    )
+                )
+            )
+          Height: =67
+          Width: =261
+          X: =807
+          Y: =247
+    - desc:
+        Control: Text
+        Properties:
+          Text: =Substitute( Last(Split(First(Split(Trim(Gallery6.Selected.type),"\n")).Value,"=")).Value,"""","")
+          Height: =67
+          Width: =261
+          X: =679
+          Y: =489
+    - TextCanvas8:
+        Control: Text
+        Properties:
+          Text: =Gallery6.Selected.Value
+          Height: =173
+          Width: =533
+          X: =671
+          Y: =595
+    - Gallery7:
+        Control: Gallery
+        Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+        Properties:
+          Items: =dataSubFilters
+          DelayItemLoading: =true
+          Layout: =Layout.Vertical
+          LoadingSpinner: =LoadingSpinner.Data
+          TemplatePadding: =0
+          TemplateSize: =460
+          Visible: =false
+          Width: =278
+          X: =940
+          Y: =60
+        Children:
+        - Gallery8:
+            Control: Gallery
+            Variant: BrowseLayout_Horizontal_TwoTextOneImageVariant_ver5.0
+            Properties:
+              Items: =ThisItem.tags
+              DelayItemLoading: =true
+              Height: =460
+              LoadingSpinner: =LoadingSpinner.Data
+              TemplatePadding: =0
+              TemplateSize: =Min(440, Self.Height - 60)
+              Visible: =false
+            Children:
+            - Subtitle7:
+                Control: Label
+                Properties:
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.values
+                  FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+                  Height: =Self.Size * 1.8
+                  PaddingBottom: =0
+                  PaddingLeft: =0
+                  PaddingRight: =0
+                  PaddingTop: =0
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =Title10.Width
+                  X: =Title10.X
+                  Y: =Title10.Y + Title10.Height + 8
+            - Title10:
+                Control: Label
+                Properties:
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.tagName
+                  FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+                  Height: =Self.Size * 1.8
+                  PaddingBottom: =0
+                  PaddingLeft: =0
+                  PaddingRight: =0
+                  PaddingTop: =0
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =Parent.TemplateWidth - 64
+                  X: =32
+                  Y: =Image10.Y + Image10.Height + 16
+            - Image10:
+                Control: Image
+                Properties:
+                  OnSelect: =Select(Parent)
+                  Height: =296
+                  ImagePosition: =ImagePosition.Fill
+                  RadiusBottomLeft: =8
+                  RadiusBottomRight: =8
+                  RadiusTopLeft: =8
+                  RadiusTopRight: =8
+                  Width: =Parent.TemplateWidth - 32
+                  X: =(Parent.TemplateWidth / 2) - (Self.Width / 2)
+                  Y: =16
+        - Rectangle6:
+            Control: Rectangle
+            Properties:
+              OnSelect: =Select(Parent)
+              Height: =Parent.TemplateHeight - Separator5.Height
+              Visible: =ThisItem.IsSelected
+              Width: =4
+        - Separator5:
+            Control: Rectangle
+            Properties:
+              OnSelect: =Select(Parent)
+              Fill: =RGBA(255, 255, 255, 1)
+              Height: =8
+              Width: =Parent.TemplateWidth
+              Y: =Parent.TemplateHeight - Self.Height
+        - NextArrow5:
+            Control: Classic/Icon
+            Variant: ChevronRight
+            Properties:
+              OnSelect: =Select(Parent)
+              AccessibleLabel: =Self.Tooltip
+              Tooltip: ="View item details"
+              BorderColor: =RGBA(0, 0, 0, 1)
+              Color: =RGBA(166, 166, 166, 1)
+              DisabledBorderColor: =RGBA(56, 56, 56, 1)
+              DisabledColor: =RGBA(119, 119, 119, 1)
+              Height: =50
+              Icon: =Icon.ChevronRight
+              PaddingBottom: =16
+              PaddingLeft: =16
+              PaddingRight: =16
+              PaddingTop: =16
+              Width: =50
+              X: =Parent.TemplateWidth - Self.Width - 12
+              Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+        - Subtitle6:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.AllowSelfService
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =Self.Size * 1.8
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Width: =Title9.Width
+              X: =Title9.X
+              Y: =Title9.Y + Title9.Height
+        - Title9:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.authorizationSource
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =Self.Size * 1.8
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Width: =Parent.TemplateWidth - 173
+              Y: '=0   '
+        - Image9:
+            Control: Image
+            Properties:
+              OnSelect: =Select(Parent)
+              Height: =72
+              RadiusBottomLeft: =8
+              RadiusBottomRight: =8
+              RadiusTopLeft: =8
+              RadiusTopRight: =8
+              Width: =72
+              X: =16
+              Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+    - ButtonCanvas2:
+        Control: Button
+        Properties:
+          OnSelect: |-
+            =/*Set( terraformFile,
+              First(TerraformFiles).'File Content'
+            )*/
+          Height: =67
+          X: =1171
+          Y: =247
+    - TextCanvas3:
+        Control: Text
+        Properties:
+          Text: "=With(\r\n    {\r\n        // Step 1: Input Terraform file content\r\n        // Step 2: Extract variable blocks\r\n        variableBlocks: Filter(\r\n            Split(terraformFile, \"variable\"),\r\n            Len(Trim(ThisRecord.Value)) > 0 // Exclude empty strings or whitespace\r\n        )\r\n    },\r\n    // Step 3: Directly construct the JSON object\r\n    \"{\" & \r\n    Concat(\r\n        variableBlocks As Block,\r\nWith({ variableName: /*Mid(\r\n                    Block.Value,\r\n                    Find(\"\"\"\", Block.Value) + 1,\r\n                    Find(\"\"\"\", Block.Value, Find(\"\"\"\", Block.Value) + 1) - Find(\"\"\"\", Block.Value) - 1\r\n                )*/\r\n                Block.Value\r\n                ,\r\n\r\n                // Extract Content Block\r\n                contentStart: Find(\"{\", Block.Value),\r\n                contentEnd: Find(\"}\", Block.Value, Find(\"{\", Block.Value)),\r\n                defaultStart: Find(\"default =\", Block.Value),\r\n                contentBlock: Mid(\r\n                    Block.Value,\r\n                    Find(\"{\", Block.Value) + 1,\r\n                    Find(\"}\", Block.Value, Find(\"{\", Block.Value)) - Find(\"{\", Block.Value) - 1\r\n                )},\r\n        \r\n        With(\r\n            {\r\n                // Extract Variable Name\r\n               \r\n                \r\n\r\n                // Extract Default Value if Present\r\n                defaultValue: If(\r\n                    defaultStart > 0,\r\n                    Trim(\r\n                        Mid(\r\n                            Block.Value,\r\n                            defaultStart + 9,\r\n                            Find(\"\\n\", Block.Value, defaultStart) - defaultStart - 9\r\n                        )\r\n                    ),\r\n                    \"null\"\r\n                ),\r\n\r\n                // Handle Nested Types\r\n                parsedType: If(\r\n                    StartsWith(Trim(contentBlock), \"map(\"),\r\n                    \"{\"\"map\"\": \"\"\" & Mid(contentBlock, 5, Len(contentBlock) - 5) & \"\"\"}\",\r\n                    If(\r\n                        StartsWith(Trim(contentBlock), \"list(\"),\r\n                        \"{\"\"list\"\": \"\"\" & Mid(contentBlock, 6, Len(contentBlock) - 6) & \"\"\"}\",\r\n                        If(\r\n                            StartsWith(Trim(contentBlock), \"object(\"),\r\n                            \"{\"\"object\"\": \"\"\" & Mid(contentBlock, 8, Len(contentBlock) - 8) & \"\"\"}\",\r\n                            contentBlock\r\n                        )\r\n                    )\r\n                )\r\n            },\r\n            // Construct the JSON object for this variable\r\n            \"{\"\"\" & variableName & \"\"\": {\" &\r\n                \"\"\"type\"\": \"\"\" & parsedType & \"\"\", \" &\r\n                \"\"\"default\"\": \"\"\" & defaultValue & \"\"\"\" &\r\n            \"}}\"\r\n        ) & \r\n        If(\r\n            !IsBlank(Block.Value),\r\n            \", \",\r\n            \"\"\r\n        )) // Add a comma between entries\r\n    ) & \r\n    \"}\"\r\n)"
+          Height: =247
+          Width: =326
+          X: =996
+          Y: =460
+    - Gallery6:
+        Control: Gallery
+        Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+        Properties:
+          Items: "=ForAll(\n    Filter(\n        Split(\n            terraformFile,\n            \"variable \"\n        ),\n            // Exclude empty strings or whitespace\n        Len(Trim(ThisRecord.Value)) > 0\n    ) As Lines,\n    With( \n            {value:\n                If(\n                    Find( \"#\", Lines.Value ) > 0,\n                    Trim( Left( Lines.Value, Find( \"#\", Lines.Value ) - 1 ) ),\n                    Trim(Lines.Value)\n                )\n            },\n            {\n                variableName: Substitute(TrimEnds(Mid(value,1,Find(\"{\",value) -1)),\"\"\"\",\"\"),\n                contentBlock: Mid(value, Find(\"{\",value)+1,Find(\"}\",value ,Find( \"{\", value ))-Find( \"{\", value )-1),\n                type: Substitute( Last(Split(First(Split(Trim(Mid(value, Find(\"{\",value)+1,Find(\"}\",value ,Find( \"{\", value ))-Find( \"{\", value )-1)),\"\\n\")).Value,\"=\")).Value,\"\"\"\",\"\"),description:LookUp(Split(Trim(Mid(value, Find(\"{\",value)+1,Find(\"}\",value ,Find( \"{\", value ))-Find( \"{\", value )-1)),Char(10)),StartsWith(Trim(ThisRecord.Value),\"descripiton\"),Substitute(Trim(Mid(Value,Find(\"=\",Value)+1)),\" \",\"\"))\n                    \n            }\n    )\n)"
+          DelayItemLoading: =true
+          Height: =728
+          Layout: =Layout.Vertical
+          LoadingSpinner: =LoadingSpinner.Data
+          TemplatePadding: =0
+          TemplateSize: =104
+          Visible: =false
+          Width: =615
+          X: =45
+          Y: =40
+        Children:
+        - Rectangle5:
+            Control: Rectangle
+            Properties:
+              OnSelect: =Select(Parent)
+              Height: =Parent.TemplateHeight - Separator4.Height
+              Visible: =ThisItem.IsSelected
+              Width: =4
+        - Separator4:
+            Control: Rectangle
+            Properties:
+              OnSelect: =Select(Parent)
+              Fill: =RGBA(255, 255, 255, 1)
+              Height: =8
+              Width: =Parent.TemplateWidth
+              Y: =Parent.TemplateHeight - Self.Height
+        - NextArrow4:
+            Control: Classic/Icon
+            Variant: ChevronRight
+            Properties:
+              OnSelect: =Select(Parent)
+              AccessibleLabel: =Self.Tooltip
+              Tooltip: ="View item details"
+              BorderColor: =RGBA(0, 0, 0, 1)
+              Color: =RGBA(166, 166, 166, 1)
+              DisabledBorderColor: =RGBA(56, 56, 56, 1)
+              DisabledColor: =RGBA(119, 119, 119, 1)
+              Height: =50
+              Icon: =Icon.ChevronRight
+              PaddingBottom: =16
+              PaddingLeft: =16
+              PaddingRight: =16
+              PaddingTop: =16
+              Width: =50
+              X: =Parent.TemplateWidth - Self.Width - 12
+              Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+        - Subtitle5:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.variableName
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =Self.Size * 1.8
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Width: =Title8.Width
+              X: =99
+        - Title8:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.contentBlock
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =76
+              Overflow: =Overflow.Scroll
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Width: =Parent.TemplateWidth - 173
+              X: =103
+              Y: =(Parent.TemplateHeight - (Self.Size * 1.8 + Subtitle5.Size * 1.8)) / 2
+        - Image8:
+            Control: Image
+            Properties:
+              OnSelect: =Select(Parent)
+              Height: =72
+              RadiusBottomLeft: =8
+              RadiusBottomRight: =8
+              RadiusTopLeft: =8
+              RadiusTopRight: =8
+              Width: =72
+              X: =16
+              Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+    - HtmlText4:
+        Control: HtmlViewer
+        Properties:
+          HtmlText: "=\"<!DOCTYPE html>\r\n<html lang=\"\"en\"\">\r\n<head>\r\n    <meta charset=\"\"UTF-8\"\">\r\n    <meta name=\"\"viewport\"\" content=\"\"width=device-width, initial-scale=1.0\"\">\r\n    <title>Beautiful JSON Viewer</title>\r\n    <style>\r\n        body {\r\n            font-family: Arial, sans-serif;\r\n            margin: 20px;\r\n        }\r\n        pre {\r\n            background-color: #f4f4f4;\r\n            padding: 10px;\r\n            border: 1px solid #ddd;\r\n            overflow: auto;\r\n            white-space: pre-wrap;\r\n            word-wrap: break-word;\r\n        }\r\n    </style>\r\n</head>\r\n<body>\r\n    <h1>Beautiful JSON Viewer</h1>\r\n    <pre id=\"\"jsonDisplay\"\"></pre>\r\n    <code>\"&\r\n    Substitute( Substitute( JSON(First(dataTags).values, JSONFormat.IndentFour),\"\"\"\",\"\"), \",\", \",<br>\" & Char(10))\r\n    &\"</code>\r\n   \r\n</body>\r\n</html>\"\r\n\r\n"
+          Fill: =RGBA(255, 255, 255, 1)
+          Height: =497
+          PaddingBottom: =20
+          PaddingLeft: =20
+          PaddingRight: =20
+          PaddingTop: =20
+          Visible: =false
+          Width: =57
+          X: =1286
+          Y: =32
+    - galSubscriptions:
+        Control: Gallery
+        Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+        Properties:
+          OnSelect: =UpdateContext({locVarCurrentNav:ThisItem})
+          Items: =Search(dataSubscriptions,TextInputCanvas1.Value,authorizationSource,displayName,id,state,subscriptionId,subscriptionPolicies)
+          WrapCount: =2
+          DelayItemLoading: =true
+          Layout: =Layout.Vertical
+          ShowScrollbar: =false
+          TemplateSize: =140
+          Visible: =false
+          X: =20
+          Y: =20
+        Children:
+        - Container3_3:
+            Control: GroupContainer
+            Variant: horizontalAutoLayoutContainer
+            Properties:
+              BorderColor: |-
+                =// Selected - Blue rgb(59, 130, 246) - // Not Selected - transparent
+                If(ThisItem.IsSelected,RGBA(59,130,246,1),RGBA(228,228,231,1))
+              BorderThickness: =1
+              Fill: |-
+                =// Selected - Blue rgb(59, 130, 246) - // Not Selected - transparent
+                //If(ThisItem.IsSelected,RGBA(59,130,246,.15),RGBA(107,114,128,0))
+                Color.White
+              Height: =Parent.TemplateHeight-15
+              LayoutAlignItems: =LayoutAlignItems.Center
+              LayoutGap: =15
+              LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+              LayoutMode: =LayoutMode.Auto
+              PaddingBottom: =10
+              PaddingLeft: =10
+              PaddingRight: =10
+              PaddingTop: =10
+              RadiusBottomLeft: =10
+              RadiusBottomRight: =10
+              RadiusTopLeft: =10
+              RadiusTopRight: =10
+              Width: =Parent.TemplateWidth-24
+              X: =12
+              Y: =10
+            Children:
+            - Image7_3:
+                Control: Image
+                Properties:
+                  OnSelect: =
+                  Image: |
+                    =//
+                    // Icon Color Processing Function
+                    //
+                    With(
+                        {
+                            iconName:"Globe",
+                            isSelected: ThisItem.IsSelected,
+                            iconColor: "rgb(59, 130, 246)"//Switch( ThisItem.color,"blue", "rgb(59, 130, 246)", "orange", "rgb(249, 115, 22)", "purple", "rgb(147, 51, 234)", "green", "rgb(34, 197, 94)", "red", "rgb(239, 68, 68)", "yellow", "rgb(234, 179, 8)", "indigo", "rgb(99, 102, 241)", "pink", "rgb(236, 72, 153)", "teal", "rgb(20, 184, 166)", "cyan", "rgb(6, 182, 212)")
+                        },
+                            "data:image/svg+xml;utf8," & EncodeUrl(
+                                Substitute(
+                                    LookUp(
+                                        fn_Icons,
+                                        name = iconName
+                                    ).value,
+                                    "currentColor",// Original color placeholder
+                                  "rgb(59, 130, 246)"
+                                )
+                            )
+                        )
+                  Fill: =//Switch(ThisItem.color,"blue",RGBA(59,130,246,.15),"orange",RGBA(249,115,22,.15),"purple",RGBA(147,51,234,.15),"green",RGBA(34,197,94,.15),"red",RGBA(239,68,68,.15),"yellow",RGBA(234,179,8,.15),"indigo",RGBA(99,102,241,.15),"pink",RGBA(236,72,153,.15),"teal",RGBA(20,184,166,.15),"cyan",RGBA(6,182,212,.15))
+                  Height: =60
+                  ImagePosition: =ImagePosition.Fill
+                  LayoutMinHeight: =10
+                  LayoutMinWidth: =50
+                  PaddingBottom: =15
+                  PaddingLeft: =15
+                  PaddingRight: =15
+                  PaddingTop: =15
+                  RadiusBottomLeft: =10
+                  RadiusBottomRight: =10
+                  RadiusTopLeft: =10
+                  RadiusTopRight: =10
+                  Width: =60
+                  X: =//(Parent.TemplateWidth / 2) - (Self.Width / 2)
+                  Y: =16
+            - Container4_3:
+                Control: GroupContainer
+                Variant: verticalAutoLayoutContainer
+                Properties:
+                  AlignInContainer: =AlignInContainer.SetByContainer
+                  DropShadow: =DropShadow.None
+                  Height: =70
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                  LayoutMinHeight: =10
+                  LayoutMinWidth: =10
+                  LayoutMode: =LayoutMode.Auto
+                Children:
+                - Container3_7:
+                    Control: GroupContainer
+                    Variant: horizontalAutoLayoutContainer
+                    Properties:
+                      DropShadow: =DropShadow.None
+                      FillPortions: =0
+                      Height: =40
+                      LayoutAlignItems: =LayoutAlignItems.Stretch
+                      LayoutGap: =10
+                      LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                      LayoutMinHeight: =10
+                      LayoutMode: =LayoutMode.Auto
+                    Children:
+                    - Label2_5:
+                        Control: Label
+                        Properties:
+                          Text: =ThisItem.displayName
+                          AlignInContainer: =AlignInContainer.Stretch
+                          AutoHeight: =true
+                          FillPortions: =1
+                          Font: =Font.Lato
+                          FontWeight: =FontWeight.Semibold
+                          Height: =26
+                          LayoutMinWidth: =15
+                          Width: =3
+                    - Container3_8:
+                        Control: GroupContainer
+                        Variant: horizontalAutoLayoutContainer
+                        Properties:
+                          AlignInContainer: =AlignInContainer.Center
+                          DropShadow: =DropShadow.None
+                          Fill: =RGBA(34, 197, 94, 0.1)
+                          FillPortions: =0
+                          Height: =27
+                          LayoutAlignItems: =LayoutAlignItems.Stretch
+                          LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                          LayoutMinHeight: =10
+                          LayoutMode: =LayoutMode.Auto
+                          PaddingLeft: =5
+                          PaddingRight: =5
+                          RadiusBottomLeft: =100
+                          RadiusBottomRight: =100
+                          RadiusTopLeft: =100
+                          RadiusTopRight: =100
+                          Width: =190
+                        Children:
+                        - Image7_5:
+                            Control: Image
+                            Properties:
+                              OnSelect: =
+                              Image: |
+                                =//
+                                // Icon Color Processing Function
+                                //
+                                With(
+                                    {
+                                        iconName: "CircleCkeck",
+                                        //bgColor: "rgba(34, 197, 94, 0.1)" ,//witch( ThisItem.bgColor, "blue", "rgba(59, 130, 246, 0.1)", "purple", "rgba(147, 51, 234, 0.1)", "green", "rgba(34, 197, 94, 0.1)" ),
+                                        iconColor: "rgb(34, 197, 94)" //Switch( ThisItem.actionColor, "blue", "rgb(59, 130, 246)", "purple", "rgb(147, 51, 234)", "green", "rgb(34, 197, 94)" )
+                                    },
+                                        "data:image/svg+xml;utf8," & EncodeUrl(
+                                            Substitute(
+                                                LookUp(
+                                                    fn_Icons,
+                                                    name = "CircleCheck"
+                                                ).value,
+                                                "currentColor",// Original color placeholder
+                                               /* If(
+                                                    isSelected,
+                                                    "rgb(59, 130, 246)",// Selected - Blue rgb(59, 130, 246)
+                                                    "rgb(107, 114, 128)"// Not Selected - Gray rgb(107, 114, 128)
+                                                )*/
+                                              iconColor
+                                            )
+                                        )
+                                    )
+                              AlignInContainer: =AlignInContainer.Stretch
+                              Fill: =//Switch( ThisItem.bgColor, "blue", RGBA(59, 130, 246, 0.1), "purple", RGBA(147, 51, 234, 0.1), "green", RGBA(34, 197, 94, 0.1) )
+                              Height: =50
+                              ImagePosition: =ImagePosition.Fill
+                              LayoutMinHeight: =10
+                              LayoutMinWidth: =50
+                              PaddingBottom: =7
+                              PaddingLeft: =7
+                              PaddingRight: =7
+                              PaddingTop: =7
+                              RadiusBottomLeft: =10
+                              RadiusBottomRight: =10
+                              RadiusTopLeft: =10
+                              RadiusTopRight: =10
+                              Width: =Self.Height
+                              X: =//(Parent.TemplateWidth / 2) - (Self.Width / 2)
+                              Y: =16
+                        - Container4_5:
+                            Control: GroupContainer
+                            Variant: verticalAutoLayoutContainer
+                            Properties:
+                              AlignInContainer: =AlignInContainer.SetByContainer
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutJustifyContent: =LayoutJustifyContent.Center
+                              LayoutMinHeight: =10
+                              LayoutMinWidth: =10
+                              LayoutMode: =LayoutMode.Auto
+                            Children:
+                            - Label4_11:
+                                Control: Label
+                                Properties:
+                                  Text: =ThisItem.state
+                                  AlignInContainer: =AlignInContainer.Stretch
+                                  AutoHeight: =true
+                                  Color: =ColorFade( RGBA(34, 197, 94, 1),-40%)
+                                  LayoutMinWidth: =15
+                                  Size: =11
+                                  Width: =3
+                - Container3_6:
+                    Control: GroupContainer
+                    Variant: horizontalAutoLayoutContainer
+                    Properties:
+                      DropShadow: =DropShadow.None
+                      FillPortions: =0
+                      Height: =25
+                      LayoutAlignItems: =LayoutAlignItems.Stretch
+                      LayoutGap: =10
+                      LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                      LayoutMinHeight: =10
+                      LayoutMode: =LayoutMode.Auto
+                    Children:
+                    - Label2_7:
+                        Control: Label
+                        Properties:
+                          Text: |-
+                            ="ID: " & ThisItem.id
+                          AlignInContainer: =AlignInContainer.Center
+                          AutoHeight: =true
+                          Color: =RGBA(79, 90, 94, 1)
+                          FillPortions: =1
+                          Font: =Font.Arial
+                          Height: =26
+                          LayoutMinHeight: =30
+                          LayoutMinWidth: =15
+                          Size: =12
+                          Width: =3
+                    - Label2_8:
+                        Control: Label
+                        Properties:
+                          Text: |-
+                            =//"RGs: " & ThisItem.resourceGroups
+                          AlignInContainer: =AlignInContainer.Center
+                          AutoHeight: =true
+                          Color: =RGBA(79, 90, 94, 1)
+                          FillPortions: =1
+                          Font: =Font.Arial
+                          Height: =26
+                          LayoutMinHeight: =30
+                          LayoutMinWidth: =15
+                          Size: =12
+                          Visible: =false
+                          Width: =3
+                    - Label4_9:
+                        Control: Label
+                        Properties:
+                          Text: |-
+                            =//"Quota: "& ThisItem.quota.used &"/" & ThisItem.quota.total
+                          Align: =Align.Right
+                          AlignInContainer: =AlignInContainer.Center
+                          AutoHeight: =true
+                          Color: =RGBA(79, 90, 94, 1)
+                          FillPortions: =1
+                          Font: =Font.Arial
+                          LayoutMinHeight: =30
+                          LayoutMinWidth: =15
+                          Size: =11
+                          Visible: =false
+                          Width: =3
+                - TextCanvas5:
+                    Control: Text
+                    Properties:
+                      Text: =Text(ThisItem.authorizationSource)
+                      AlignInContainer: =AlignInContainer.Stretch
+                      FillPortions: =1
+                      Visible: =false
+        - Rectangle3_2:
+            Control: Rectangle
+            Properties:
+              OnSelect: =Select(Parent)
+              Height: =Parent.TemplateHeight - Separator3_2.Height
+              Visible: =false
+              Width: =4
+        - Separator3_2:
+            Control: Rectangle
+            Properties:
+              OnSelect: =Select(Parent)
+              Fill: =RGBA(255, 255, 255, 1)
+              Height: =8
+              Visible: =false
+              Width: =Parent.TemplateWidth
+              Y: =Parent.TemplateHeight - Self.Height
+        - NextArrow3_2:
+            Control: Classic/Icon
+            Variant: ChevronRight
+            Properties:
+              OnSelect: =Select(Parent)
+              AccessibleLabel: =Self.Tooltip
+              Tooltip: ="View item details"
+              BorderColor: =RGBA(0, 0, 0, 1)
+              Color: =RGBA(166, 166, 166, 1)
+              DisabledBorderColor: =RGBA(56, 56, 56, 1)
+              DisabledColor: =RGBA(119, 119, 119, 1)
+              Height: =50
+              Icon: =Icon.ChevronRight
+              PaddingBottom: =16
+              PaddingLeft: =16
+              PaddingRight: =16
+              PaddingTop: =16
+              Visible: =false
+              Width: =50
+              X: =Parent.TemplateWidth - Self.Width - 12
+              Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+        - Subtitle2_2:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.id
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =Self.Size * 1.8
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Visible: =false
+              Width: =Title3_2.Width
+              X: =Title3_2.X
+              Y: =Title3_2.Y + Title3_2.Height
+        - Title3_2:
+            Control: Label
+            Properties:
+              OnSelect: =Select(Parent)
+              Text: =ThisItem.authorizationSource
+              FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
+              Height: =Self.Size * 1.8
+              PaddingBottom: =0
+              PaddingLeft: =0
+              PaddingRight: =0
+              PaddingTop: =0
+              VerticalAlign: =VerticalAlign.Top
+              Visible: =false
+              Width: =Parent.TemplateWidth - 173
+              X: =103
+              Y: =(Parent.TemplateHeight - (Self.Size * 1.8 + Subtitle2_2.Size * 1.8)) / 2
+        - Image3_5:
+            Control: Image
+            Properties:
+              OnSelect: =Select(Parent)
+              Image: |-
+                =// // Icon Color Processing Function // With( { iconName: ThisItem.icon, isSelected: ThisItem.id = locVarCurrentNav.id, iconColor: Switch( ThisItem.color,"blue", "rgb(59, 130, 246)", "orange", "rgb(249, 115, 22)", "purple", "rgb(147, 51, 234)", "green", "rgb(34, 197, 94)", "red", "rgb(239, 68, 68)", "yellow", "rgb(234, 179, 8)", "indigo", "rgb(99, 102, 241)", "pink", "rgb(236, 72, 153)", "teal", "rgb(20, 184, 166)", "cyan", "rgb(6, 182, 212)") }, "data:image/svg+xml;utf8," & EncodeUrl( Substitute( LookUp( fn_Icons, name = iconName ).value, "currentColor",// Original color placeholder /* If( isSelected, "rgb(59, 130, 246)",// Selected - Blue rgb(59, 130, 246) "rgb(107, 114, 128)"// Not Selected - Gray rgb(107, 114, 128) )*/ iconColor ) ) )
+              Height: =72
+              RadiusBottomLeft: =8
+              RadiusBottomRight: =8
+              RadiusTopLeft: =8
+              RadiusTopRight: =8
+              Visible: =false
+              Width: =72
+              X: =16
+              Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+    - Canvas1:
+        Control: FluidGrid
+        Variant: fluidGridWithBlankCard
+        Properties:
+          BorderThickness: =0
+          Height: =Parent.Height - Self.Y
+          Width: =Parent.Width
+          Y: =RectQuickActionBar2.Y + RectQuickActionBar2.Height
+        Children:
+        - DataCard1:
+            Control: DataCard
+            Properties:
+              Height: =Parent.Height - 100
+              Width: =Parent.Width
+    - LblAppName1:
+        Control: Label
+        Properties:
+          Text: ="[Title]"
+          Align: =Align.Center
+          Height: =88
+          Width: =Parent.Width
+          Y: =60
+    - RectQuickActionBar2:
+        Control: Rectangle
+        Properties:
+          Height: =88
+          Width: =Parent.Width
