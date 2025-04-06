@@ -1,0 +1,337 @@
+# Updated SharePoint Infrastructure Project Plan
+
+## 1. Project Overview
+**Project Name:** SharePoint Infrastructure Redesign  
+**Timeline:** April 4 - June 15, 2025 (Extended to account for testing and post-launch stabilization)  
+**Project Lead:** [Your Name]  
+**Business Sponsor:** Asher Diba
+
+### 1.1 Objectives
+- Create standardized, reusable templates for all site types (Home, Intranet Hub, Department, Project) with scalability in mind.
+- Implement dynamic and role-based security groups for automated, audit-compliant permissions management.
+- Ensure seamless SharePoint-Teams integration for enhanced collaboration and communication.
+- Establish Viva components (e.g., Viva Connections, Viva Insights) for employee engagement and productivity.
+- Achieve high user adoption through comprehensive training, documentation, and support.
+- Ensure data integrity and performance during migration and post-deployment.
+
+### 1.2 Current Status
+**Phase:** Planning & Design  
+**Priority Tasks:**
+- Finalize requirements document (Due: Apr 10, 2025)
+- Complete site mapping review with Laura (Due: Apr 14, 2025)
+- Conduct stakeholder alignment meeting (Due: Apr 15, 2025)
+
+## 2. Project Structure
+
+### 2.1 Team
+| Role | Name | Responsibility |
+|------|------|----------------|
+| Project Lead | [Your Name] | Overall coordination, technical oversight, risk management |
+| Project Sponsor | Asher Diba | Executive oversight, strategic alignment, budget approval |
+| Site Mapping Specialist | Laura | Content structure, site hierarchy, metadata planning |
+| Templates Designer | Raviv Givati | UI/UX development, template creation, branding alignment |
+| Business Stakeholder | Sigalit | Requirements gathering, approval, user advocacy |
+| IT Administrator | [TBD] | Infrastructure setup, server management, performance tuning |
+| Training Coordinator | [TBD] | Training design, delivery, adoption tracking |
+
+### 2.2 Timeline
+| Phase | Dates | Key Deliverables |
+|-------|------|------------------|
+| Planning | Apr 4-15 | Requirements doc, site architecture, governance plan |
+| Design | Apr 16-May 5 | Templates, information architecture, integration plans |
+| Development | May 6-20 | Site creation, configuration, testing environment setup |
+| Testing | May 21-June 3 | Validation, user acceptance testing (UAT), performance testing |
+| Deployment | June 4-10 | Migration, go-live, initial support |
+| Post-Implementation | June 11-15 | Stabilization, final training, close-out |
+
+## 3. Site Architecture
+
+### 3.1 Site Types
+| Type | Purpose | Template | Owner | Key Features |
+|------|---------|----------|-------|--------------|
+| Home Site | Central entry point | Communication Site | IT | Hero, news, quick links, search bar |
+| Intranet Hub | Org info, policies | Communication Site | IT + KU | Policies, announcements, resources |
+| Department Site | Team collaboration | Team Site | Dept KU + IT | Documents, calendars, tasks, people |
+| Project Site | Project collaboration | Team Site | Project KU + IT | Gantt charts, milestones, deliverables |
+
+### 3.2 Site Structure
+```
+HOME SITE (Communication)
+  |
+  ├── INTRANET HUB (Communication)
+  |     ├── Policies
+  |     ├── Resources
+  |     └── Announcements
+  |
+  ├── DEPARTMENT SITES (Team)
+  |     ├── IT Department
+  |     |     ├── Documents
+  |     |     ├── Calendar
+  |     |     └── Tasks
+  |     ├── Legal Department
+  |     └── [Other Departments]
+  |
+  └── PROJECT SITES (Team)
+        ├── Project A
+        ├── Project B
+        └── [Other Projects]
+```
+
+### 3.3 Scalability Considerations
+- Use hub sites to connect related sites for consistent navigation and search.
+- Plan for future site growth by reserving site collection quotas and storage limits.
+- Implement site designs to enforce consistency across new site creations.
+
+## 4. Template Specifications
+
+### 4.1 Template Components
+| Component | Home | Intranet | Department | Project | Notes |
+|-----------|------|----------|------------|---------|-------|
+| Hero | ✓ | ✓ | ✓ | - | High-impact visuals, clickable CTAs |
+| News | ✓ | ✓ | ✓ | - | RSS feed integration, audience targeting |
+| Document Library | ✓ | ✓ | ✓ | ✓ | Versioning, check-in/out, metadata |
+| Calendar | ✓ | ✓ | ✓ | ✓ | Sync with Outlook, recurring events |
+| Quick Links | ✓ | ✓ | ✓ | ✓ | Dynamic links, categories |
+| People | - | - | ✓ | ✓ | Org chart, contact info, presence |
+| Tasks | - | - | ✓ | ✓ | Integration with Planner, timelines |
+| Search Box | ✓ | ✓ | ✓ | ✓ | Custom search scopes, refiners |
+
+### 4.2 Implementation Approach
+1. Develop wireframes and mockups for stakeholder review (Raviv).
+2. Use SharePoint Online modern experience for all templates.
+3. Leverage SharePoint Framework (SPFx) for custom web parts if needed.
+4. Conduct usability testing with a pilot group.
+5. Deploy templates to a staging environment for final approval.
+
+## 5. Security & Governance
+
+### 5.1 Permission Model
+| Group | Membership | Permission | Scope | Audit Requirements |
+|-------|------------|------------|-------|-------------------|
+| All-Employees | Dynamic (employeeType=emp) | Read | All sites | Monthly access reviews |
+| Dept-[Name] | Dynamic (department=[Name]) | Edit | Department sites | Quarterly audits |
+| Dept-[Name]-Owners | Manual assignment | Full Control | Department sites | Bi-annual recertification |
+| Project-[Name] | Manual assignment | Edit | Project sites | Project closure review |
+| IT-Admins | Manual | Full Control | All sites | Restricted access, logging |
+
+### 5.2 Site Lifecycle
+| Stage | Policy | Action | Owner |
+|-------|--------|--------|-------|
+| Active | Regular usage | Normal operation | Site Owners |
+| Inactive (3mo) | No login | Email notification, archive warning | IT Admin |
+| Inactive (4mo) | No login | Change to read-only, backup | IT Admin |
+| Inactive (6mo) | No login | Archive to Azure Blob, remove from production | IT Admin |
+
+### 5.3 Governance Policies
+- Enforce naming conventions for sites, libraries, and lists.
+- Set retention policies for documents and sites.
+- Use sensitivity labels for data classification (e.g., public, confidential).
+- Monitor usage with Power BI dashboards for compliance.
+
+## 6. Content Migration
+
+### 6.1 Migration Strategy
+**Approach:** Phased migration by department, with data validation at each step.  
+**Timeline:** April 15 - June 5, 2025  
+**Tools:** SharePoint Migration Tool, third-party tools (if needed), PowerShell scripts for bulk operations.
+
+### 6.2 Department Schedule
+| Department | Start Date | End Date | Complexity | Data Volume | Risks |
+|------------|------------|----------|------------|-------------|-------|
+| IT | April 15 | April 20 | Medium | 500 GB | Minimal |
+| Legal | April 21 | April 25 | High | 1 TB | Sensitive data, complex permissions |
+| Finance | April 26 | May 1 | High | 750 GB | Financial records, audit trails |
+| HR | May 2 | May 7 | Medium | 400 GB | Employee data privacy concerns |
+
+### 6.3 Migration Checklist
+- Inventory current content (files, permissions, metadata).
+- Clean up redundant, obsolete, or trivial (ROT) data.
+- Map old permissions to new dynamic groups.
+- Test migration in a sandbox environment.
+- Validate post-migration search, links, and access.
+
+## 7. Action Plan
+
+### 7.1 Immediate Tasks (Next 2 Weeks)
+- [ ] Finalize requirements document (Due: Apr 10)
+- [ ] Review and approve site mapping by Laura (Due: Apr 14)
+- [ ] Schedule stakeholder alignment meeting (Due: Apr 15)
+- [ ] Initiate template design with Raviv (Due: Apr 16)
+
+### 7.2 Key Decisions Required
+- Finalize template designs (Sigalit, Dept KUs) by Apr 25.
+- Choose between Azure AD dynamic groups or manual groups for complex departments.
+- Prioritize migration based on business impact vs. technical complexity.
+- Define site ownership roles and responsibilities.
+
+## 8. Risk Management
+
+### 8.1 Risk Register
+| Risk | Impact | Probability | Mitigation Strategy | Owner | Status |
+|------|--------|------------|---------------------|-------|--------|
+| Template approval delays | High | Medium | Early stakeholder engagement, iterative reviews | [You] | Open |
+| Dynamic group configuration complexity | Medium | High | Pilot with IT, use Azure AD testing tools | [You] | Open |
+| Content migration issues (data loss, corruption) | High | High | Pre-migration backup, dry runs, validation scripts | [You]/Laura | Open |
+| User resistance to new structure | Medium | Medium | Change management plan, champions, early wins | [You] | Open |
+| Performance degradation post-launch | Medium | Low | Load testing, capacity planning, CDN integration | IT Admin | Open |
+
+### 8.2 Contingency Planning
+- Rollback plan for failed migrations (restore from backup).
+- Temporary manual permissions if dynamic groups fail.
+- Additional server resources for peak load during migration.
+- Extended UAT period if critical bugs are found.
+
+## 9. Training & Adoption
+
+### 9.1 Training Approach
+| Audience | Format | Duration | Content | Timing | Delivery Method |
+|----------|--------|----------|---------|--------|-----------------|
+| Site Owners | Hands-on workshop | 3 hours | Template mgmt, governance, permissions | Pre-launch (May 15) | In-person/Teams |
+| Content Authors | Workshop | 2 hours | Content creation, page design, metadata | Pre-launch (May 16) | Virtual |
+| General Users | Quick guide + video | 30 min | Navigation, doc mgmt, search | At launch (June 5) | Intranet, email |
+| IT Support | Technical session | 4 hours | Admin, troubleshooting, maintenance | Pre-launch (May 14) | In-person |
+
+### 9.2 Adoption Strategy
+- Appoint department champions to drive usage.
+- Create a feedback portal for user suggestions.
+- Track adoption via Microsoft 365 usage analytics.
+- Offer incentives for early adopters (e.g., recognition, training credits).
+
+## 10. Communications Plan
+
+### 10.1 Stakeholder Communications
+| Audience | Message | Channel | Frequency | Owner | Escalation Path |
+|----------|---------|---------|-----------|-------|-----------------|
+| Executive Team | Project status, ROI | Meeting | Monthly | Asher | [You] |
+| Department Heads | Implementation timeline, requirements | Email/Meeting | Bi-weekly | [You] | Asher |
+| Site Owners | Technical updates, responsibilities | Workshop/Email | Weekly | [You] | IT Admin |
+| End Users | Changes, benefits, training | Email/Intranet | At milestones | [You] | Department Heads |
+
+### 10.2 Communication Timeline
+- Project kickoff announcement: April 10
+- Migration notifications: April 15-May 31 (weekly)
+- Training schedule release: May 1
+- Go-live announcement: June 4
+- Post-implementation feedback request: June 15
+
+## 11. Testing Strategy
+
+### 11.1 Test Plan
+| Test Type | Scope | Method | Timing | Responsibility | Tools |
+|-----------|-------|--------|--------|----------------|-------|
+| Template Functionality | All templates | Manual, automated | May 20-25 | [You]/Raviv | SharePoint Tester, SPFx |
+| Permission Structure | Security groups | User scenario | May 26-30 | [You] | Azure AD, PowerShell |
+| Content Migration | Sample content | Pilot, full | May 15-20 | [You]/Laura | Migration Tool, scripts |
+| User Acceptance | End-to-end | Department testers | May 31-June 3 | Dept KUs | Test scripts, surveys |
+| Performance | Load, search | Automated | May 28-30 | IT Admin | LoadRunner, Fiddler |
+
+### 11.2 Acceptance Criteria
+- Templates match approved designs (100% compliance).
+- Dynamic permissions applied correctly (no unauthorized access).
+- Migration preserves all data, metadata, and permissions (0% loss).
+- Search returns relevant results within 2 seconds (95% accuracy).
+- Page load times under 3 seconds (95% of pages).
+
+## 12. Post-Implementation Support
+
+### 12.1 Support Model
+| Support Level | Response Time | Handle By | Scope | Escalation |
+|---------------|---------------|-----------|-------|------------|
+| Tier 1 | 4 hours | Help Desk | Basic usage, access | Tier 2 |
+| Tier 2 | 8 hours | SharePoint Team | Configuration, templates | Tier 3 |
+| Tier 3 | 24 hours | IT Admin | Infrastructure, critical | Project Lead |
+
+### 12.2 Knowledge Management
+- Centralize documentation in a SharePoint site.
+- Create a troubleshooting wiki with video tutorials.
+- Maintain a known issues log with workarounds.
+- Publish monthly tips via email and intranet.
+
+## 13. Resource Planning & Budget
+
+### 13.1 Internal Resources
+| Resource | Role | Allocation % | Duration | Effort (Hours) | Cost Estimate |
+|----------|------|--------------|----------|----------------|---------------|
+| [You] | Project Lead | 80% | 10 weeks | 320 | $50,000 |
+| Raviv Givati | UI/UX Designer | 50% | 6 weeks | 120 | $30,000 |
+| Laura | Content Specialist | 30% | 8 weeks | 96 | $20,000 |
+| IT Support | Technical Support | 20% | 10 weeks | 80 | $15,000 |
+| Dept KUs | User Testing | 10% | 3 weeks | 12 per KU | $5,000 |
+
+### 13.2 Technical Resources
+| Resource | Purpose | Timeline | Environment | Cost |
+|----------|---------|----------|-------------|------|
+| Dev Tenant | Template design | Apr 15-May 5 | Non-prod | $2,000 |
+| Test Site | UAT | May 6-June 3 | Non-prod | $1,500 |
+| Prod Site | Live | June 4-15 | Prod | Included |
+| Migration Tools | Content move | Apr 15-June 5 | Both | $3,000 |
+
+### 13.3 Budget Considerations
+- Additional licensing for Power Apps, Flow (if needed).
+- Consultant fees for complex integrations ($10,000).
+- Contingency fund (15% of total): $20,000.
+- Training materials and video production: $5,000.
+
+## 14. Quality Assurance
+
+### 14.1 Quality Standards
+- Adherence to Microsoft SharePoint best practices.
+- Compliance with organizational branding and accessibility standards (WCAG 2.1).
+- 99% uptime post-launch (monitored via Azure Monitor).
+- Zero critical defects in production.
+
+### 14.2 Review Process
+| Review Point | Reviewer | Timing | Deliverable | Sign-off Required | Notes |
+|--------------|----------|--------|-------------|-------------------|-------|
+| Requirements | Asher, Sigalit | Apr 14 | Requirements doc | Yes | Include business cases |
+| Template Design | Sigalit, Dept KUs | Apr 28 | Mockups | Yes | Usability feedback |
+| Site Arch | Asher | Apr 21 | Diagram | Yes | Scalability check |
+| Migration Plan | Dept Heads | May 7 | Schedule | Yes | Risk assessment |
+| UAT Results | Asher | June 5 | Report | Yes | Final approval |
+
+## 15. Closing & Evaluation
+
+### 15.1 Project Close-out
+- Final review meeting: June 15
+- Document lessons learned (template for future projects).
+- Transition support to IT team.
+- Recognize team contributions publicly.
+- Archive all project artifacts in SharePoint.
+
+### 15.2 Success Metrics Evaluation
+| Metric | Target | Measurement Method | Owner |
+|--------|--------|---------------------|-------|
+| Template Adoption | 100% | Usage analytics | [You] |
+| User Satisfaction | >85% | Survey, NPS score | Training Coord |
+| Migration Accuracy | 100% | Validation reports | Laura |
+| Search Relevancy | >90% | User testing | IT Admin |
+| Performance | <3 sec | Monitoring tools | IT Admin |
+
+### 15.3 Future Enhancements
+- Integrate Power Automate for automated workflows.
+- Develop Power Apps for custom business processes.
+- Implement AI-driven content tagging and recommendations.
+- Expand Viva modules (e.g., Viva Learning, Viva Topics).
+
+## 16. Appendices
+- SharePoint Governance Document (updated for modern features).
+- Detailed Site Mapping Document (Laura).
+- Requirements Specifications (Sigalit).
+- Template Mockups (Raviv).
+- Training Materials and Videos.
+- Communications Templates (email, intranet posts).
+- Test Plans and Scripts (automated and manual).
+- Migration Checklist and Scripts.
+- Risk Management Log.
+- Budget Breakdown and Approvals.
+
+---
+
+### Self-Review Notes
+- **Completeness:** Added scalability, governance, and post-launch support details. Ensured all modern SharePoint features (e.g., SPFx, Viva) are considered.
+- **Clarity:** Simplified complex sections (e.g., permissions, migration) with tables and examples.
+- **Actionability:** Included specific deadlines, owners, and tools for every task.
+- **Risks:** Addressed potential issues like performance, user adoption, and data integrity with mitigation strategies.
+- **Alignment:** Ensured alignment with business goals (e.g., productivity, compliance) and technical best practices.
+
+This updated plan is now robust, detailed, and ready for execution. Let me know if further adjustments are needed!
